@@ -1,0 +1,252 @@
+.myers-datatable {
+
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    all: unset;
+    cursor: pointer;
+  }
+
+  .table-container {
+    width: 100%;
+  }
+
+  .table-cell {
+    padding-block: 8px;
+    padding-inline: 10px;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .table-header {
+    background-color: rgb(240, 240, 240);
+    font-weight: bold;
+    text-transform: capitalize;
+    font-size: small;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    padding-block: 12px;
+  }
+
+  .table-header:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1px;
+    height: 50%;
+    background-color: rgb(190, 190, 190);
+    transform: translateY(-50%);
+  }
+
+  .table-header-children-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-header-column-name {
+    display: flex;
+  }
+
+  .table-row {
+    border: 1px solid rgb(240, 240, 240);
+    transition: background-color 200ms linear;
+
+    &:nth-child(even) {
+      background-color: rgb(252, 252, 252);
+    }
+
+    &:hover {
+      background-color: rgb(230, 230, 230);
+    }
+  }
+
+  .column-header-options {
+    display: flex;
+  }
+
+
+  .sortable-table-header {
+    cursor: pointer;
+    transition: background-color 200ms linear;
+
+    &:hover {
+      background-color: rgb(255, 255, 255);
+    }
+  }
+
+  .sortable-caret-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(100, 100, 100);
+    min-width: 16px;
+    min-height: 16px;
+  }
+
+  .sortable-caret {
+    width: 16px;
+    height: 16px;
+    fill: rgb(150, 150, 150);
+  }
+
+
+  .boolean-svg {
+    height: 24px;
+    width: 24px;
+  }
+
+  .boolean-true-svg {
+    fill: rgb(0, 165, 0);
+  }
+
+  .boolean-false-svg {
+    fill: rgb(255, 72, 72);
+  }
+
+  .cell-datatype-name {
+    text-transform: capitalize;
+  }
+
+  .cell-datatype-image {
+    max-height: 24px;
+  }
+
+  .cell-datatype-paragraph {
+    display: block;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  .cell-datatype-paragraph-closed {
+    white-space: nowrap;
+  }
+
+  .cell-datatype-paragraph-open {
+    white-space: normal;
+  }
+
+  .pagination-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    float: right;
+    margin: 16px;
+    align-self: flex-end;
+  }
+
+  .pagination-rpp-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: rgb(50, 50, 50);
+  }
+
+  .pagination-icon-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .pagination-icon-button-container {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pagination-navigation-svg {
+    width: 24px;
+    height: 24px;
+    fill: rgb(150, 150, 150);
+  }
+
+  .apps-button-header-cell {
+    width: 16px;
+    height: 16px;
+  }
+
+  .header-svg {
+    display: flex;
+    height: 16px;
+    width: 16px;
+    fill: rgb(100, 100, 100);
+    color: rgb(100, 100, 100);
+  }
+
+  .apps-button {
+    display: flex;
+  }
+
+  .options-svg {
+    display: flex;
+    height: 20px;
+    width: 20px;
+    fill: black;
+  }
+
+
+  .popup-floating-container {
+    z-index: 1;
+  }
+
+  .popup-floating-arrow {
+    fill: gray;
+  }
+
+  .popup-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid lightgray;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0px 0px 8px lightgray;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  .omit-column-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+  }
+
+  .omit-column-title {
+    padding: 8px;
+  }
+
+  .omit-column-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 150px;
+    overflow-y: scroll;
+  }
+
+  .omit-column-list:last-child {
+    padding-bottom: 8px;
+  }
+
+  .omit-column-list-item-container {
+    display: flex;
+    gap: 8px;
+    padding-inline: 8px;
+  }
+
+  .omit-column-label {
+    width: 100%;
+    font-weight: normal;
+  }
+
+  .filter-options-button {
+    display: flex;
+    margin-inline: 8px;
+  }
+}

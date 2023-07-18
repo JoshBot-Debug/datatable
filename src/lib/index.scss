@@ -1,0 +1,50 @@
+.myers-datatable {
+
+  .table-container {
+    display: table;
+    border-collapse: collapse;
+  }
+
+  .table-row {
+    display: table-row;
+    position: relative;
+  }
+
+  .table-cell {
+    display: table-cell;
+  }
+
+  .table-header {
+    z-index: 1;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #7e7e7e; /* Blue */
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    animation: spin 1s linear infinite;
+    margin-left: 5px;
+  }
+
+  .spinner-loading-text {
+    margin-left: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .spinner-container {
+    position: absolute;
+    background-color: white;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
