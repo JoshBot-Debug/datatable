@@ -1,8 +1,10 @@
 import { useId } from "react";
+import { Datatable } from "../types";
+import { useMountLog } from "../../helper";
 
 interface Props<FieldNames extends string> {
-  columns: UseDatatable.Column<FieldNames>[];
-  setColumns: (callback: (columns: UseDatatable.Column<FieldNames>[]) => UseDatatable.Column<FieldNames>[]) => void;
+  columns: Datatable.Column<FieldNames>[];
+  setColumns: (callback: (columns: Datatable.Column<FieldNames>[]) => Datatable.Column<FieldNames>[]) => void;
 }
 
 export default function OmitColumn<FieldNames extends string>(config: Props<FieldNames>) {
@@ -12,11 +14,13 @@ export default function OmitColumn<FieldNames extends string>(config: Props<Fiel
     setColumns
   } = config;
 
+  useMountLog("OmitColumn")
+
   const id = useId();
 
   const isAllOmitted = !!columns.find(c => c.omit)
 
-  const onToggle = (column: UseDatatable.Column<FieldNames>) => {
+  const onToggle = (column: Datatable.Column<FieldNames>) => {
     setColumns(prev => {
       const next = [...prev];
       for (let i = 0; i < next.length; i++) {

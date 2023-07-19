@@ -1,31 +1,23 @@
 {
-  "name": "datatable",
-  "version": "0.1.0",
+  "name": "@jjmyers/datatable",
+  "version": "0.1.1",
   "private": true,
-  "dependencies": {
-    "@floating-ui/react": "^0.24.8",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.38",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
-  },
+  "main": "build/index.js",
+  "module": "build/index.esm.js",
+  "types": "build/index.d.ts",
   "overrides": {
     "nth-check": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "copy-css": "mkdir -p build/styles && cp -r src/lib/styles/*.css build/styles/",
+    "build": "rm -r build & rm jjmyers-datatable-*.tgz & rollup -c --bundleConfigAsCjs && npm run copy-css && npm pack",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "files": [
+    "build/*"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -61,18 +53,40 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.22.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@faker-js/faker": "^8.0.2"
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-react": "^7.22.5",
+    "@faker-js/faker": "^8.0.2",
+    "@floating-ui/react": "^0.24.8",
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.38",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "rollup": "^3.26.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-scss": "^4.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-loader": "^9.4.4",
+    "tslib": "^2.6.0",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
   },
-  "description": "A ready to use react js server side datatable.",
-  "keywords": [
-    "datatable",
-    "react-datatable",
-    "react-js",
-    "table",
-    "react-table",
-    "server-side-datatable"
-  ],
+  "description": "A datatable that comes with the most popular features.",
+  "keywords": [],
   "author": "Joshua Joseph Myers",
   "license": "ISC"
 }

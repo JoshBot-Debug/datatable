@@ -1,26 +1,48 @@
-type PartialKeys<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
 
-namespace UseDatatable {
+export declare namespace Datatable {
 
-    type Datatype = "string" | "boolean" | "date" | "datetime" | "image" | "link" | "email" | "phone" | "name" | "paragraph" | "number";
+    type PartialKeys<T, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K>;
+
+    type Include<T, U> = T extends U ? T : never
+
+    type Datatype = "string" | "boolean" | "date" | "datetime" | "image" | "link" | "email" | "phone" | "name" | "paragraph" | "number" | "set";
 
     type Filters = { [F in Datatype]?: React.ReactNode };
 
-    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank"
+    type BooleanFilterOperations = "Is true" | "Is false" | "Is blank";
+
+    type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank";
+
+    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
+
+    type OperationFilter<Operation> = { field: string; operation: Operation; value: string; };
+    type SetFilter = { field: string; selected: string[]; };
 
     type Column<FieldNames extends string> = {
         field: FieldNames;
         columnName: string;
         sortable: boolean;
+        filterable: boolean;
         omit: boolean;
         renderCell?: (value: any, column: Column<FieldNames>) => React.ReactNode;
+        setOptions?: string[];
+        multiFilter?: boolean;
     } & ({
-        datatype: Exclude<Datatype, "boolean" | "date" | "datetime" | "image" | "number">;
+        datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
         filterOperations?: TextFilterOperations[];
     } | {
-        datatype: Exclude<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph">;
-        filterOperations?: string[];
+        datatype: Include<Datatype, "date" | "datetime" | "number">;
+        filterOperations?: RangeFilterOperations[];
+    } | {
+        datatype: Include<Datatype, "boolean">;
+        filterOperations?: BooleanFilterOperations[];
     })
+
+    type RowOptionMenuProps = { row: Record<FieldNames, any>; rowIndex: number; }
+
+    type AppsPanelProps = { DefaultComponents: React.ReactNode; }
+
+    type ColumnConfig<FieldNames> = PartialKeys<Column<FieldNames>, "datatype" | "sortable" | "columnName" | "omit" | "filterable">[];
 
     interface Config<Data, FieldNames> {
 
@@ -34,19 +56,23 @@ namespace UseDatatable {
 
         isSelectable?: (row: Record<FieldNames, any>) => boolean;
 
-        columns: PartialKeys<Column<FieldNames>, "datatype" | "sortable" | "columnName" | "omit">[];
+        columns: ColumnConfig;
 
-        onFilter?: (filter: Filter) => void;
+        onFilter?: (filter: Filter<FieldNames>) => void;
 
-        initialSortOrder?: UseSortable.Config<FieldNames>["initialSortOrder"];
-        initialPage?: UsePagination.Config["initialPage"];
+        initialSortOrder?: Filter<FieldNames>["sortOrder"];
+        initialPage?: Filter<FieldNames>["page"];
+        initialFilter?: Filter<FieldNames>["filter"];
 
-        RowOptionMenu?: React.FC<{ row: Record<FieldNames, any>; rowIndex: number; }>
+        RowOptionMenu?: React.FC<RowOptionMenuProps>
+        AppsPanel?: React.FC<AppsPanelProps>
     }
 
-    interface Filter {
-        sortOrder?: UseSortable.SortOrder;
+    interface Filter<FieldNames> {
+        sortOrder?: UseSortable.SortOrder<FieldNames>;
         page?: UsePagination.Page;
+        filter?: OperationFilter<TextFilterOperations | RangeFilterOperations>[];
+        setFilter?: SetFilter[];
     }
 
 
@@ -56,28 +82,43 @@ namespace UseDatatable {
         className?: string;
     }
 
+    type DatatableFilterProps<Operation> = { multiFilter?: boolean; setOptions?: string[]; datatype: string; field: string; filterOperations?: Operation[] };
+
     interface DatatableProps<FieldNames extends string> {
-        columns: UseDatatable.Column<FieldNames>[];
+        columns: Datatable.Column<FieldNames>[];
         data: Record<FieldNames, any>[];
         isFetching?: boolean;
 
         tableClassName?: string;
         thClassName?: string;
 
-        sortable?: UseDatatable.UseSortable.HookReturn<FieldNames>;
-        pagination?: UseDatatable.UsePagination.HookReturn;
-        selectable?: UseDatatable.UseSelectable.HookReturn<FieldNames>;
+        sortable?: Datatable.UseSortable.HookReturn<FieldNames>;
+        pagination?: Datatable.UsePagination.HookReturn;
+        selectable?: Datatable.UseSelectable.HookReturn<FieldNames>;
 
         RowOptionMenu?: React.FC<{ row: Record<FieldNames, any>; rowIndex: number; }>;
         AppsPanel?: React.ReactNode;
 
-        TextFilter?: React.FC<{ field: string; filterOperations?: string[] }>;
+        TextFilter?: React.FC<DatatableFilterProps<TextFilterOperations>>;
+        DateFilter?: React.FC<DatatableFilterProps<RangeFilterOperations>>;
+        NumberFilter?: React.FC<DatatableFilterProps<RangeFilterOperations>>;
+        BooleanFilter?: React.FC<DatatableFilterProps<BooleanFilterOperations>>;
     }
 
-    interface TextFilterProps {
+    interface FilterComponentProps<Operation> {
+        inputType?: "text" | "date" | "datetime" | "number";
         field: string;
-        onChange: () => void;
-        filterOperations?: string[]
+        onChange: (result: OperationFilter<Operation>) => void;
+        filterOperations?: Operation[];
+        defaultValue?: { operation: any; value: string; }
+        allowedOperations: Operation[];
+    }
+
+    interface SetFilterComponentProps {
+        field: string;
+        options: string[];
+        onChange: (result: { field: string; selected: string[]; }) => void;
+        defaultValue?: { selected: string[]; };
     }
 
 

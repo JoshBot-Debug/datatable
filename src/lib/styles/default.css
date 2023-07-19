@@ -2,10 +2,15 @@
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
-.myers-datatable button {
+.myers-datatable .icon-button {
   all: unset;
   cursor: pointer;
+}
+.myers-datatable .table-scroll-container {
+  display: flex;
+  overflow: auto;
 }
 .myers-datatable .table-container {
   width: 100%;
@@ -125,6 +130,7 @@
 }
 .myers-datatable .pagination-icon-button {
   cursor: pointer;
+  all: unset;
   display: flex;
   align-items: center;
 }
@@ -137,6 +143,14 @@
   height: 24px;
   fill: rgb(150, 150, 150);
 }
+.myers-datatable .pagination-select-input {
+  background-color: white;
+  border: 1px solid #c6c6c6;
+  border-radius: 3px;
+}
+.myers-datatable .app-panel-button {
+  vertical-align: middle;
+}
 .myers-datatable .apps-button-header-cell {
   width: 16px;
   height: 16px;
@@ -147,6 +161,11 @@
   width: 16px;
   fill: rgb(100, 100, 100);
   color: rgb(100, 100, 100);
+  transition: all 200ms ease-in-out;
+}
+.myers-datatable .header-svg:hover {
+  fill: rgb(150, 150, 150);
+  color: rgb(150, 150, 150);
 }
 .myers-datatable .apps-button {
   display: flex;
@@ -174,6 +193,29 @@
 .myers-datatable .hide {
   display: none;
 }
+.myers-datatable .set-filter-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  gap: 4px;
+  max-height: 150px;
+  overflow-y: scroll;
+  padding-inline: 4px;
+  padding-block: 8px;
+}
+.myers-datatable .divider {
+  height: 1px;
+  background-color: #c6c6c6;
+  width: 100%;
+}
+.myers-datatable .set-filter-list-item-container {
+  display: flex;
+  gap: 8px;
+}
+.myers-datatable .set-filter-label {
+  width: 100%;
+  cursor: pointer;
+}
 .myers-datatable .omit-column-container {
   display: flex;
   flex-direction: column;
@@ -200,8 +242,26 @@
 .myers-datatable .omit-column-label {
   width: 100%;
   font-weight: normal;
+  cursor: pointer;
 }
 .myers-datatable .filter-options-button {
   display: flex;
   margin-inline: 8px;
+}
+.myers-datatable .operation-filter-container {
+  width: 182px;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+.myers-datatable .operation-filter-input {
+  background-color: white;
+  outline: none;
+  display: flex;
+  border-radius: 3px;
+  border: 1px solid #c6c6c6;
+  padding: 4px;
+  font-weight: normal;
 }/*# sourceMappingURL=default.css.map */

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Datatable } from "../types";
 
-export default function useSelectable<FieldNames extends string>(config: UseDatatable.UseSelectable.Config<FieldNames>) {
+export default function useSelectable<FieldNames extends string>(config: Datatable.UseSelectable.Config<FieldNames>) {
 
   const {
     isSelectable: _isSelectable,
@@ -52,7 +53,7 @@ export default function useSelectable<FieldNames extends string>(config: UseData
 }
 
 
-function Header(props: UseDatatable.UseSelectable.HeaderProps) {
+function Header(props: Datatable.UseSelectable.HeaderProps) {
 
   const {
     selectAll,
@@ -68,7 +69,7 @@ function Header(props: UseDatatable.UseSelectable.HeaderProps) {
   )
 }
 
-function Row<FieldNames>(props: UseDatatable.UseSelectable.RowProps<FieldNames>) {
+function Row<FieldNames>(props: Datatable.UseSelectable.RowProps<FieldNames>) {
 
   const {
     row,

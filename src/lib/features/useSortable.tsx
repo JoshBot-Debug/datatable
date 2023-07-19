@@ -1,36 +1,37 @@
 import { useEffect, useState } from "react";
+import { Datatable } from "../types";
 
 
 export default function useSortable<
   FieldNames extends string
 >(
-  config: UseDatatable.UseSortable.Config<FieldNames>
-): UseDatatable.UseSortable.HookReturn<FieldNames> {
+  config: Datatable.UseSortable.Config<FieldNames>
+): Datatable.UseSortable.HookReturn<FieldNames> {
 
   const {
     onChange,
-    initialSortOrder = {} as UseDatatable.UseSortable.SortOrder<FieldNames>,
+    initialSortOrder = {} as Datatable.UseSortable.SortOrder<FieldNames>,
   } = config;
 
   const [isMultiSort, setIsMultiSort] = useState(false);
 
-  const [sortOrder, setSortOrder] = useState<UseDatatable.UseSortable.SortOrder<FieldNames>>(initialSortOrder);
+  const [sortOrder, setSortOrder] = useState<Datatable.UseSortable.SortOrder<FieldNames>>(initialSortOrder);
 
-  const onSingleSort = (column: UseDatatable.Column<FieldNames>) => {
+  const onSingleSort = (column: Datatable.Column<FieldNames>) => {
 
     const nextSortOrder = {
       [column.field]: {
         sortDirection: sortOrder[column.field]?.sortDirection === "asc" ? "desc" : "asc",
         orderIndex: 1
       }
-    } as UseDatatable.UseSortable.SortOrder<FieldNames>;
+    } as Datatable.UseSortable.SortOrder<FieldNames>;
 
     setSortOrder(nextSortOrder);
     onChange(nextSortOrder);
   }
 
-  const onMultiSort = (column: UseDatatable.Column<FieldNames>) => {
-    const nextSortOrder: UseDatatable.UseSortable.SortOrder<FieldNames> = {
+  const onMultiSort = (column: Datatable.Column<FieldNames>) => {
+    const nextSortOrder: Datatable.UseSortable.SortOrder<FieldNames> = {
       ...sortOrder,
     };
 
@@ -72,7 +73,7 @@ export default function useSortable<
 }
 
 
-const Sort = <FieldNames extends string,>(props: UseDatatable.UseSortable.SortProps<FieldNames>) => {
+const Sort = <FieldNames extends string,>(props: Datatable.UseSortable.SortProps<FieldNames>) => {
 
   const {
     column,

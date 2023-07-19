@@ -3,10 +3,16 @@
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: column;
+  height: 100%;
 
-  button {
+  .icon-button {
     all: unset;
     cursor: pointer;
+  }
+
+  .table-scroll-container {
+    display: flex;
+    overflow: auto;
   }
 
   .table-container {
@@ -151,6 +157,7 @@
 
   .pagination-icon-button {
     cursor: pointer;
+    all: unset;
     display: flex;
     align-items: center;
   }
@@ -166,6 +173,16 @@
     fill: rgb(150, 150, 150);
   }
 
+  .pagination-select-input {
+    background-color: white;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+  }
+
+  .app-panel-button {
+    vertical-align: middle;
+  }
+
   .apps-button-header-cell {
     width: 16px;
     height: 16px;
@@ -177,6 +194,12 @@
     width: 16px;
     fill: rgb(100, 100, 100);
     color: rgb(100, 100, 100);
+    transition: all 200ms ease-in-out;
+
+    &:hover {
+      fill: rgb(150, 150, 150);
+      color: rgb(150, 150, 150);
+    }
   }
 
   .apps-button {
@@ -212,6 +235,33 @@
     display: none;
   }
 
+  .set-filter-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    gap: 4px;
+    max-height: 150px;
+    overflow-y: scroll;
+    padding-inline: 4px;
+    padding-block: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background-color: #c6c6c6;
+    width: 100%;
+  }
+
+  .set-filter-list-item-container {
+    display: flex;
+    gap: 8px;
+  }
+
+  .set-filter-label {
+    width: 100%;
+    cursor: pointer;
+  }
+
   .omit-column-container {
     display: flex;
     flex-direction: column;
@@ -243,10 +293,30 @@
   .omit-column-label {
     width: 100%;
     font-weight: normal;
+    cursor: pointer;
   }
 
   .filter-options-button {
     display: flex;
     margin-inline: 8px;
+  }
+
+  .operation-filter-container {
+    width: 182px;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .operation-filter-input {
+    background-color: white;
+    outline: none;
+    display: flex;
+    border-radius: 3px;
+    border: 1px solid #c6c6c6;
+    padding: 4px;
+    font-weight: normal;
   }
 }

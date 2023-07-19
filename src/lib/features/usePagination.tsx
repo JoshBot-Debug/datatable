@@ -1,10 +1,11 @@
 import { useEffect, useId, useState } from "react";
+import { Datatable } from "../types";
 
-export default function usePagination(config: UseDatatable.UsePagination.Config): UseDatatable.UsePagination.HookReturn {
+export default function usePagination(config: Datatable.UsePagination.Config): Datatable.UsePagination.HookReturn {
 
   const {
     onChange,
-    initialPage = {} as UseDatatable.UsePagination.Page,
+    initialPage = {} as Datatable.UsePagination.Page,
     numberOfRows,
     count
   } = config;
@@ -15,7 +16,7 @@ export default function usePagination(config: UseDatatable.UsePagination.Config)
     currentRowsPerPage = rowsPerPage[0],
   } = initialPage;
 
-  const [page, setPage] = useState<UseDatatable.UsePagination.Page>({ currentPage, currentRowsPerPage, rowsPerPage });
+  const [page, setPage] = useState<Datatable.UsePagination.Page>({ currentPage, currentRowsPerPage, rowsPerPage });
 
   const lastPageNumber = Math.ceil(count / page.currentRowsPerPage);
 
@@ -27,7 +28,7 @@ export default function usePagination(config: UseDatatable.UsePagination.Config)
 
   const onChangeRowsPerPage = (rowsPerPage: number) => onPageChange(prev => ({ ...prev, currentRowsPerPage: rowsPerPage }));
 
-  const onPageChange = (callback: (prev: UseDatatable.UsePagination.Page) => UseDatatable.UsePagination.Page) => {
+  const onPageChange = (callback: (prev: Datatable.UsePagination.Page) => Datatable.UsePagination.Page) => {
     return setPage(prev => {
       const nextPage = callback(prev);
       onChange(nextPage);
@@ -52,7 +53,7 @@ export default function usePagination(config: UseDatatable.UsePagination.Config)
 }
 
 
-const Pagination = (props: UseDatatable.UsePagination.PageProps) => {
+const Pagination = (props: Datatable.UsePagination.PageProps) => {
 
   const {
     currentPage,
@@ -81,6 +82,7 @@ const Pagination = (props: UseDatatable.UsePagination.PageProps) => {
           id={`rows-per-page-${id}`}
           value={currentRowsPerPage}
           onChange={(e) => onChangeRowsPerPage(Number(e.target.value))}
+          className="pagination-select-input"
         >
           {rowsPerPage.map(count => <option key={`rows-per-page-${count}`} value={count}>{count}</option>)}
         </select>
