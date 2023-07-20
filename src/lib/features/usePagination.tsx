@@ -5,18 +5,12 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
 
   const {
     onChange,
-    initialPage = {} as Datatable.UsePagination.Page,
+    initialPage,
     numberOfRows,
     count
   } = config;
 
-  const {
-    currentPage = 1,
-    rowsPerPage = [10, 50, 100, 200, 500],
-    currentRowsPerPage = rowsPerPage[0],
-  } = initialPage;
-
-  const [page, setPage] = useState<Datatable.UsePagination.Page>({ currentPage, currentRowsPerPage, rowsPerPage });
+  const [page, setPage] = useState<Datatable.UsePagination.Page>(initialPage ?? {} as Datatable.UsePagination.Page);
 
   const lastPageNumber = Math.ceil(count / page.currentRowsPerPage);
 

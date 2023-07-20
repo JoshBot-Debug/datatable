@@ -1,6 +1,5 @@
 import { useId } from "react";
 import { Datatable } from "../types";
-import { useMountLog } from "../../helper";
 
 interface Props<FieldNames extends string> {
   columns: Datatable.Column<FieldNames>[];
@@ -13,8 +12,6 @@ export default function OmitColumn<FieldNames extends string>(config: Props<Fiel
     columns,
     setColumns
   } = config;
-
-  useMountLog("OmitColumn")
 
   const id = useId();
 

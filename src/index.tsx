@@ -15,6 +15,7 @@ function App() {
       <button onClick={() => selectable.selectAll(false)} style={{ padding: 8 }}>Uncheck All</button>
       <button onClick={() => setFilter(prev => ({ ...prev, ["custom"]: "Hello!" }))} style={{ padding: 8 }}>Custom filter option</button>
       <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Bulk update</button>
+      <button onClick={() => pagination.lastPage()} style={{ padding: 8 }}>Last page</button>
       {DefaultComponents}
     </>
   ), [])
@@ -25,8 +26,8 @@ function App() {
     </>
   ), []);
 
-  const columns: Datatable.ColumnConfig<string> = [
-    { field: "emp_id", datatype: "number" },
+  const columns: Datatable.ColumnConfig<any> = [
+    { field: "emp_id", datatype: "number", sortable: false },
     { field: "name", datatype: "string", filterOperations: ["Ends with"], setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
     { field: "email", datatype: "email", },
     { field: "dob", datatype: "date" },
@@ -36,18 +37,23 @@ function App() {
     { field: "bio", datatype: "paragraph" },
   ]
 
-  const { Datatable, selectable, setFilter } = useDatatable({
-    data: data.slice(0, 100),
+  const { Datatable, selectable, pagination, setFilter } = useDatatable({
+    data: data.slice(0, 10),
     count: data.length,
     isFetching,
     columns,
+    initialSetFilter: [{field: "name", selected: ["Tom"]}],
     onFilter: filter => console.log(filter),
     isSelectable: (row) => row.is_active,
     RowOptionMenu,
     AppsPanel,
   })
 
-  return Datatable
+  return (
+    <div style={{height: "100%"}}>
+      {Datatable}
+    </div>
+  )
 }
 
 const node = document.getElementById("root");

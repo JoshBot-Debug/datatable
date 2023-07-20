@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import "./index.css"
 import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
-import { useMountLog } from "../helper";
 
 export function BaseDatatable<FieldNames extends string>(props: Datatable.DatatableProps<FieldNames>) {
 
@@ -24,8 +23,6 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
     DateFilter,
     BooleanFilter,
   } = props;
-
-  useMountLog("BaseDatatable")
 
   const isTextFilter = (TextFilter: any, column: Datatable.Column<any>): TextFilter is NonNullable<Datatable.DatatableProps<FieldNames>["TextFilter"]> => (
     TextFilter &&
@@ -76,9 +73,9 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
               key={column.field}
               column={column}
               onClick={(column) => {
-                if (sortable) sortable.onSort(column);
+                if (sortable && column.sortable) sortable.onSort(column);
               }}
-              className={`${sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''} ${thClassName}`}
+              className={`${(sortable && column.sortable) ? 'sortable-table-header' : ''} ${thClassName} ${column.omit ? 'hide' : ''}`}
             >
               <div className="column-header-options">
                 {
@@ -139,7 +136,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                         )
                       }
                       {
-                        (column.datatype === "boolean"&& BooleanFilter) && (
+                        (column.datatype === "boolean" && BooleanFilter) && (
                           <div className="filter-options-button">
                             <Popper
                               Icon={IoMenu}
@@ -195,7 +192,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                     row={row}
                     checked={selectable.selectedRows.includes(rIndex)}
                     onChange={selectable.onSelectRow}
-                    disableRow={selectable.disableRow}
+                    onEnableRow={selectable.onEnableRow}
                   />
                 </div>
               )}
@@ -206,7 +203,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                   className={`table-cell ${col.omit ? 'hide' : ''}`}
                   title={String(row[col.field])}
                 >
-                  {(col.renderCell ?? Cell)(row[col.field], col)}
+                  {(col.renderCell ?? Cell)(row[col.field], col, row)}
                 </div>
               ))}
 

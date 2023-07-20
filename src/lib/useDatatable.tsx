@@ -8,7 +8,6 @@ import OmitColumn from "./features/OmitColumn";
 import { OperationFilter } from "./features/OperationFilter";
 import { Datatable } from "./types";
 import SetFilter from "./features/SetFilter";
-import { useMountLog } from "../helper";
 
 
 export default function useDatatable<Data extends Record<string, any>, FieldNames extends keyof Data>(config: Datatable.Config<Data, FieldNames>) {
@@ -19,8 +18,13 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
     count,
     onFilter,
     initialSortOrder,
-    initialPage,
+    initialPage = {
+      currentPage: 1,
+      rowsPerPage: [10, 50, 100, 200, 500],
+      currentRowsPerPage: 10,
+    },
     initialFilter,
+    initialSetFilter,
     isSelectable,
     RowOptionMenu,
     AppsPanel,
@@ -30,7 +34,8 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
   const [filter, setFilter] = useState<Datatable.Filter<FieldNames>>({
     sortOrder: initialSortOrder,
     page: initialPage,
-    filter: initialFilter
+    filter: initialFilter,
+    setFilter: initialSetFilter
   });
 
   const [columns, setColumns] = useState(getColumnDefaults<any>(config.columns as Partial<Datatable.Column<string>>[]));
@@ -40,8 +45,6 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
   const pagination = usePagination({ initialPage, count: count, numberOfRows: data.length, onChange: page => onFilter && setFilter(prev => ({ ...prev, page })) });
   const selectable = useSelectable({ isSelectable: isSelectable as any, numberOfRows: data.length, onChange: select => onFilter && setFilter(prev => ({ ...prev, select })) });
 
-
-  useMountLog("useDatatable")
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
@@ -60,7 +63,6 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
 
   const getFilterDefault = (field: string) => (filter.filter ?? []).find(f => f.field === field)
 
-
   const onSetFilter = (filter: Datatable.SetFilter) => {
     if (!onFilter) return;
     setFilter(prev => {
@@ -78,6 +80,7 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
       field={props.field}
       onChange={onSetFilter}
       options={props.setOptions ?? []}
+      defaultValue={{ selected: (initialSetFilter ?? []).filter(s => s.field === props.field).flatMap(s => s.selected) ?? [] }}
     />
   ), [])
 
@@ -164,6 +167,7 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
     />
   ), [])
 
+  
   return {
     sortable,
     pagination,

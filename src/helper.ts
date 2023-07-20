@@ -8,3 +8,10 @@ export function useMountLog(name: string) {
   }, [])
 
 }
+
+
+export function useRenderLog(name: string) {
+
+    useEffect(() => { console.count(`Render: ${name}`) })
+  
+  }

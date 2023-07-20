@@ -29,11 +29,19 @@ export default function useSelectable<FieldNames extends string>(config: Datatab
     if (isAllSelected) setIsAllSelected(false);
   }
 
-  // TODO possibly remove the need for this function
-  const disableRow = (rowIndex: number) => {
+  const onEnableRow = (enabled: boolean, rowIndex: number) => {
     setDisabledRows(prev => {
-      if (prev.includes(rowIndex)) return prev
-      return [...prev, rowIndex]
+      const ri = prev.findIndex(v => v === rowIndex);
+      const next = [...prev];
+      if (ri > -1 && enabled) {
+        next.splice(ri, 1);
+        return next;
+      }
+      if (ri === -1 && !enabled) {
+        next.push(rowIndex);
+        return next;
+      }
+      return prev;
     })
   }
 
@@ -48,7 +56,7 @@ export default function useSelectable<FieldNames extends string>(config: Datatab
     selectedRows,
     onSelectRow,
     isAllSelected,
-    disableRow,
+    onEnableRow,
   }
 }
 
@@ -77,12 +85,12 @@ function Row<FieldNames>(props: Datatable.UseSelectable.RowProps<FieldNames>) {
     isSelectable,
     checked,
     onChange,
-    disableRow
+    onEnableRow
   } = props;
 
   const enabled = isSelectable(row);
 
-  useEffect(() => { if (!enabled) disableRow(index); }, [enabled])
+  useEffect(() => { onEnableRow(enabled, index); }, [enabled])
 
   return (
     <input

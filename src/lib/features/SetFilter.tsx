@@ -29,7 +29,7 @@ export default function SetFilter(config: Datatable.SetFilterComponentProps) {
   }
 
   const onToggleSelectAll = () => {
-    const next = selected.length === 0 ? options : [];
+    const next = selected.length === options.length ? [] : options;
     setSelected(next);
     onChange({ field, selected: next });
   }

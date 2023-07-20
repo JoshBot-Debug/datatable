@@ -4,16 +4,22 @@
   flex-direction: column;
   height: 100%;
 }
+.myers-datatable .hide {
+  display: none !important;
+}
 .myers-datatable .icon-button {
   all: unset;
   cursor: pointer;
 }
 .myers-datatable .table-scroll-container {
   display: flex;
+  flex: 1;
   overflow: auto;
 }
 .myers-datatable .table-container {
   width: 100%;
+  height: -moz-fit-content;
+  height: fit-content;
 }
 .myers-datatable .table-cell {
   padding-block: 8px;
@@ -142,6 +148,7 @@
   width: 24px;
   height: 24px;
   fill: rgb(150, 150, 150);
+  cursor: pointer;
 }
 .myers-datatable .pagination-select-input {
   background-color: white;
@@ -189,9 +196,7 @@
   background-color: white;
   border-radius: 4px;
   box-shadow: 0px 0px 8px lightgray;
-}
-.myers-datatable .hide {
-  display: none;
+  overflow: hidden;
 }
 .myers-datatable .set-filter-container {
   display: flex;
