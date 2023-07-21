@@ -26,7 +26,6 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
     },
     initialOperationFilter,
     initialSetFilter,
-    isSelectable,
   } = config;
 
   const [filter, updateFilter] = useState<Datatable.Filter<FieldNames>>({
@@ -38,7 +37,7 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
 
   const sortable = useSortable({ initialSortOrder, onChange: sortOrder => onFilter && updateFilter(prev => ({ ...prev, sortOrder })) });
   const pagination = usePagination({ initialPage, count: count, numberOfRows, onChange: page => onFilter && updateFilter(prev => ({ ...prev, page })) });
-  const selectable = useSelectable({ isSelectable: isSelectable as any, numberOfRows, onChange: select => onFilter && updateFilter(prev => ({ ...prev, select })) });
+  const selectable = useSelectable({ numberOfRows, onChange: select => onFilter && updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => onFilter && updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => onFilter && updateFilter(prev => ({ ...prev, operationFilter })) });
 
@@ -89,6 +88,7 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     operationFilter,
     RowOptionMenu,
     AppsPanel,
+    isSelectable
   } = props;
 
   const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
@@ -141,16 +141,18 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     />
   )
 
-  const SelectCell = ({ row, index }: { index: number; row: Record<FieldNames, any>; }) => (
-    <selectable.Row
-      index={index}
-      row={row}
-      isSelectable={selectable.isSelectable}
-      checked={selectable.selectedRows.includes(index)}
-      onChange={selectable.onSelectRow}
-      onEnableRow={selectable.onEnableRow}
-    />
-  )
+  const SelectCell = ({ row, index }: { index: number; row: Record<FieldNames, any>; }) => {
+    const enabled = !isSelectable ? true : isSelectable(row);
+    useEffect(() => { selectable.onDisableRow(!enabled, index); }, [enabled])
+    return (
+      <selectable.Row
+        index={index}
+        disabled={!enabled}
+        checked={selectable.selectedRows.includes(index)}
+        onChange={selectable.onSelectRow}
+      />
+    )
+  }
 
   return (
     <BaseDatatable
@@ -161,7 +163,6 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
       renderSort={renderSort}
       onColumnClick={sortable.onSort}
       RowOptionMenu={RowOptionMenu}
-      selectable={selectable}
       SelectHeader={SelectHeader}
       SelectCell={SelectCell}
       Footer={

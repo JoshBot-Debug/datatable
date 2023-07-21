@@ -4,7 +4,6 @@ import { Datatable } from "../types";
 export default function useSelectable<FieldNames extends string>(config: Datatable.UseSelectable.Config<FieldNames>): Datatable.UseSelectable.HookReturn<FieldNames> {
 
   const {
-    isSelectable: _isSelectable,
     numberOfRows,
     onChange,
   } = config;
@@ -19,8 +18,6 @@ export default function useSelectable<FieldNames extends string>(config: Datatab
     setSelectedRows(selected)
   }
 
-  const isSelectable = (row: Record<FieldNames, any>) => !_isSelectable ? false : _isSelectable(row)
-
   const onSelectRow = (checked: boolean, rowIndex: number) => {
     setSelectedRows(prev => {
       if (checked) return [...prev, rowIndex]
@@ -29,15 +26,15 @@ export default function useSelectable<FieldNames extends string>(config: Datatab
     if (isAllSelected) setIsAllSelected(false);
   }
 
-  const onEnableRow = (enabled: boolean, rowIndex: number) => {
+  const onDisableRow = (disabled: boolean, rowIndex: number) => {
     setDisabledRows(prev => {
       const ri = prev.findIndex(v => v === rowIndex);
       const next = [...prev];
-      if (ri > -1 && enabled) {
+      if (ri > -1 && !disabled) {
         next.splice(ri, 1);
         return next;
       }
-      if (ri === -1 && !enabled) {
+      if (ri === -1 && disabled) {
         next.push(rowIndex);
         return next;
       }
@@ -50,13 +47,11 @@ export default function useSelectable<FieldNames extends string>(config: Datatab
   return {
     Header,
     Row,
-    show: !!_isSelectable,
     selectAll,
-    isSelectable,
     selectedRows,
     onSelectRow,
     isAllSelected,
-    onEnableRow,
+    onDisableRow,
   }
 }
 
@@ -80,23 +75,17 @@ function Header(props: Datatable.UseSelectable.HeaderProps) {
 function Row<FieldNames>(props: Datatable.UseSelectable.RowProps<FieldNames>) {
 
   const {
-    row,
     index,
-    isSelectable,
+    disabled,
     checked,
     onChange,
-    onEnableRow
   } = props;
-
-  const enabled = isSelectable(row);
-
-  useEffect(() => { onEnableRow(enabled, index); }, [enabled])
 
   return (
     <input
       checked={checked}
       onChange={e => onChange(e.target.checked, index)}
-      disabled={!enabled}
+      disabled={disabled}
       type="checkbox"
     />
   )

@@ -10,10 +10,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
     data,
     isFetching,
     columns,
-
     onColumnClick,
-    selectable,
-
     RowOptionMenu,
     AppsPanel,
     renderSort,

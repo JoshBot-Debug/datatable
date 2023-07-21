@@ -42,9 +42,7 @@ export declare namespace Datatable {
      */
     count: number;
     numberOfRows: number;
-
-    isSelectable?: (row: Record<FieldNames, any>) => boolean;
-
+    
     onFilter?: (filter: Filter<FieldNames>) => void;
 
     initialSortOrder?: Filter<FieldNames>["sortOrder"];
@@ -65,6 +63,7 @@ export declare namespace Datatable {
     selectable: Datatable.UseSelectable.HookReturn<FieldNames>;
     RowOptionMenu?: React.FC<RowOptionMenuProps>;
     AppsPanel?: React.FC<AppsPanelProps>;
+    isSelectable?: (row: Record<FieldNames, any>) => boolean;
   }
 
   interface Filter<FieldNames> {
@@ -88,8 +87,6 @@ export declare namespace Datatable {
     data: Record<FieldNames, any>[];
     isFetching?: boolean;
     onColumnClick?: (column: Datatable.Column<FieldNames>) => void;
-
-    selectable?: Datatable.UseSelectable.HookReturn<FieldNames>;
 
     RowOptionMenu?: React.FC<RowOptionMenuProps>
     AppsPanel?: React.ReactNode;
@@ -201,21 +198,18 @@ export declare namespace Datatable {
   namespace UseSelectable {
 
     interface Config<FieldNames> {
-      isSelectable?: (row: Record<FieldNames, any>) => boolean;
       numberOfRows: number;
       onChange: (selectable: { isAllSelected: boolean; selectedRows: number[] }) => void;
     }
 
     interface HookReturn<FieldNames> {
-      show: boolean;
       Header: React.FC<HeaderProps>;
       Row: React.FC<RowProps<FieldNames>>;
       selectAll: (select: boolean) => void;
-      isSelectable: (row: Record<FieldNames, any>) => boolean;
       selectedRows: number[];
       onSelectRow: (checked: boolean, rowIndex: number) => void;
       isAllSelected: boolean;
-      onEnableRow: (enabled: boolean, rowIndex: number) => void;
+      onDisableRow: (disabled: boolean, rowIndex: number) => void;
     }
 
     interface HeaderProps {
@@ -224,12 +218,10 @@ export declare namespace Datatable {
     }
 
     interface RowProps<FieldNames> {
-      row: Record<FieldNames, any>;
       index: number;
-      isSelectable: (row: Record<FieldNames, any>) => boolean;
+      disabled: boolean;
       checked: boolean;
       onChange: (checked: boolean, rowIndex: number) => void;
-      onEnableRow: (enabled: boolean, rowIndex: number) => void;
     }
 
   }

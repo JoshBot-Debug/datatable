@@ -14,7 +14,6 @@ function App() {
     numberOfRows: data.length,
     initialSetFilter: { "name": ["Tom"] },
     onFilter: console.log,
-    isSelectable: (row: any) => row.is_active,
   })
 
   const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
@@ -51,6 +50,7 @@ function App() {
         isFetching={isFetching}
         RowOptionMenu={RowOptionMenu}
         AppsPanel={AppsPanel}
+        isSelectable={row => row.is_active}
         {...controller}
       />
     </div>
