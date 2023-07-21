@@ -17,7 +17,7 @@ export const getColumnDefaults = <FieldNames extends string>(rows: Partial<Datat
 const formatField = (value: string) => value.replace(/([a-z])([A-Z])/g, '$1 $2').replace("_", " ").toLowerCase()
 
 
-export const useDebounce = <Result>(callback: (result: Result) => void, timeout: number = 300) => {
+export const useDebounce = <Result>(callback: (result: Result) => void, timeout: number = 500) => {
     const [value, setValue] = useState<Result | null>(null);
 
     useEffect(() => {

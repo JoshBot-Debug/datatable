@@ -3,44 +3,31 @@ import "./index.css"
 import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
 
+
 export function BaseDatatable<FieldNames extends string>(props: Datatable.DatatableProps<FieldNames>) {
 
   const {
     data,
     isFetching,
     columns,
-    tableClassName = "",
-    thClassName = "",
 
-    sortable,
-    pagination,
+    onColumnClick,
     selectable,
 
     RowOptionMenu,
     AppsPanel,
-    TextFilter,
-    NumberFilter,
-    DateFilter,
-    BooleanFilter,
+    renderSort,
+    renderFilter,
+    Footer,
+    SelectHeader,
+    SelectCell,
   } = props;
 
-  const isTextFilter = (TextFilter: any, column: Datatable.Column<any>): TextFilter is NonNullable<Datatable.DatatableProps<FieldNames>["TextFilter"]> => (
-    TextFilter &&
-    (
-      column.datatype === "string" ||
-      column.datatype === "paragraph" ||
-      column.datatype === "name" ||
-      column.datatype === "email" ||
-      column.datatype === "link" ||
-      column.datatype === "phone" ||
-      column.datatype === "image"
-    )
-  )
 
   return (
     <div className="myers-datatable">
       <div className="table-scroll-container">
-        <div className={`table-container ${tableClassName}`}>
+        <div className="table-container">
 
           <div className="table-cell table-header apps-button-header-cell" >
             {
@@ -51,7 +38,6 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                   crossAxisOffset={10}
                   placement="bottom-end"
                   className="app-panel-button"
-                  keepMounted
                 >
                   {AppsPanel}
                 </Popper>
@@ -59,12 +45,10 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
             }
           </div>
 
-          {!!selectable?.show && (
+          
+          {!!SelectHeader && (
             <TableHeader column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}>
-              <selectable.Header
-                selectAll={selectable.selectAll}
-                isAllSelected={selectable.isAllSelected}
-              />
+              <SelectHeader />
             </TableHeader>
           )}
 
@@ -72,87 +56,12 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
             <TableHeader
               key={column.field}
               column={column}
-              onClick={(column) => {
-                if (sortable && column.sortable) sortable.onSort(column);
-              }}
-              className={`${(sortable && column.sortable) ? 'sortable-table-header' : ''} ${thClassName} ${column.omit ? 'hide' : ''}`}
+              onClick={onColumnClick}
+              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
             >
               <div className="column-header-options">
-                {
-                  !!sortable && (
-                    <sortable.Sort
-                      key={column.field}
-                      column={column}
-                      sortDirection={sortable.sortOrder[column.field]?.sortDirection}
-                      orderIndex={sortable.sortOrder[column.field]?.orderIndex}
-                      isMultiSort={Object.keys(sortable.sortOrder).length > 1}
-                    />
-                  )
-                }
-                {
-                  column.filterable && (
-                    <>
-                      {(isTextFilter(TextFilter, column)) && (
-                        <div className="filter-options-button">
-                          <Popper
-                            Icon={IoMenu}
-                            mainAxisOffset={20}
-                            crossAxisOffset={0}
-                            placement="bottom-end"
-                            keepMounted
-                          >
-                            <TextFilter multiFilter={column.multiFilter} setOptions={column.setOptions} datatype={column.datatype} field={column.field} filterOperations={column.filterOperations as Datatable.TextFilterOperations[]} />
-                          </Popper>
-                        </div>
-                      )}
-                      {
-                        (column.datatype === "number" && NumberFilter) && (
-                          <div className="filter-options-button">
-                            <Popper
-                              Icon={IoMenu}
-                              mainAxisOffset={20}
-                              crossAxisOffset={0}
-                              placement="bottom-end"
-                              keepMounted
-                            >
-                              <NumberFilter multiFilter={column.multiFilter} setOptions={column.setOptions} datatype={column.datatype} field={column.field} filterOperations={column.filterOperations as Datatable.RangeFilterOperations[]} />
-                            </Popper>
-                          </div>
-                        )
-                      }
-                      {
-                        ((column.datatype === "date" || column.datatype === "datetime") && DateFilter) && (
-                          <div className="filter-options-button">
-                            <Popper
-                              Icon={IoMenu}
-                              mainAxisOffset={20}
-                              crossAxisOffset={0}
-                              placement="bottom-end"
-                              keepMounted
-                            >
-                              <DateFilter multiFilter={column.multiFilter} setOptions={column.setOptions} datatype={column.datatype} field={column.field} filterOperations={column.filterOperations as Datatable.RangeFilterOperations[]} />
-                            </Popper>
-                          </div>
-                        )
-                      }
-                      {
-                        (column.datatype === "boolean" && BooleanFilter) && (
-                          <div className="filter-options-button">
-                            <Popper
-                              Icon={IoMenu}
-                              mainAxisOffset={20}
-                              crossAxisOffset={0}
-                              placement="bottom-end"
-                              keepMounted
-                            >
-                              <BooleanFilter multiFilter={column.multiFilter} setOptions={column.setOptions} datatype={column.datatype} field={column.field} filterOperations={column.filterOperations as Datatable.BooleanFilterOperations[]} />
-                            </Popper>
-                          </div>
-                        )
-                      }
-                    </>
-                  )
-                }
+                { (column.sortable && renderSort) && renderSort(column) }
+                { (column.filterable && renderFilter) && renderFilter(column, FilterMenu) }
               </div>
             </TableHeader>
           ))}
@@ -184,16 +93,14 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                 }
               </div>
 
-              {!!selectable?.show && (
+              {!!SelectCell && (
                 <div className="table-cell">
-                  <selectable.Row
+                  <SelectCell
                     index={rIndex}
-                    isSelectable={selectable.isSelectable}
                     row={row}
-                    checked={selectable.selectedRows.includes(rIndex)}
-                    onChange={selectable.onSelectRow}
-                    onEnableRow={selectable.onEnableRow}
+
                   />
+ 
                 </div>
               )}
 
@@ -212,29 +119,27 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
 
         </div>
       </div>
-      {
-        !pagination?.Pagination
-          ? null
-          : (
-            <pagination.Pagination
-              currentPage={pagination.page.currentPage}
-              count={pagination.count}
-              rowsPerPage={pagination.page.rowsPerPage}
-              currentRowsPerPage={pagination.page.currentRowsPerPage}
-              numberOfRows={pagination.numberOfRows}
-              firstPage={pagination.firstPage}
-              lastPage={pagination.lastPage}
-              nextPage={pagination.nextPage}
-              previousPage={pagination.previousPage}
-              goToPage={pagination.goToPage}
-              onChangeRowsPerPage={pagination.onChangeRowsPerPage}
-            />
-          )
-      }
-    </div>
+      {Footer}
+    </div >
   )
 }
 
+function FilterMenu(props: React.PropsWithChildren) {
+  const { children } = props;
+
+  return (
+    <div className="filter-options-button">
+      <Popper
+        Icon={IoMenu}
+        mainAxisOffset={20}
+        crossAxisOffset={0}
+        placement="bottom-end"
+      >
+        {children}
+      </Popper>
+    </div>
+  )
+}
 
 const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<FieldNames>) => {
 

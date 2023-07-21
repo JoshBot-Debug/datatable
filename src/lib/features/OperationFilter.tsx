@@ -21,12 +21,12 @@ export function OperationFilter<Operation extends string>(props: Datatable.Filte
 
   const onSelectChange = (selectValue: Operation) => {
     setOperation(selectValue);
-    debounce({ field, operation: selectValue, value })
+    debounce({ [field]: { operation: selectValue, value } })
   }
 
   const onInputChange = (inputValue: string) => {
     setValue(inputValue);
-    debounce({ field, operation, value: inputValue })
+    debounce({ [field]: { operation, value: inputValue } })
   }
 
   return (
@@ -41,17 +41,18 @@ export function OperationFilter<Operation extends string>(props: Datatable.Filte
       >
         {filterOperations.map(op => <option key={`operation-filter-${op}`} value={op}>{op}</option>)}
       </select>
-      {
-        inputType && (
-          <input
-            className="operation-filter-input"
-            type={inputType}
-            value={value}
-            onChange={e => onInputChange(e.target.value)}
-            placeholder="Filter..."
-          />
-        )
-      }
+      <input
+        className={`operation-filter-input ${!inputType ? 'hide' : ''}`}
+        type={inputType}
+        value={value}
+        onChange={e => onInputChange(e.target.value)}
+        placeholder="Filter..."
+        autoFocus
+      />
+      <button
+        className="operation-filter-button"
+        onClick={() => onInputChange("")}
+      >Clear</button>
     </div>
   )
 }

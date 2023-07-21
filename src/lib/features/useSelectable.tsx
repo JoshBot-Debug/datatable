@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Datatable } from "../types";
 
-export default function useSelectable<FieldNames extends string>(config: Datatable.UseSelectable.Config<FieldNames>) {
+export default function useSelectable<FieldNames extends string>(config: Datatable.UseSelectable.Config<FieldNames>): Datatable.UseSelectable.HookReturn<FieldNames> {
 
   const {
     isSelectable: _isSelectable,

@@ -8,14 +8,15 @@ import OmitColumn from "./features/OmitColumn";
 import { OperationFilter } from "./features/OperationFilter";
 import { Datatable } from "./types";
 import SetFilter from "./features/SetFilter";
+import useSetFilter from "./features/useSetFilter";
+import useOperationFilter from "./features/useOperationFilter";
 
 
-export default function useDatatable<Data extends Record<string, any>, FieldNames extends keyof Data>(config: Datatable.Config<Data, FieldNames>) {
+export default function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>) {
 
   const {
-    data = [],
-    isFetching,
     count,
+    numberOfRows,
     onFilter,
     initialSortOrder,
     initialPage = {
@@ -23,174 +24,172 @@ export default function useDatatable<Data extends Record<string, any>, FieldName
       rowsPerPage: [10, 50, 100, 200, 500],
       currentRowsPerPage: 10,
     },
-    initialFilter,
+    initialOperationFilter,
     initialSetFilter,
     isSelectable,
-    RowOptionMenu,
-    AppsPanel,
   } = config;
 
-
-  const [filter, setFilter] = useState<Datatable.Filter<FieldNames>>({
+  const [filter, updateFilter] = useState<Datatable.Filter<FieldNames>>({
     sortOrder: initialSortOrder,
     page: initialPage,
-    filter: initialFilter,
+    operationFilter: initialOperationFilter,
     setFilter: initialSetFilter
   });
 
-  const [columns, setColumns] = useState(getColumnDefaults<any>(config.columns as Partial<Datatable.Column<string>>[]));
-
-
-  const sortable = useSortable({ initialSortOrder, onChange: sortOrder => onFilter && setFilter(prev => ({ ...prev, sortOrder })) });
-  const pagination = usePagination({ initialPage, count: count, numberOfRows: data.length, onChange: page => onFilter && setFilter(prev => ({ ...prev, page })) });
-  const selectable = useSelectable({ isSelectable: isSelectable as any, numberOfRows: data.length, onChange: select => onFilter && setFilter(prev => ({ ...prev, select })) });
-
+  const sortable = useSortable({ initialSortOrder, onChange: sortOrder => onFilter && updateFilter(prev => ({ ...prev, sortOrder })) });
+  const pagination = usePagination({ initialPage, count: count, numberOfRows, onChange: page => onFilter && updateFilter(prev => ({ ...prev, page })) });
+  const selectable = useSelectable({ isSelectable: isSelectable as any, numberOfRows, onChange: select => onFilter && updateFilter(prev => ({ ...prev, select })) });
+  const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => onFilter && updateFilter(prev => ({ ...prev, setFilter })) });
+  const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => onFilter && updateFilter(prev => ({ ...prev, operationFilter })) });
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
-
-  const onOperationFilter = (operationFilter: Datatable.OperationFilter<any>) => {
-    if (!onFilter) return;
-    setFilter(prev => {
-      const next = { ...prev }
-      if (!next.filter) return { ...next, filter: [operationFilter] };
-      const currentIndex = next.filter.findIndex(v => v.field === operationFilter.field);
-      if (currentIndex === -1) return { ...next, filter: [...next.filter, operationFilter] }
-      next.filter[currentIndex] = operationFilter;
-      return next
-    })
-  }
-
-  const getFilterDefault = (field: string) => (filter.filter ?? []).find(f => f.field === field)
-
-  const onSetFilter = (filter: Datatable.SetFilter) => {
-    if (!onFilter) return;
-    setFilter(prev => {
-      const next = { ...prev }
-      if (!next.setFilter) return { ...next, setFilter: [filter] };
-      const currentIndex = next.setFilter.findIndex(v => v.field === filter.field);
-      if (currentIndex === -1) return { ...next, setFilter: [...next.setFilter, filter] }
-      next.setFilter[currentIndex] = filter;
-      return next
-    })
-  }
-
-  const SetFilterComponent = useCallback((props: Datatable.DatatableFilterProps<any>) => (
-    <SetFilter
-      field={props.field}
-      onChange={onSetFilter}
-      options={props.setOptions ?? []}
-      defaultValue={{ selected: (initialSetFilter ?? []).filter(s => s.field === props.field).flatMap(s => s.selected) ?? [] }}
-    />
-  ), [])
-
-  const showOperationFilter = (props: Datatable.DatatableFilterProps<any>) => ((props.filterOperations && props.setOptions) || (!props.setOptions) || (props.multiFilter))
-
-  const TextFilter = useCallback((props: Datatable.DatatableFilterProps<any>) => (
-    <>
-      {
-        showOperationFilter(props) && (
-          <OperationFilter
-            inputType="text"
-            allowedOperations={["Contains", "Equal", "Not equal", "Starts with", "Ends with", "Is blank"] as Datatable.TextFilterOperations[]}
-            onChange={onOperationFilter}
-            defaultValue={getFilterDefault(props.field)}
-            {...props}
-          />
-        )
-      }
-      {
-        props.setOptions && (
-          <>
-            <span className="divider" />
-            <SetFilterComponent field={props.field} datatype={props.datatype} setOptions={props.setOptions} />
-          </>
-        )
-      }
-    </>
-  ), [])
-
-  const NumberFilter = useCallback((props: Datatable.DatatableFilterProps<any>) => (
-    <>
-      {
-        showOperationFilter(props) && (
-          <OperationFilter
-            inputType="number"
-            allowedOperations={["Equal", "Not equal", "Is blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"] as Datatable.RangeFilterOperations[]}
-            onChange={onOperationFilter}
-            defaultValue={getFilterDefault(props.field)}
-            {...props}
-          />
-        )
-      }
-      {
-        props.setOptions && (
-          <>
-            <span className="divider" />
-            <SetFilterComponent field={props.field} datatype={props.datatype} setOptions={props.setOptions} />
-          </>
-        )
-      }
-    </>
-  ), [])
-
-  const DateFilter = useCallback((props: Datatable.DatatableFilterProps<any>) => (
-    <>
-      {
-        showOperationFilter(props) && (
-          <OperationFilter
-            inputType={props.datatype === "date" ? "date" : "datetime"}
-            allowedOperations={["Equal", "Not equal", "Is blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"] as Datatable.RangeFilterOperations[]}
-            onChange={onOperationFilter}
-            defaultValue={getFilterDefault(props.field)}
-            {...props}
-          />
-        )
-      }
-      {
-        props.setOptions && (
-          <>
-            <span className="divider" />
-            <SetFilterComponent field={props.field} datatype={props.datatype} setOptions={props.setOptions} />
-          </>
-        )
-      }
-    </>
-  ), [])
-
-  const BooleanFilter = useCallback((props: Datatable.DatatableFilterProps<any>) => (
-    <OperationFilter
-      allowedOperations={["Is true", "Is false", "Is blank"] as Datatable.BooleanFilterOperations[]}
-      onChange={onOperationFilter}
-      defaultValue={getFilterDefault(props.field)}
-      {...props}
-    />
-  ), [])
-
-  
   return {
     sortable,
     pagination,
     selectable,
     setFilter,
-    Datatable: <BaseDatatable
+    operationFilter,
+    updateFilter,
+    Datatable: RichDatatable
+  }
+}
+
+
+const text = ["Contains", "Equal", "Not equal", "Starts with", "Ends with", "Is blank"];
+const number = ["Equal", "Not equal", "Is blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"];
+const date = ["Equal", "Not equal", "Is blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"];
+const boolean = ["Is true", "Is false", "Is blank"];
+
+
+const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.FilterComponentProps<any>["inputType"]; } } = {
+  boolean: { inputType: undefined, operation: boolean },
+  date: { inputType: "date", operation: date },
+  datetime: { inputType: "datetime", operation: date },
+  email: { inputType: "text", operation: text },
+  image: { inputType: "text", operation: text },
+  link: { inputType: "text", operation: text },
+  name: { inputType: "text", operation: text },
+  number: { inputType: "number", operation: number },
+  paragraph: { inputType: "text", operation: text },
+  phone: { inputType: "text", operation: text },
+  string: { inputType: "text", operation: text },
+}
+
+
+function RichDatatable<Data extends Record<string, any>, FieldNames extends string>(props: Datatable.RichDatatableProps<Data, FieldNames>) {
+
+  const {
+    data = [],
+    isFetching,
+    setFilter,
+    sortable,
+    selectable,
+    pagination,
+    operationFilter,
+    RowOptionMenu,
+    AppsPanel,
+  } = props;
+
+  const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
+
+  const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<React.PropsWithChildren>) => {
+    return (
+      <FilterMenu>
+        <OperationFilter
+          field={column.field}
+          inputType={columnOperations[column.datatype].inputType}
+          filterOperations={column.filterOperations}
+          allowedOperations={columnOperations[column.datatype].operation}
+          onChange={operationFilter.onSetOperationFilter}
+          defaultValue={operationFilter.operationFilter[column.field]}
+          {...props}
+        />
+        {
+          column.setOptions && (
+            <>
+              <span className="divider" />
+              <SetFilter
+                field={column.field}
+                onChange={setFilter.onSetFilter}
+                options={column.setOptions ?? []}
+                defaultValue={setFilter.setFilter[column.field] ?? []}
+              />
+            </>
+          )
+        }
+      </FilterMenu>
+    )
+  }
+
+  const renderSort = (column: Datatable.Column<FieldNames>) => {
+    return (
+      <sortable.Sort
+        key={column.field}
+        column={column}
+        sortDirection={sortable.sortOrder[column.field]?.sortDirection}
+        orderIndex={sortable.sortOrder[column.field]?.orderIndex}
+        isMultiSort={Object.keys(sortable.sortOrder).length > 1}
+      />
+    )
+  }
+
+  const SelectHeader = () => (
+    <selectable.Header
+      selectAll={selectable.selectAll}
+      isAllSelected={selectable.isAllSelected}
+    />
+  )
+
+  const SelectCell = ({ row, index }: { index: number; row: Record<FieldNames, any>; }) => (
+    <selectable.Row
+      index={index}
+      row={row}
+      isSelectable={selectable.isSelectable}
+      checked={selectable.selectedRows.includes(index)}
+      onChange={selectable.onSelectRow}
+      onEnableRow={selectable.onEnableRow}
+    />
+  )
+
+  return (
+    <BaseDatatable
       data={data}
       isFetching={isFetching}
       columns={columns}
-      sortable={sortable}
-      pagination={pagination}
-      selectable={selectable}
+      renderFilter={renderFilter}
+      renderSort={renderSort}
+      onColumnClick={sortable.onSort}
       RowOptionMenu={RowOptionMenu}
-      TextFilter={TextFilter}
-      NumberFilter={NumberFilter}
-      DateFilter={DateFilter}
-      BooleanFilter={BooleanFilter}
+      selectable={selectable}
+      SelectHeader={SelectHeader}
+      SelectCell={SelectCell}
+      Footer={
+        !pagination?.Pagination
+          ? null
+          : (
+            <pagination.Pagination
+              currentPage={pagination.page.currentPage}
+              count={pagination.count}
+              rowsPerPage={pagination.page.rowsPerPage}
+              currentRowsPerPage={pagination.page.currentRowsPerPage}
+              numberOfRows={pagination.numberOfRows}
+              firstPage={pagination.firstPage}
+              lastPage={pagination.lastPage}
+              nextPage={pagination.nextPage}
+              previousPage={pagination.previousPage}
+              goToPage={pagination.goToPage}
+              onChangeRowsPerPage={pagination.onChangeRowsPerPage}
+            />
+          )
+      }
       AppsPanel={
         <>
           {!AppsPanel && <OmitColumn columns={columns} setColumns={setColumns} />}
-          {!!AppsPanel && (<AppsPanel DefaultComponents={<OmitColumn columns={columns} setColumns={setColumns} />} />)}
+          {!!AppsPanel && (<AppsPanel OmitColumns={<OmitColumn columns={columns} setColumns={setColumns} />} />)}
         </>
       }
     />
-  }
+  )
 }
+

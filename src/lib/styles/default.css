@@ -10,6 +10,7 @@
 .myers-datatable .icon-button {
   all: unset;
   cursor: pointer;
+  vertical-align: middle;
 }
 .myers-datatable .table-scroll-container {
   display: flex;
@@ -269,4 +270,18 @@
   border: 1px solid #c6c6c6;
   padding: 4px;
   font-weight: normal;
+}
+.myers-datatable .operation-filter-button {
+  all: unset;
+  background-color: white;
+  border: 1px solid lightgray;
+  padding: 4px;
+  border-radius: 3px;
+  font-weight: normal;
+  text-align: center;
+  transition: background-color 300ms ease-in-out;
+}
+.myers-datatable .operation-filter-button:hover {
+  background-color: rgb(240, 240, 240);
+  cursor: pointer;
 }/*# sourceMappingURL=default.css.map */

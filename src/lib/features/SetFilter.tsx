@@ -13,25 +13,25 @@ export default function SetFilter(config: Datatable.SetFilterComponentProps) {
 
   const id = useId();
 
-  const [selected, setSelected] = useState(defaultValue?.selected ?? []);
+  const [selected, setSelected] = useState(defaultValue ?? []);
 
   const onSelect = (select: string) => {
     const next = [...selected];
     const selectedIndex = selected.findIndex(s => s === select);
     if (selectedIndex === -1) {
       setSelected([...selected, select])
-      onChange({ field, selected: [...selected, select] });
+      onChange({ [field]: [...selected, select] });
       return;
     }
     next.splice(selectedIndex, 1);
     setSelected(next);
-    onChange({ field, selected: next });
+    onChange({ [field]: next });
   }
 
   const onToggleSelectAll = () => {
     const next = selected.length === options.length ? [] : options;
     setSelected(next);
-    onChange({ field, selected: next });
+    onChange({ [field]: next });
   }
 
   return (

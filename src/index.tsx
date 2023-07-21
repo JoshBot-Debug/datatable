@@ -9,22 +9,28 @@ function App() {
 
   const [isFetching, setIsFetching] = useState(false);
 
-  const AppsPanel = useCallback(({ DefaultComponents }: Datatable.AppsPanelProps) => (
-    <>
-      <button onClick={() => selectable.selectAll(true)} style={{ padding: 8 }}>Check All</button>
-      <button onClick={() => selectable.selectAll(false)} style={{ padding: 8 }}>Uncheck All</button>
-      <button onClick={() => setFilter(prev => ({ ...prev, ["custom"]: "Hello!" }))} style={{ padding: 8 }}>Custom filter option</button>
-      <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Bulk update</button>
-      <button onClick={() => pagination.lastPage()} style={{ padding: 8 }}>Last page</button>
-      {DefaultComponents}
-    </>
-  ), [])
+  const { Datatable, ...controller } = useDatatable({
+    count: data.length,
+    numberOfRows: data.length,
+    initialSetFilter: { "name": ["Tom"] },
+    onFilter: console.log,
+    isSelectable: (row: any) => row.is_active,
+  })
 
-  const RowOptionMenu = useCallback(({ row, rowIndex }: Datatable.RowOptionMenuProps) => (
+  const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
     <>
-      <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</button>
+      <button onClick={() => controller.selectable.selectAll(true)} style={{ padding: 8 }}>Check All</button>
+      <button onClick={() => controller.selectable.selectAll(false)} style={{ padding: 8 }}>Uncheck All</button>
+      <button onClick={() => controller.updateFilter(prev => ({ ...prev, ["custom"]: "Hello!" }))} style={{ padding: 8 }}>Custom filter option</button>
+      <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Bulk update</button>
+      <button onClick={() => controller.pagination.lastPage()} style={{ padding: 8 }}>Last page</button>
+      {OmitColumns}
     </>
-  ), []);
+  )
+
+  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
+    <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</button>
+  </>);
 
   const columns: Datatable.ColumnConfig<any> = [
     { field: "emp_id", datatype: "number", sortable: false },
@@ -37,21 +43,16 @@ function App() {
     { field: "bio", datatype: "paragraph" },
   ]
 
-  const { Datatable, selectable, pagination, setFilter } = useDatatable({
-    data: data.slice(0, 10),
-    count: data.length,
-    isFetching,
-    columns,
-    initialSetFilter: [{field: "name", selected: ["Tom"]}],
-    onFilter: filter => console.log(filter),
-    isSelectable: (row) => row.is_active,
-    RowOptionMenu,
-    AppsPanel,
-  })
-
   return (
-    <div style={{height: "100%"}}>
-      {Datatable}
+    <div style={{ margin: 20, gap: 20, display: "flex", flexDirection: "column" }}>
+      <Datatable
+        data={data.slice(0, 10)}
+        columns={columns}
+        isFetching={isFetching}
+        RowOptionMenu={RowOptionMenu}
+        AppsPanel={AppsPanel}
+        {...controller}
+      />
     </div>
   )
 }
