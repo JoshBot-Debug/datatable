@@ -42,7 +42,7 @@ export declare namespace Datatable {
      */
     count: number;
     numberOfRows: number;
-    
+
     onFilter?: (filter: Filter<FieldNames>) => void;
 
     initialSortOrder?: Filter<FieldNames>["sortOrder"];
@@ -91,7 +91,7 @@ export declare namespace Datatable {
     RowOptionMenu?: React.FC<RowOptionMenuProps>
     AppsPanel?: React.ReactNode;
 
-    renderFilter?: (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<React.PropsWithChildren>) => React.ReactElement;
+    renderFilter?: (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => React.ReactElement;
     renderSort?: (column: Datatable.Column<FieldNames>) => React.ReactElement;
     Footer?: React.ReactNode;
 

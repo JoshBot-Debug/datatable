@@ -11,7 +11,7 @@ export default function useOperationFilter(config: Datatable.UseOperationFilter.
     const next = { ...operationFilter };
     for (const key in filter) {
       const { operation, value } = filter[key];
-      if (String(value).length === 0) {
+      if (String(value).length === 0 && !["Is blank", "Is true", "Is false"].includes(operation)) {
         delete next[key];
         continue;
       }

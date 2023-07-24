@@ -93,9 +93,9 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
 
   const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
 
-  const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<React.PropsWithChildren>) => {
+  const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
     return (
-      <FilterMenu>
+      <FilterMenu hasFilter={!!operationFilter.operationFilter[column.field]}>
         <OperationFilter
           field={column.field}
           inputType={columnOperations[column.datatype].inputType}
