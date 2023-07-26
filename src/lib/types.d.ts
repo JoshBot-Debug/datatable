@@ -69,7 +69,7 @@ export declare namespace Datatable {
   interface Filter<FieldNames> {
     sortOrder?: UseSortable.SortOrder<FieldNames>;
     page?: UsePagination.Page;
-    operationFilter?: OperationFilter<TextFilterOperations | RangeFilterOperations | BooleanFilterOperations>[];
+    operationFilter?: UseOperationFilter.OperationFilter<TextFilterOperations | RangeFilterOperations | BooleanFilterOperations>;
     setFilter?: UseSetFilter.SetFilter<FieldNames>;
   }
 
@@ -95,16 +95,17 @@ export declare namespace Datatable {
     renderSort?: (column: Datatable.Column<FieldNames>) => React.ReactElement;
     Footer?: React.ReactNode;
 
+    hideSelect?: boolean;
     SelectHeader?: React.FC;
     SelectCell?: React.FC<{ index: number; row: Record<FieldNames, any> }>;
   }
 
   interface FilterComponentProps<Operation> {
-    inputType?: "text" | "date" | "datetime" | "number";
+    inputType?: "text" | "date" | "datetime-local" | "number";
     field: string;
-    onChange: (result: OperationFilter<Operation>) => void;
+    onChange: (result: UseOperationFilter.OperationFilter<Operation>) => void;
     filterOperations?: Operation[];
-    defaultValue?: { operation: any; value: string; }
+    defaultValue?: UseOperationFilter.OperationValue<Operation>
     allowedOperations: Operation[];
   }
 
@@ -250,7 +251,16 @@ export declare namespace Datatable {
       initialOperationFilter?: OperationFilter;
     }
 
-    type OperationFilter<Operation> = { [field: string]: { operation: Operation; value: string; } };
+    type OperationValue<Operation> = {
+        operation: Operation;
+        value: string;
+        and?: OperationValue<Operation>
+        or?: OperationValue<Operation>
+    }
+
+    type OperationFilter<Operation> = {
+        [field: string]: OperationValue<Operation>
+    };
 
     interface HookReturn {
       operationFilter: OperationFilter<BooleanFilterOperations | RangeFilterOperations | TextFilterOperations>;

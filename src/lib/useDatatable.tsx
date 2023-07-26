@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BaseDatatable } from "./BaseDatatable";
 import useSortable from "./features/useSortable";
 import { getColumnDefaults } from "./helpers";
@@ -21,8 +21,8 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
     initialSortOrder,
     initialPage = {
       currentPage: 1,
-      rowsPerPage: [10, 50, 100, 200, 500],
-      currentRowsPerPage: 10,
+      rowsPerPage: [50, 100, 200, 500],
+      currentRowsPerPage: 50,
     },
     initialOperationFilter,
     initialSetFilter,
@@ -64,7 +64,7 @@ const boolean = ["Is true", "Is false", "Is blank"];
 const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.FilterComponentProps<any>["inputType"]; } } = {
   boolean: { inputType: undefined, operation: boolean },
   date: { inputType: "date", operation: date },
-  datetime: { inputType: "datetime", operation: date },
+  datetime: { inputType: "datetime-local", operation: date },
   email: { inputType: "text", operation: text },
   image: { inputType: "text", operation: text },
   link: { inputType: "text", operation: text },
@@ -94,19 +94,25 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
   const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
 
   const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
+    const hasSetOptions = !!column.setOptions;
+    const hasFilterOptions = !!column.filterOperations;
     return (
       <FilterMenu hasFilter={!!operationFilter.operationFilter[column.field]}>
-        <OperationFilter
-          field={column.field}
-          inputType={columnOperations[column.datatype].inputType}
-          filterOperations={column.filterOperations}
-          allowedOperations={columnOperations[column.datatype].operation}
-          onChange={operationFilter.onSetOperationFilter}
-          defaultValue={operationFilter.operationFilter[column.field]}
-          {...props}
-        />
         {
-          column.setOptions && (
+          ((!hasSetOptions || hasFilterOptions) || column.multiFilter) && (
+            <OperationFilter
+              field={column.field}
+              inputType={columnOperations[column.datatype].inputType}
+              filterOperations={column.filterOperations}
+              allowedOperations={columnOperations[column.datatype].operation}
+              onChange={operationFilter.onSetOperationFilter}
+              defaultValue={operationFilter.operationFilter[column.field]}
+              {...props}
+            />
+          )
+        }
+        {
+          hasSetOptions && (
             <>
               <span className="divider" />
               <SetFilter
@@ -163,6 +169,7 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
       renderSort={renderSort}
       onColumnClick={sortable.onSort}
       RowOptionMenu={RowOptionMenu}
+      hideSelect={!isSelectable}
       SelectHeader={SelectHeader}
       SelectCell={SelectCell}
       Footer={

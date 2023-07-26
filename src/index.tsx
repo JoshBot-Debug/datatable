@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import useDatatable from "./lib/useDatatable";
 import { data } from "./data";
 import "./lib/styles/default.css"
@@ -13,6 +13,7 @@ function App() {
     count: data.length,
     numberOfRows: data.length,
     initialSetFilter: { "name": ["Tom"] },
+    initialOperationFilter: {'name': {operation: "Equal", value: "abc", or: {operation: "Equal", value: "xyz"}}},
     onFilter: console.log,
   })
 
@@ -33,7 +34,7 @@ function App() {
 
   const columns: Datatable.ColumnConfig<any> = [
     { field: "emp_id", datatype: "number", sortable: false },
-    { field: "name", datatype: "string", filterOperations: ["Ends with"], setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
+    { field: "name", datatype: "string", multiFilter: true, setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
     { field: "email", datatype: "email", },
     { field: "dob", datatype: "date" },
     { field: "image", datatype: "image" },

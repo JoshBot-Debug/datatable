@@ -81,7 +81,8 @@ const Pagination = (props: Datatable.UsePagination.PageProps) => {
           {rowsPerPage.map(count => <option key={`rows-per-page-${count}`} value={count}>{count}</option>)}
         </select>
 
-        <span>{from + 1}-{numberOfRows + from} of {count}</span>
+        {count === 0 && <span>0-0 of 0</span>}
+        {count > 0 && <span>{from + 1}-{numberOfRows + from} of {count}</span>}
 
       </div>
       <div className="pagination-icon-button-container">

@@ -16,6 +16,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
     renderSort,
     renderFilter,
     Footer,
+    hideSelect,
     SelectHeader,
     SelectCell,
   } = props;
@@ -43,7 +44,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
           </div>
 
 
-          {!!SelectHeader && (
+          {(!hideSelect && !!SelectHeader) && (
             <TableHeader column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}>
               <SelectHeader />
             </TableHeader>
@@ -90,14 +91,12 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                 }
               </div>
 
-              {!!SelectCell && (
+              {(!hideSelect && !!SelectCell) && (
                 <div className="table-cell">
                   <SelectCell
                     index={rIndex}
                     row={row}
-
                   />
-
                 </div>
               )}
 
@@ -105,7 +104,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
                 <div
                   key={cIndex}
                   className={`table-cell ${col.omit ? 'hide' : ''}`}
-                  title={String(row[col.field])}
+                  title={row[col.field] !== undefined ? String(row[col.field]) : undefined}
                 >
                   {(col.renderCell ?? Cell)(row[col.field], col, row)}
                 </div>
