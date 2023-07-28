@@ -10,10 +10,18 @@ function App() {
   const [isFetching, setIsFetching] = useState(false);
 
   const { Datatable, ...controller } = useDatatable({
+    columns: [
+      { field: "emp_id", datatype: "number", sortable: false },
+      { field: "name", datatype: "string", multiFilter: true, setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
+      { field: "email", datatype: "email", },
+      { field: "dob", datatype: "date" },
+      { field: "image", datatype: "image" },
+      { field: "phone", datatype: "phone" },
+      { field: "is_active", datatype: "boolean" },
+      { field: "bio", datatype: "paragraph" },
+    ],
     count: data.length,
     numberOfRows: data.length,
-    initialSetFilter: { "name": ["Tom"] },
-    initialOperationFilter: {'name': {operation: "Equal", value: "abc", or: {operation: "Equal", value: "xyz"}}},
     onFilter: console.log,
   })
 
@@ -29,29 +37,19 @@ function App() {
   )
 
   const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
-    <button onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</button>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
   </>);
 
-  const columns: Datatable.ColumnConfig<any> = [
-    { field: "emp_id", datatype: "number", sortable: false },
-    { field: "name", datatype: "string", multiFilter: true, setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
-    { field: "email", datatype: "email", },
-    { field: "dob", datatype: "date" },
-    { field: "image", datatype: "image" },
-    { field: "phone", datatype: "phone" },
-    { field: "is_active", datatype: "boolean" },
-    { field: "bio", datatype: "paragraph" },
-  ]
 
   return (
-    <div style={{ margin: 20, gap: 20, display: "flex", flexDirection: "column" }}>
+    <div style={{  gap: 20, display: "flex", flexDirection: "column" }}>
       <Datatable
         data={data.slice(0, 10)}
-        columns={columns}
         isFetching={isFetching}
         RowOptionMenu={RowOptionMenu}
         AppsPanel={AppsPanel}
         isSelectable={row => row.is_active}
+        showOptionsOnRowClick
         {...controller}
       />
     </div>

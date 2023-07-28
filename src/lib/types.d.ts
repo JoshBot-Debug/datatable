@@ -37,9 +37,7 @@ export declare namespace Datatable {
 
   interface Config<FieldNames> {
 
-    /**
-     * The total number of rows in the database.
-     */
+    columns: Datatable.ColumnConfig<FieldNames>;
     count: number;
     numberOfRows: number;
 
@@ -56,14 +54,17 @@ export declare namespace Datatable {
     data?: Data[];
     isFetching?: boolean;
     columns: Datatable.ColumnConfig<FieldNames>;
-    setFilter: Datatable.UseSetFilter.HookReturn;
-    operationFilter: Datatable.UseOperationFilter.HookReturn;
+    setFilter: Datatable.UseSetFilter.HookReturn<FieldNames>;
+    operationFilter: Datatable.UseOperationFilter.HookReturn<string>;
     sortable: Datatable.UseSortable.HookReturn<FieldNames>;
     pagination: Datatable.UsePagination.HookReturn;
     selectable: Datatable.UseSelectable.HookReturn<FieldNames>;
     RowOptionMenu?: React.FC<RowOptionMenuProps>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Record<FieldNames, any>) => boolean;
+    NoData?: React.ReactNode;
+    onRowClick?: (row: Record<FieldNames, any>, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    showOptionsOnRowClick?: boolean;
   }
 
   interface Filter<FieldNames> {
@@ -98,23 +99,11 @@ export declare namespace Datatable {
     hideSelect?: boolean;
     SelectHeader?: React.FC;
     SelectCell?: React.FC<{ index: number; row: Record<FieldNames, any> }>;
+    NoData?: React.ReactNode;
+    onRowClick?: (row: Record<FieldNames, any>, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    showOptionsOnRowClick?: boolean;
   }
 
-  interface FilterComponentProps<Operation> {
-    inputType?: "text" | "date" | "datetime-local" | "number";
-    field: string;
-    onChange: (result: UseOperationFilter.OperationFilter<Operation>) => void;
-    filterOperations?: Operation[];
-    defaultValue?: UseOperationFilter.OperationValue<Operation>
-    allowedOperations: Operation[];
-  }
-
-  interface SetFilterComponentProps {
-    field: string;
-    options: string[];
-    onChange: (result: UseSetFilter.SetFilter) => void;
-    defaultValue?: string[]
-  }
 
 
   namespace UseSortable {
@@ -173,11 +162,9 @@ export declare namespace Datatable {
 
 
     interface PageProps {
-      currentPage: number;
+      page: Page;
       count: number;
       numberOfRows: number;
-      rowsPerPage: number[];
-      currentRowsPerPage: number;
       goToPage: (page: number) => void;
       nextPage: () => void;
       previousPage: () => void;
@@ -204,8 +191,8 @@ export declare namespace Datatable {
     }
 
     interface HookReturn<FieldNames> {
-      Header: React.FC<HeaderProps>;
-      Row: React.FC<RowProps<FieldNames>>;
+      Header: (props: HeaderProps) => JSX.Element | null;
+      Row: (props: RowProps<FieldNames>) => JSX.Element | null;
       selectAll: (select: boolean) => void;
       selectedRows: number[];
       onSelectRow: (checked: boolean, rowIndex: number) => void;
@@ -238,8 +225,17 @@ export declare namespace Datatable {
     type SetFilter<FieldNames> = { [F in FieldNames]?: string[] };
 
     interface HookReturn<FieldNames> {
+      SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<FieldNames>;
       onSetFilter: (filter: SetFilter<FieldNames>) => void;
+    }
+
+
+    interface SetFilterProps {
+      field: string;
+      options: string[];
+      onChange: (result: SetFilter) => void;
+      defaultValue?: string[]
     }
 
   }
@@ -252,19 +248,20 @@ export declare namespace Datatable {
     }
 
     type OperationValue<Operation> = {
-        operation: Operation;
-        value: string;
-        and?: OperationValue<Operation>
-        or?: OperationValue<Operation>
+      operation: Operation;
+      value?: string;
+      and?: OperationValue<Operation>
+      or?: OperationValue<Operation>
     }
 
     type OperationFilter<Operation> = {
-        [field: string]: OperationValue<Operation>
+      [field: string]: OperationValue<Operation>
     };
 
-    interface HookReturn {
-      operationFilter: OperationFilter<BooleanFilterOperations | RangeFilterOperations | TextFilterOperations>;
-      onSetOperationFilter: (filter: OperationFilter<BooleanFilterOperations | RangeFilterOperations | TextFilterOperations>) => void;
+    interface HookReturn<Operation> {
+      OperationFilter: (props: OperationProps<Operation>) => JSX.Element | null;
+      operationFilter: OperationFilter<Operation>;
+      onSetOperationFilter: (filter: OperationFilter<Operation>) => void;
     }
 
     type BooleanFilterOperations = "Is true" | "Is false" | "Is blank";
@@ -272,6 +269,15 @@ export declare namespace Datatable {
     type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank";
 
     type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
+
+    interface OperationProps<Operation> {
+      inputType?: "text" | "date" | "datetime-local" | "number";
+      field: string;
+      onChange: (result: UseOperationFilter.OperationFilter<Operation>) => void;
+      filterOperations?: Operation[];
+      currentValue?: UseOperationFilter.OperationValue<Operation>
+      allowedOperations: Operation[];
+    }
 
   }
 }

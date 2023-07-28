@@ -50,10 +50,8 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
 const Pagination = (props: Datatable.UsePagination.PageProps) => {
 
   const {
-    currentPage,
+    page,
     count,
-    rowsPerPage,
-    currentRowsPerPage,
     numberOfRows,
     firstPage,
     lastPage,
@@ -62,6 +60,8 @@ const Pagination = (props: Datatable.UsePagination.PageProps) => {
     goToPage,
     onChangeRowsPerPage,
   } = props;
+
+  const { currentPage, currentRowsPerPage, rowsPerPage } = page;
 
   const id = useId();
 

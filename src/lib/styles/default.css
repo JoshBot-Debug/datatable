@@ -16,6 +16,8 @@
   display: flex;
   flex: 1;
   overflow: auto;
+  flex-direction: column;
+  position: relative;
 }
 .myers-datatable .table-container {
   width: 100%;
@@ -38,7 +40,7 @@
           user-select: none;
   position: sticky;
   top: 0;
-  padding-block: 12px;
+  padding: 0px;
 }
 .myers-datatable .table-header:not(:first-child)::before {
   content: "";
@@ -57,6 +59,8 @@
 }
 .myers-datatable .table-header-column-name {
   display: flex;
+  margin-inline: 8px;
+  margin-block: 16px;
 }
 .myers-datatable .table-row {
   border: 1px solid rgb(240, 240, 240);
@@ -156,8 +160,12 @@
   border: 1px solid #c6c6c6;
   border-radius: 3px;
 }
+.myers-datatable .select-header-checkbox {
+  margin: 14px;
+}
 .myers-datatable .app-panel-button {
   vertical-align: middle;
+  margin: 14px;
 }
 .myers-datatable .apps-button-header-cell {
   width: 16px;
@@ -186,6 +194,7 @@
 }
 .myers-datatable .popup-floating-container {
   z-index: 1;
+  outline: none;
 }
 .myers-datatable .popup-floating-arrow {
   fill: gray;
@@ -253,6 +262,7 @@
 .myers-datatable .filter-options-button {
   display: flex;
   margin-inline: 8px;
+  height: 40px;
 }
 .myers-datatable .operation-filter-container {
   min-width: 182px;
@@ -278,17 +288,16 @@
 }
 .myers-datatable .operation-filter-button {
   all: unset;
-  background-color: white;
   border: 1px solid lightgray;
   padding: 4px;
   border-radius: 3px;
   font-weight: normal;
   text-align: center;
   transition: background-color 300ms ease-in-out;
+  cursor: pointer;
 }
 .myers-datatable .operation-filter-button:hover {
   background-color: rgb(240, 240, 240);
-  cursor: pointer;
 }
 .myers-datatable .operation-and-or-container {
   display: flex;
@@ -302,4 +311,13 @@
 }
 .myers-datatable .operation-and-or-option-label {
   font-weight: normal;
+}
+.myers-datatable .no-items-to-display {
+  text-align: center;
+  position: sticky;
+  left: 0;
+  padding: 8px;
+}
+.myers-datatable .table-row-clickable {
+  cursor: pointer;
 }/*# sourceMappingURL=default.css.map */

@@ -65,6 +65,7 @@ function Header(props: Datatable.UseSelectable.HeaderProps) {
 
   return (
     <input
+      className="select-header-checkbox"
       type="checkbox"
       checked={isAllSelected}
       onChange={e => selectAll(e.target.checked)}

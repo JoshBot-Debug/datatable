@@ -5,9 +5,7 @@ import { getColumnDefaults } from "./helpers";
 import usePagination from "./features/usePagination";
 import useSelectable from "./features/useSelectable";
 import OmitColumn from "./features/OmitColumn";
-import { OperationFilter } from "./features/OperationFilter";
 import { Datatable } from "./types";
-import SetFilter from "./features/SetFilter";
 import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 
@@ -15,6 +13,7 @@ import useOperationFilter from "./features/useOperationFilter";
 export default function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>) {
 
   const {
+    columns,
     count,
     numberOfRows,
     onFilter,
@@ -25,8 +24,9 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
       currentRowsPerPage: 50,
     },
     initialOperationFilter,
-    initialSetFilter,
   } = config;
+
+  const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
 
   const [filter, updateFilter] = useState<Datatable.Filter<FieldNames>>({
     sortOrder: initialSortOrder,
@@ -44,14 +44,20 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
   return {
+    columns,
     sortable,
     pagination,
     selectable,
     setFilter,
     operationFilter,
     updateFilter,
-    Datatable: RichDatatable
+    Datatable: RichDatatable,
   }
+}
+
+
+function getInitialSetFilter<FieldNames>(columns: Datatable.ColumnConfig<FieldNames>): Datatable.UseSetFilter.SetFilter<FieldNames> {
+  return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: c.setOptions } : r, {})
 }
 
 
@@ -61,7 +67,7 @@ const date = ["Equal", "Not equal", "Is blank", "Greater than", "Greater than or
 const boolean = ["Is true", "Is false", "Is blank"];
 
 
-const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.FilterComponentProps<any>["inputType"]; } } = {
+const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.UseOperationFilter.OperationProps<any>["inputType"]; } } = {
   boolean: { inputType: undefined, operation: boolean },
   date: { inputType: "date", operation: date },
   datetime: { inputType: "datetime-local", operation: date },
@@ -88,16 +94,26 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     operationFilter,
     RowOptionMenu,
     AppsPanel,
-    isSelectable
+    isSelectable,
+    NoData,
+    onRowClick,
+    showOptionsOnRowClick,
   } = props;
+
+  const { Pagination, ...paginationController } = pagination;
+  const { Header, Row, ...selectableController } = selectable;
+  const { OperationFilter, ...operationFilterController } = operationFilter;
+  const { SetFilter, ...setFilterController } = setFilter;
 
   const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
 
   const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
     const hasSetOptions = !!column.setOptions;
     const hasFilterOptions = !!column.filterOperations;
+    const hasSetFilter = (column.setOptions && setFilter.setFilter[column.field]?.length !== column.setOptions.length);
+    const hasOperationFilter = !!operationFilterController.operationFilter[column.field];
     return (
-      <FilterMenu hasFilter={!!operationFilter.operationFilter[column.field]}>
+      <FilterMenu hasFilter={hasOperationFilter || hasSetFilter}>
         {
           ((!hasSetOptions || hasFilterOptions) || column.multiFilter) && (
             <OperationFilter
@@ -105,8 +121,8 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
               inputType={columnOperations[column.datatype].inputType}
               filterOperations={column.filterOperations}
               allowedOperations={columnOperations[column.datatype].operation}
-              onChange={operationFilter.onSetOperationFilter}
-              defaultValue={operationFilter.operationFilter[column.field]}
+              onChange={operationFilterController.onSetOperationFilter}
+              currentValue={operationFilterController.operationFilter[column.field]}
               {...props}
             />
           )
@@ -117,9 +133,9 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
               <span className="divider" />
               <SetFilter
                 field={column.field}
-                onChange={setFilter.onSetFilter}
+                onChange={setFilterController.onSetFilter}
                 options={column.setOptions ?? []}
-                defaultValue={setFilter.setFilter[column.field] ?? []}
+                defaultValue={setFilterController.setFilter[column.field] ?? []}
               />
             </>
           )
@@ -141,9 +157,9 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
   }
 
   const SelectHeader = () => (
-    <selectable.Header
-      selectAll={selectable.selectAll}
-      isAllSelected={selectable.isAllSelected}
+    <Header
+      selectAll={selectableController.selectAll}
+      isAllSelected={selectableController.isAllSelected}
     />
   )
 
@@ -151,11 +167,11 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     const enabled = !isSelectable ? true : isSelectable(row);
     useEffect(() => { selectable.onDisableRow(!enabled, index); }, [enabled])
     return (
-      <selectable.Row
+      <Row
         index={index}
         disabled={!enabled}
-        checked={selectable.selectedRows.includes(index)}
-        onChange={selectable.onSelectRow}
+        checked={selectableController.selectedRows.includes(index)}
+        onChange={selectableController.onSelectRow}
       />
     )
   }
@@ -167,29 +183,18 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
       columns={columns}
       renderFilter={renderFilter}
       renderSort={renderSort}
-      onColumnClick={sortable.onSort}
+      onColumnClick={col => col.sortable && sortable.onSort(col)}
       RowOptionMenu={RowOptionMenu}
       hideSelect={!isSelectable}
       SelectHeader={SelectHeader}
       SelectCell={SelectCell}
+      NoData={NoData}
+      onRowClick={onRowClick}
+      showOptionsOnRowClick={showOptionsOnRowClick}
       Footer={
-        !pagination?.Pagination
+        !Pagination
           ? null
-          : (
-            <pagination.Pagination
-              currentPage={pagination.page.currentPage}
-              count={pagination.count}
-              rowsPerPage={pagination.page.rowsPerPage}
-              currentRowsPerPage={pagination.page.currentRowsPerPage}
-              numberOfRows={pagination.numberOfRows}
-              firstPage={pagination.firstPage}
-              lastPage={pagination.lastPage}
-              nextPage={pagination.nextPage}
-              previousPage={pagination.previousPage}
-              goToPage={pagination.goToPage}
-              onChangeRowsPerPage={pagination.onChangeRowsPerPage}
-            />
-          )
+          : <Pagination {...paginationController} />
       }
       AppsPanel={
         <>

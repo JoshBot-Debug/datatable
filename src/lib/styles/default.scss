@@ -20,6 +20,8 @@
     display: flex;
     flex: 1;
     overflow: auto;
+    flex-direction: column;
+    position: relative;
   }
 
   .table-container {
@@ -42,7 +44,7 @@
     user-select: none;
     position: sticky;
     top: 0;
-    padding-block: 12px;
+    padding: 0px;
   }
 
   .table-header:not(:first-child)::before {
@@ -64,6 +66,8 @@
 
   .table-header-column-name {
     display: flex;
+    margin-inline: 8px;
+    margin-block: 16px;
   }
 
   .table-row {
@@ -188,8 +192,13 @@
     border-radius: 3px;
   }
 
+  .select-header-checkbox {
+    margin: 14px;
+  }
+
   .app-panel-button {
     vertical-align: middle;
+    margin: 14px;
   }
 
   .apps-button-header-cell {
@@ -225,6 +234,7 @@
 
   .popup-floating-container {
     z-index: 1;
+    outline: none;
   }
 
   .popup-floating-arrow {
@@ -305,6 +315,7 @@
   .filter-options-button {
     display: flex;
     margin-inline: 8px;
+    height: 40px;
   }
 
   .operation-filter-container {
@@ -334,16 +345,15 @@
 
   .operation-filter-button {
     all: unset;
-    background-color: white;
     border: 1px solid lightgray;
     padding: 4px;
     border-radius: 3px;
     font-weight: normal;
     text-align: center;
     transition: background-color 300ms ease-in-out;
+    cursor: pointer;
     &:hover {
       background-color: rgb(240, 240, 240);
-      cursor: pointer;
     }
   }
 
@@ -361,5 +371,16 @@
 
   .operation-and-or-option-label {
     font-weight: normal;
+  }
+
+  .no-items-to-display {
+    text-align: center;
+    position: sticky;
+    left: 0;
+    padding: 8px;
+  }
+
+  .table-row-clickable {
+    cursor: pointer;
   }
 }

@@ -19,8 +19,10 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
     hideSelect,
     SelectHeader,
     SelectCell,
+    NoData,
+    onRowClick,
+    showOptionsOnRowClick,
   } = props;
-
 
   return (
     <div className="myers-datatable">
@@ -65,55 +67,70 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
           ))}
 
           {data.map((row, rIndex) => (
-            <div key={rIndex} className="table-row">
+            <PopperRow
+              key={rIndex}
+              crossAxisOffset={0}
+              placement="right-start"
+              PopUp={!RowOptionMenu ? null : <RowOptionMenu row={row} rowIndex={rIndex} />}
+              useCursorOffset={!!showOptionsOnRowClick}
+            >
+              {
+                (triggerProps) => (
+                  <div
+                    className={`table-row ${(!!onRowClick || showOptionsOnRowClick) ? 'table-row-clickable' : ''}`}
+                    onClick={(e) => {
+                      onRowClick && onRowClick(row, e);
+                      showOptionsOnRowClick && triggerProps.onClick(e);
+                    }}
+                  >
 
-              <div className="table-cell">
-                {
-                  RowOptionMenu && (
-                    <Popper
-                      Icon={IoEllipsisVertical}
-                      mainAxisOffset={10}
-                      crossAxisOffset={0}
-                      placement="right-start"
-                    >
-                      <RowOptionMenu row={row} rowIndex={rIndex} />
-                    </Popper>
-                  )
-                }
-
-                {
-                  isFetching && (
-                    <div className="spinner-container">
-                      <div className="spinner"></div>
-                      <span className="spinner-loading-text">Loading</span>
+                    <div className="table-cell">
+                      {
+                        RowOptionMenu && (
+                          <button
+                            {...triggerProps}
+                            onClick={(e) => { e.stopPropagation(); triggerProps.onClick(e) }}
+                          >
+                            <IoEllipsisVertical />
+                          </button>
+                        )
+                      }
+                      {
+                        isFetching && (
+                          <div className="spinner-container">
+                            <div className="spinner"></div>
+                            <span className="spinner-loading-text">Loading</span>
+                          </div>
+                        )
+                      }
                     </div>
-                  )
-                }
-              </div>
 
-              {(!hideSelect && !!SelectCell) && (
-                <div className="table-cell">
-                  <SelectCell
-                    index={rIndex}
-                    row={row}
-                  />
-                </div>
-              )}
+                    {(!hideSelect && !!SelectCell) && (
+                      <div className="table-cell">
+                        <SelectCell
+                          index={rIndex}
+                          row={row}
+                        />
+                      </div>
+                    )}
 
-              {columns.map((col, cIndex) => (
-                <div
-                  key={cIndex}
-                  className={`table-cell ${col.omit ? 'hide' : ''}`}
-                  title={row[col.field] !== undefined ? String(row[col.field]) : undefined}
-                >
-                  {(col.renderCell ?? Cell)(row[col.field], col, row)}
-                </div>
-              ))}
+                    {columns.map((col, cIndex) => (
+                      <div
+                        key={cIndex}
+                        className={`table-cell ${col.omit ? 'hide' : ''}`}
+                        title={row[col.field] !== undefined ? String(row[col.field]) : undefined}
+                      >
+                        {(col.renderCell ?? Cell)(row[col.field], col, row)}
+                      </div>
+                    ))}
 
-            </div>
+                  </div>
+                )
+              }
+            </PopperRow>
           ))}
-
         </div>
+        {(data.length === 0 && !isFetching) && (NoData ? NoData : <DefaultNoData />)}
       </div>
       {Footer}
     </div >
@@ -148,7 +165,7 @@ const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<F
   if (column.datatype === "email") return <a href={`mailto:${value}`}>{value}</a>
 
   if (column.datatype === "date") {
-    return new Date(value).toLocaleString('en-IN', {
+    return !value ? "" : new Date(value).toLocaleString('en-IN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -156,7 +173,7 @@ const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<F
   }
 
   if (column.datatype === "datetime") {
-    return new Date(value).toLocaleString('en-IN', {
+    return !value ? "" : new Date(value).toLocaleString('en-IN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -210,7 +227,7 @@ const ParagraphCell = (props: { text: string; }) => {
   return (
     <span
       className={`cell-datatype-paragraph ${open ? 'cell-datatype-paragraph-open' : 'cell-datatype-paragraph-closed'}`}
-      onClick={() => setOpen(o => !o)}
+      onClick={(e) => { e.stopPropagation(); setOpen(o => !o) }}
     >{text}</span>
   )
 }
@@ -225,14 +242,15 @@ const TableHeader = <FieldNames extends string,>(props: Datatable.TableHeaderPro
   } = props;
 
   const ref = useRef(null);
-  const [fontSize, setFontSize] = useState<number | null>(null);
+  const [maxWidth, setMaxWidth] = useState<number | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
     const computedStyle = getComputedStyle(ref.current);
-    const fontSize = computedStyle.fontSize;
-    setFontSize(Number(fontSize.replace("px", "")))
-  }, []);
+    const fontSize = Number(computedStyle.fontSize.replace("px", ""));
+    const characters = column.columnName.length
+    setMaxWidth(Math.floor(fontSize / 1.5) * characters)
+  }, [column.columnName]);
 
   return (
     <div
@@ -240,7 +258,8 @@ const TableHeader = <FieldNames extends string,>(props: Datatable.TableHeaderPro
       key={column.columnName}
       className={`table-cell table-header ${className}`}
       onClick={() => onClick && onClick(column)}
-      style={{ minWidth: fontSize ? ((column.columnName.length * fontSize)) : undefined }}
+      style={{ minWidth: maxWidth ? maxWidth : undefined }}
+      title={column.columnName}
     >
       <div className="table-header-children-container">
         {!!column.columnName && <span className="table-header-column-name">{column.columnName}</span>}
@@ -284,7 +303,7 @@ function IoApps() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
-      className="header-svg"
+      className="header-svg io-apps"
     >
       <path
         d="M104 160a56 56 0 1156-56 56.06 56.06 0 01-56 56zM256 160a56 56 0 1156-56 56.06 56.06 0 01-56 56zM408 160a56 56 0 1156-56 56.06 56.06 0 01-56 56zM104 312a56 56 0 1156-56 56.06 56.06 0 01-56 56zM256 312a56 56 0 1156-56 56.06 56.06 0 01-56 56zM408 312a56 56 0 1156-56 56.06 56.06 0 01-56 56zM104 464a56 56 0 1156-56 56.06 56.06 0 01-56 56zM256 464a56 56 0 1156-56 56.06 56.06 0 01-56 56zM408 464a56 56 0 1156-56 56.06 56.06 0 01-56 56z"
@@ -299,7 +318,7 @@ function IoEllipsisVertical() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
-      className="options-svg"
+      className="options-svg io-ellipsis"
     >
       <circle cx="256" cy="256" r="48" />
       <circle cx="256" cy="416" r="48" />
@@ -313,7 +332,7 @@ function IoMenu() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
-      className="header-svg"
+      className="header-svg io-menu"
     >
       <path
         fill="none"
@@ -332,7 +351,7 @@ function IoFunnel() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
-      className="header-svg"
+      className="header-svg io-funnel"
     >
       <path
         d="M296 464a23.88 23.88 0 01-7.55-1.23L208.3 436.1a23.92 23.92 0 01-16.3-22.78V294.11a.44.44 0 00-.09-.13L23.26 97.54A30 30 0 0146.05 48H466a30 30 0 0122.79 49.54L320.09 294a.77.77 0 00-.09.13V440a23.93 23.93 0 01-24 24z"
@@ -341,7 +360,13 @@ function IoFunnel() {
   )
 }
 
-function Popper(props: { className?: string; keepMounted?: boolean; Icon: React.FC; placement: Placement; mainAxisOffset: number; crossAxisOffset: number; } & React.PropsWithChildren) {
+function Popper(props: {
+  className?: string;
+  Icon: React.FC;
+  placement: Placement;
+  mainAxisOffset: number;
+  crossAxisOffset: number;
+} & React.PropsWithChildren) {
 
   const {
     Icon,
@@ -349,7 +374,6 @@ function Popper(props: { className?: string; keepMounted?: boolean; Icon: React.
     mainAxisOffset,
     crossAxisOffset,
     placement,
-    keepMounted,
     className,
   } = props;
 
@@ -387,13 +411,13 @@ function Popper(props: { className?: string; keepMounted?: boolean; Icon: React.
         type="button"
         ref={refs.setReference}
         {...buttonProps}
-        className={`icon-button ${className}`}
+        className={`icon-button ${className ?? ""}`}
         onClick={e => { e.stopPropagation(); (buttonProps as any).onClick(e); }}
       >
         <Icon />
       </button>
 
-      {(!keepMounted && isOpen) && (
+      {isOpen && (
         <FloatingFocusManager context={context} modal={false}>
           <div
             ref={refs.setFloating}
@@ -408,27 +432,95 @@ function Popper(props: { className?: string; keepMounted?: boolean; Icon: React.
           </div>
         </FloatingFocusManager>
       )}
-
-      {
-        keepMounted && (
-          <FloatingFocusManager context={context} modal={false}>
-            <div
-              ref={refs.setFloating}
-              style={floatingStyles}
-              className={`popup-floating-container`}
-              {...getFloatingProps()}
-            >
-              <div className={`${isOpen ? '' : 'hide'}`}>
-                <FloatingArrow ref={arrowRef} context={context} className="popup-floating-arrow" />
-                <div className="popup-container">
-                  {children}
-                </div>
-              </div>
-            </div>
-          </FloatingFocusManager>
-        )
-      }
-
     </>
   )
+}
+
+function PopperRow(props: {
+  className?: string;
+  placement: Placement;
+  crossAxisOffset: number;
+  children: (triggerProps: any) => React.ReactNode;
+  PopUp: React.ReactNode;
+  useCursorOffset: boolean;
+}) {
+
+  const {
+    children,
+    PopUp,
+    crossAxisOffset,
+    placement,
+    className,
+    useCursorOffset,
+  } = props;
+
+  const arrowRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mainAxisMouseOffset, setMainAxisMouseOffset] = useState(useCursorOffset ? 0 : 10);
+
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    whileElementsMounted: autoUpdate,
+    placement,
+    middleware: [
+      arrow({ element: arrowRef, padding: 16 }),
+      offset({ mainAxis: mainAxisMouseOffset, crossAxis: crossAxisOffset }),
+      flip(),
+      shift(),
+    ],
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context);
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+  ]);
+
+  const buttonProps = getReferenceProps();
+
+  const triggerProps = {
+    type: "button",
+    ref: refs.setReference,
+    ...buttonProps,
+    className: `icon-button ${className ?? ""}`,
+    onClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+      e.stopPropagation();
+      if (useCursorOffset) {
+        const offsetX = e.nativeEvent.clientX - e.currentTarget.getBoundingClientRect().left;
+        setMainAxisMouseOffset(offsetX);
+      }
+      (buttonProps as any).onClick(e);
+    }
+  }
+
+  return (
+    <>
+      {children(triggerProps)}
+      {isOpen && (
+        <FloatingFocusManager context={context} modal={false}>
+          <div
+            ref={refs.setFloating}
+            style={floatingStyles}
+            {...getFloatingProps()}
+            className="popup-floating-container"
+          >
+            <FloatingArrow ref={arrowRef} context={context} className="popup-floating-arrow" />
+            <div className="popup-container">
+              {PopUp}
+            </div>
+          </div>
+        </FloatingFocusManager>
+      )}
+    </>
+  )
+}
+
+
+function DefaultNoData() {
+  return <p className="no-items-to-display">No items to display.</p>
 }
