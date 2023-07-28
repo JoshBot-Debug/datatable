@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css"
-import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
+import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, autoPlacement, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
 
 
@@ -461,13 +461,11 @@ function PopperRow(props: {
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
-    whileElementsMounted: autoUpdate,
     placement,
     middleware: [
       arrow({ element: arrowRef, padding: 16 }),
       offset({ mainAxis: mainAxisMouseOffset, crossAxis: crossAxisOffset }),
       flip(),
-      shift(),
     ],
   });
 
@@ -519,7 +517,6 @@ function PopperRow(props: {
     </>
   )
 }
-
 
 function DefaultNoData() {
   return <p className="no-items-to-display">No items to display.</p>

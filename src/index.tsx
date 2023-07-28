@@ -38,6 +38,14 @@ function App() {
 
   const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
   </>);
 
 
