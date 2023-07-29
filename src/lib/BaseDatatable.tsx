@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css"
-import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, autoPlacement, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
+import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
 
 
@@ -160,7 +160,7 @@ const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<F
 
   if (column.datatype === "name") return <span className="cell-datatype-name" >{value}</span>
 
-  if (column.datatype === "link") return <a href={value} target="_blank">{new URL(value).hostname}</a>
+  if (column.datatype === "link") return <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
 
   if (column.datatype === "email") return <a href={`mailto:${value}`}>{value}</a>
 
@@ -210,8 +210,8 @@ const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<F
 
   if (column.datatype === "image") {
 
-    return <a href={value} target="_blank">
-      <img className="cell-datatype-image" src={value} />
+    return <a href={value} target="_blank" rel="noreferrer">
+      <img alt="row" className="cell-datatype-image" src={value} />
     </a>
   }
 
