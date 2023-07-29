@@ -37,30 +37,23 @@ function App() {
   )
 
   const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
-    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Toggle Fetching</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 1</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 2</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 3</div>
+    <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 4</div>
   </>);
 
 
   return (
-    <div style={{  gap: 20, display: "flex", flexDirection: "column" }}>
-      <Datatable
-        data={data.slice(0, 10)}
-        isFetching={isFetching}
-        RowOptionMenu={RowOptionMenu}
-        AppsPanel={AppsPanel}
-        isSelectable={row => row.is_active}
-        showOptionsOnRowClick
-        {...controller}
-      />
-    </div>
+    <Datatable
+      data={data.slice(0, 100)}
+      isFetching={isFetching}
+      RowOptionMenu={RowOptionMenu}
+      AppsPanel={AppsPanel}
+      isSelectable={row => row.is_active}
+      showOptionsOnRowClick
+      {...controller}
+    />
   )
 }
 

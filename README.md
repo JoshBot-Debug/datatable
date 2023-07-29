@@ -1,19 +1,14 @@
-# Todo
+## @jjmyers/datatable
 
-- ***Possible feature?*** May want to replace context with an external store
-While cells are loading, header transtions to the next place. This stops when disabling animation. Perhaps use an animated svg?
+A server sided datatable equiped with every commonly used filter.
 
-
-### Filters
-`Equal: =`
-`Not equal: field__ne`
-`Is blank: field__isnull`
-`Starts with: field__istartswith`
-`Ends with: field__iendswith`
-`Contains: field__icontains`
-
-`Greater than or equal: field__gte`
-`Less than or equal: field__lte`
-`Greater than: field__gt`
-`Less than: field__lt`
-`In: field__in`
+## Quick Features
+- Sorting
+- Multi Sorting
+- Number filter
+- Text filter
+- Boolean filter
+- Set filter
+- Pagination
+- Toggleable columns
+- A Seperate controller from component, to allow customization.
