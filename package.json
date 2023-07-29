@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "module": "build/index.esm.js",
   "types": "build/index.d.ts",
+  "homepage": "/datatable/",
   "overrides": {
     "nth-check": "^2.0.1"
   },

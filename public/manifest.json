@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "@jjmyers/datatable",
+  "name": "@jjmyers/datatable - A Powerful React Library for Data Tables",
   "icons": [
     {
       "src": "favicon.ico",
