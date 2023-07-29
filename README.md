@@ -1,5 +1,7 @@
 ## @jjmyers/datatable
 
+### Check out the [DEMO WEBSITE](https://joshbot-debug.github.io/datatable)
+
 A server sided datatable equiped with every commonly used filter.
 
 ## Quick Features

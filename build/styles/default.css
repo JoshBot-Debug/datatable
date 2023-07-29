@@ -1,0 +1,323 @@
+.myers-datatable {
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.myers-datatable .hide {
+  display: none !important;
+}
+.myers-datatable .icon-button {
+  all: unset;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.myers-datatable .table-scroll-container {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  flex-direction: column;
+  position: relative;
+}
+.myers-datatable .table-container {
+  width: 100%;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.myers-datatable .table-cell {
+  padding-block: 8px;
+  padding-inline: 10px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.myers-datatable .table-header {
+  background-color: rgb(240, 240, 240);
+  font-weight: bold;
+  text-transform: capitalize;
+  font-size: small;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  position: sticky;
+  top: 0;
+  padding: 0px;
+}
+.myers-datatable .table-header:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1px;
+  height: 50%;
+  background-color: rgb(190, 190, 190);
+  transform: translateY(-50%);
+}
+.myers-datatable .table-header-children-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.myers-datatable .table-header-column-name {
+  display: flex;
+  margin-inline: 8px;
+  margin-block: 16px;
+}
+.myers-datatable .table-row {
+  border: 1px solid rgb(240, 240, 240);
+  transition: background-color 200ms linear;
+}
+.myers-datatable .table-row:nth-child(even) {
+  background-color: rgb(252, 252, 252);
+}
+.myers-datatable .table-row:hover {
+  background-color: rgb(230, 230, 230);
+}
+.myers-datatable .column-header-options {
+  display: flex;
+}
+.myers-datatable .sortable-table-header {
+  cursor: pointer;
+  transition: background-color 200ms linear;
+}
+.myers-datatable .sortable-table-header:hover {
+  background-color: rgb(255, 255, 255);
+}
+.myers-datatable .sortable-caret-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(100, 100, 100);
+  min-width: 16px;
+  min-height: 16px;
+}
+.myers-datatable .sortable-caret {
+  width: 16px;
+  height: 16px;
+  fill: rgb(150, 150, 150);
+}
+.myers-datatable .boolean-svg {
+  height: 24px;
+  width: 24px;
+}
+.myers-datatable .boolean-true-svg {
+  fill: rgb(0, 165, 0);
+}
+.myers-datatable .boolean-false-svg {
+  fill: rgb(255, 72, 72);
+}
+.myers-datatable .cell-datatype-name {
+  text-transform: capitalize;
+}
+.myers-datatable .cell-datatype-image {
+  max-height: 24px;
+}
+.myers-datatable .cell-datatype-paragraph {
+  display: block;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.myers-datatable .cell-datatype-paragraph-closed {
+  white-space: nowrap;
+}
+.myers-datatable .cell-datatype-paragraph-open {
+  white-space: normal;
+}
+.myers-datatable .pagination-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  float: right;
+  margin: 16px;
+  align-self: flex-end;
+}
+.myers-datatable .pagination-rpp-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgb(50, 50, 50);
+}
+.myers-datatable .pagination-icon-button {
+  cursor: pointer;
+  all: unset;
+  display: flex;
+  align-items: center;
+}
+.myers-datatable .pagination-icon-button-container {
+  display: flex;
+  gap: 8px;
+}
+.myers-datatable .pagination-navigation-svg {
+  width: 24px;
+  height: 24px;
+  fill: rgb(150, 150, 150);
+  cursor: pointer;
+}
+.myers-datatable .pagination-select-input {
+  background-color: white;
+  border: 1px solid #c6c6c6;
+  border-radius: 3px;
+}
+.myers-datatable .select-header-checkbox {
+  margin: 14px;
+}
+.myers-datatable .app-panel-button {
+  vertical-align: middle;
+  margin: 14px;
+}
+.myers-datatable .apps-button-header-cell {
+  width: 16px;
+  height: 16px;
+}
+.myers-datatable .header-svg {
+  display: flex;
+  height: 16px;
+  width: 16px;
+  fill: rgb(100, 100, 100);
+  color: rgb(100, 100, 100);
+  transition: all 200ms ease-in-out;
+}
+.myers-datatable .header-svg:hover {
+  fill: rgb(150, 150, 150);
+  color: rgb(150, 150, 150);
+}
+.myers-datatable .apps-button {
+  display: flex;
+}
+.myers-datatable .options-svg {
+  display: flex;
+  height: 20px;
+  width: 20px;
+  fill: black;
+}
+.myers-datatable .popup-floating-container {
+  z-index: 1;
+  outline: none;
+}
+.myers-datatable .popup-floating-arrow {
+  fill: gray;
+}
+.myers-datatable .popup-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid lightgray;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0px 0px 8px -2px lightgray;
+  overflow: hidden;
+}
+.myers-datatable .set-filter-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  gap: 4px;
+  max-height: 150px;
+  overflow-y: scroll;
+  padding-inline: 4px;
+  padding-block: 8px;
+}
+.myers-datatable .divider {
+  height: 1px;
+  background-color: #c6c6c6;
+  width: 100%;
+}
+.myers-datatable .set-filter-list-item-container {
+  display: flex;
+  gap: 8px;
+}
+.myers-datatable .set-filter-label {
+  width: 100%;
+  cursor: pointer;
+}
+.myers-datatable .omit-column-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+.myers-datatable .omit-column-title {
+  padding: 8px;
+}
+.myers-datatable .omit-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 150px;
+  overflow-y: scroll;
+}
+.myers-datatable .omit-column-list:last-child {
+  padding-bottom: 8px;
+}
+.myers-datatable .omit-column-list-item-container {
+  display: flex;
+  gap: 8px;
+  padding-inline: 8px;
+}
+.myers-datatable .omit-column-label {
+  width: 100%;
+  font-weight: normal;
+  cursor: pointer;
+}
+.myers-datatable .filter-options-button {
+  display: flex;
+  margin-inline: 8px;
+  height: 40px;
+}
+.myers-datatable .operation-filter-container {
+  min-width: 182px;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+.myers-datatable .operation-filter-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.myers-datatable .operation-filter-input {
+  background-color: white;
+  outline: none;
+  display: flex;
+  border-radius: 3px;
+  border: 1px solid #c6c6c6;
+  padding: 4px;
+  font-weight: normal;
+}
+.myers-datatable .operation-filter-button {
+  all: unset;
+  border: 1px solid lightgray;
+  padding: 4px;
+  border-radius: 3px;
+  font-weight: normal;
+  text-align: center;
+  transition: background-color 300ms ease-in-out;
+  cursor: pointer;
+}
+.myers-datatable .operation-filter-button:hover {
+  background-color: rgb(240, 240, 240);
+}
+.myers-datatable .operation-and-or-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.myers-datatable .operation-and-or-option {
+  display: flex;
+  align-items: center;
+}
+.myers-datatable .operation-and-or-option-label {
+  font-weight: normal;
+}
+.myers-datatable .no-items-to-display {
+  text-align: center;
+  position: sticky;
+  left: 0;
+  padding: 8px;
+}
+.myers-datatable .table-row-clickable {
+  cursor: pointer;
+}/*# sourceMappingURL=default.css.map */

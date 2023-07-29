@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "build-web": "BUILD_PATH='./docs' react-scripts build",
     "copy-css": "mkdir -p build/styles && cp -r src/lib/styles/*.css build/styles/",
     "build": "rm -r build & rm jjmyers-datatable-*.tgz & rollup -c --bundleConfigAsCjs && npm run copy-css && npm pack",
     "test": "react-scripts test",
