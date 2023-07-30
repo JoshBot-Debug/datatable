@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import useDatatable from "./lib/useDatatable";
-import { data } from "./data";
-import "./lib/styles/default.css"
 import { createRoot } from 'react-dom/client';
-import { Datatable } from "./lib";
+import { data } from "./data";
+
+import { useDatatable, Datatable } from "@jjmyers/datatable";
+import "@jjmyers/datatable/build/styles/default.css"
 
 function App() {
 
@@ -20,7 +20,7 @@ function App() {
       { field: "dob", datatype: "date" },
       { field: "image", datatype: "image" },
       { field: "phone", datatype: "phone" },
-      { field: "is_active", datatype: "boolean"},
+      { field: "is_active", datatype: "boolean" },
       { field: "bio", datatype: "paragraph" },
     ],
   })

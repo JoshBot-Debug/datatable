@@ -1,6 +1,6 @@
 {
   "name": "@jjmyers/datatable",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "private": false,
   "main": "build/index.js",
   "module": "build/index.esm.js",
@@ -95,7 +95,17 @@
     "web-vitals": "^2.1.4"
   },
   "description": "A datatable that comes with the most popular features.",
-  "keywords": ["datatable", "react datatable", "server sided datatable", "client sided datatable", "react js datatable", "table"],
+  "keywords": [
+    "datatable",
+    "react datatable",
+    "server sided datatable",
+    "client sided datatable",
+    "react js datatable",
+    "table"
+  ],
   "author": "Joshua Joseph Myers",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@jjmyers/datatable": "^0.4.6"
+  }
 }

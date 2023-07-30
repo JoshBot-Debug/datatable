@@ -19,7 +19,20 @@ A server sided datatable equiped with every commonly used filter.
 
 ## Example usage
 
+### To import styles you need to add this to the top
+
+You can copy the contents of this css file and customize it
+to suit your theme
+```ts
+import "@jjmyers/datatable/build/styles/default.css"
+```
+
 ```tsx
+
+import { useDatatable, Datatable } from "@jjmyers/datatable";
+import "@jjmyers/datatable/build/styles/default.css"
+
+function MyListOfData() {
 
   const [isFetching, setIsFetching] = useState(false);
 
@@ -71,5 +84,7 @@ A server sided datatable equiped with every commonly used filter.
       {...controller}
     />
   )
+
+}
 
 ```
