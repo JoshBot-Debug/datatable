@@ -104,8 +104,5 @@
     "table"
   ],
   "author": "Joshua Joseph Myers",
-  "license": "ISC",
-  "dependencies": {
-    "@jjmyers/datatable": "^0.4.6"
-  }
+  "license": "ISC"
 }

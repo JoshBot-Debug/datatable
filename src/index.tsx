@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { createRoot } from 'react-dom/client';
 import { data } from "./data";
 
-import { useDatatable, Datatable } from "@jjmyers/datatable";
-import "@jjmyers/datatable/build/styles/default.css"
+import { useDatatable, Datatable } from "./lib";
+import "./lib/styles/default.css"
+
+// import { useDatatable, Datatable } from "@jjmyers/datatable";
+// import "@jjmyers/datatable/build/styles/default.css"
 
 function App() {
 
