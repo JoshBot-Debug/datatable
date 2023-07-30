@@ -5,17 +5,17 @@ import { getColumnDefaults } from "./helpers";
 import usePagination from "./features/usePagination";
 import useSelectable from "./features/useSelectable";
 import OmitColumn from "./features/OmitColumn";
-import { Datatable } from "./types";
+import { type Datatable } from "./types";
 import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
-
+import { useClientSide } from "./features/useClientSIde";
 
 export default function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>) {
 
   const {
+    data,
     columns,
     count,
-    numberOfRows,
     onFilter,
     initialSortOrder,
     initialPage = {
@@ -24,26 +24,30 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
       currentRowsPerPage: 50,
     },
     initialOperationFilter,
+    serverSide,
   } = config;
 
   const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
 
   const [filter, updateFilter] = useState<Datatable.Filter<FieldNames>>({
-    sortOrder: initialSortOrder,
-    page: initialPage,
-    operationFilter: initialOperationFilter,
-    setFilter: initialSetFilter
+    sortOrder: initialSortOrder ?? {},
+    page: initialPage ?? {},
+    operationFilter: initialOperationFilter ?? {},
+    setFilter: initialSetFilter ?? {}
   });
 
-  const sortable = useSortable({ initialSortOrder, onChange: sortOrder => onFilter && updateFilter(prev => ({ ...prev, sortOrder })) });
-  const pagination = usePagination({ initialPage, count: count, numberOfRows, onChange: page => onFilter && updateFilter(prev => ({ ...prev, page })) });
-  const selectable = useSelectable({ numberOfRows, onChange: select => onFilter && updateFilter(prev => ({ ...prev, select })) });
-  const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => onFilter && updateFilter(prev => ({ ...prev, setFilter })) });
-  const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => onFilter && updateFilter(prev => ({ ...prev, operationFilter })) });
+  const sortable = useSortable({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
+  const pagination = usePagination({ initialPage, count: count, numberOfRows: data.length, onChange: page => updateFilter(prev => ({ ...prev, page })) });
+  const selectable = useSelectable({ numberOfRows: data.length, onChange: select => updateFilter(prev => ({ ...prev, select })) });
+  const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
+  const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
+
+  const clientSideData = useClientSide(data, filter, serverSide);
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
   return {
+    data: serverSide ? data : clientSideData,
     columns,
     sortable,
     pagination,

@@ -37,9 +37,9 @@ export declare namespace Datatable {
 
   interface Config<FieldNames> {
 
+    data: Data[];
     columns: Datatable.ColumnConfig<FieldNames>;
     count: number;
-    numberOfRows: number;
 
     onFilter?: (filter: Filter<FieldNames>) => void;
 
@@ -47,6 +47,7 @@ export declare namespace Datatable {
     initialPage?: Filter<FieldNames>["page"];
     initialOperationFilter?: Filter<FieldNames>["operationFilter"];
     initialSetFilter?: Filter<FieldNames>["setFilter"];
+    serverSide?: boolean;
   }
 
 

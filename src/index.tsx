@@ -10,19 +10,19 @@ function App() {
   const [isFetching, setIsFetching] = useState(false);
 
   const { Datatable, ...controller } = useDatatable({
+    data: data,
+    count: data.length,
+    serverSide: false,
     columns: [
       { field: "emp_id", datatype: "number", sortable: false },
-      { field: "name", datatype: "string", multiFilter: true, setOptions: ["Tom", "Jerry", "Jack", "John", "Warner", "Penny", "Sammy"] },
+      { field: "name", datatype: "string", multiFilter: true },
       { field: "email", datatype: "email", },
       { field: "dob", datatype: "date" },
       { field: "image", datatype: "image" },
       { field: "phone", datatype: "phone" },
-      { field: "is_active", datatype: "boolean" },
+      { field: "is_active", datatype: "boolean"},
       { field: "bio", datatype: "paragraph" },
     ],
-    count: data.length,
-    numberOfRows: data.length,
-    onFilter: console.log,
   })
 
   const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
@@ -46,7 +46,6 @@ function App() {
 
   return (
     <Datatable
-      data={data.slice(0, 100)}
       isFetching={isFetching}
       RowOptionMenu={RowOptionMenu}
       AppsPanel={AppsPanel}
