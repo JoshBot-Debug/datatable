@@ -43,9 +43,9 @@ declare namespace Datatable {
 
   interface Config<FieldNames> {
 
+    data: Data[];
     columns: Datatable.ColumnConfig<FieldNames>;
     count: number;
-    numberOfRows: number;
 
     onFilter?: (filter: Filter<FieldNames>) => void;
 
@@ -53,6 +53,7 @@ declare namespace Datatable {
     initialPage?: Filter<FieldNames>["page"];
     initialOperationFilter?: Filter<FieldNames>["operationFilter"];
     initialSetFilter?: Filter<FieldNames>["setFilter"];
+    serverSide?: boolean;
   }
 
 
@@ -291,6 +292,7 @@ declare namespace Datatable {
 declare function BaseDatatable<FieldNames extends string>(props: Datatable.DatatableProps<FieldNames>): react_jsx_runtime.JSX.Element;
 
 declare function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>): {
+    data: Data[];
     columns: Datatable.ColumnConfig<FieldNames>;
     sortable: Datatable.UseSortable.HookReturn<string>;
     pagination: Datatable.UsePagination.HookReturn;
