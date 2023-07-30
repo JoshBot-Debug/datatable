@@ -40,7 +40,7 @@ function MyListOfData() {
   const { Datatable, ...controller } = useDatatable({
     data: data,         // An array of objects
     count: data.length, // This is the total number of records in the database
-    serverSide: false,  // If this is false, data manipulation will be handled client sided.
+    serverSide: false,  // If this is false, data manipulation will be handled client sided. DEFAULT: true
     onFilter: console.log, // If serverSide is true, you need to handle the filters here and update data.
     columns: [
       { field: "emp_id", datatype: "number", sortable: false },
@@ -80,7 +80,11 @@ function MyListOfData() {
       isFetching={isFetching}
       RowOptionMenu={RowOptionMenu}
       AppsPanel={AppsPanel}
+
+      // If this is not passed, select option will go, otherwise it uses this fn to determine if a row is selectable
       isSelectable={row => row.is_active}
+
+      // Sometimes we want the row options to show when you click on a row, mostly when you have many columns and have to scroll to click options.
       showOptionsOnRowClick
       {...controller}
     />

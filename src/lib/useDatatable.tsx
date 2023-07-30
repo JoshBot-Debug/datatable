@@ -36,13 +36,14 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
     setFilter: initialSetFilter ?? {}
   });
 
+  const clientSideData = useClientSide(data, filter, serverSide);
+  const numberOfRows = serverSide ? data.length : clientSideData.length;
+
   const sortable = useSortable({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
-  const pagination = usePagination({ initialPage, count: count, numberOfRows: data.length, onChange: page => updateFilter(prev => ({ ...prev, page })) });
-  const selectable = useSelectable({ numberOfRows: data.length, onChange: select => updateFilter(prev => ({ ...prev, select })) });
+  const pagination = usePagination({ initialPage, count: count, numberOfRows, onChange: page => updateFilter(prev => ({ ...prev, page })) });
+  const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
-
-  const clientSideData = useClientSide(data, filter, serverSide);
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
