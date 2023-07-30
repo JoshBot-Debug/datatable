@@ -21,6 +21,8 @@ A server sided datatable equiped with every commonly used filter.
 
 ```tsx
 
+  const [isFetching, setIsFetching] = useState(false);
+
   const { Datatable, ...controller } = useDatatable({
     data: data,         // An array of objects
     count: data.length, // This is the total number of records in the database
