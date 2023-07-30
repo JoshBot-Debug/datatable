@@ -2,7 +2,8 @@
 
 ### Check out the [DEMO WEBSITE](https://joshbot-debug.github.io/datatable)
 
-A server sided datatable equiped with every commonly used filter.
+A datatable equiped with every commonly used filter. The demo has an array of 10,000 records. Not all features are active here.
+If you find a bug or want a feature, raise an issue on GitHub.
 
 ## Quick Features
 - Sorting
@@ -29,7 +30,7 @@ import "@jjmyers/datatable/build/styles/default.css"
 
 ```tsx
 
-import { useDatatable, Datatable } from "@jjmyers/datatable";
+import { useDatatable, type Datatable } from "@jjmyers/datatable";
 import "@jjmyers/datatable/build/styles/default.css"
 
 function MyListOfData() {
