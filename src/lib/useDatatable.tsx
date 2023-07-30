@@ -13,9 +13,7 @@ import { useClientSide } from "./features/useClientSIde";
 export default function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>) {
 
   const {
-    data,
     columns,
-    count,
     onFilter,
     initialSortOrder,
     initialPage = {
@@ -24,7 +22,6 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
       currentRowsPerPage: 50,
     },
     initialOperationFilter,
-    serverSide = true,
   } = config;
 
   const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
@@ -36,11 +33,10 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
     setFilter: initialSetFilter ?? {}
   });
 
-  const clientSideData = useClientSide(data, filter, serverSide);
-  const numberOfRows = serverSide ? data.length : clientSideData.length;
+  const { data, count, numberOfRows } = useClientSide(config.data, filter, config.count, config.serverSide);
 
   const sortable = useSortable({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
-  const pagination = usePagination({ initialPage, count: count, numberOfRows, onChange: page => updateFilter(prev => ({ ...prev, page })) });
+  const pagination = usePagination({ initialPage, count, numberOfRows, onChange: page => updateFilter(prev => ({ ...prev, page })) });
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
@@ -48,7 +44,7 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
   return {
-    data: serverSide ? data : clientSideData,
+    data,
     columns,
     sortable,
     pagination,

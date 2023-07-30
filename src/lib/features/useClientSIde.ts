@@ -3,8 +3,9 @@ import { Datatable } from "../types";
 
 
 
-export function useClientSide<Data extends Record<string, any>, FieldNames>(data: Data[], filter: Datatable.Filter<FieldNames>, serverSide?: boolean) {
+export function useClientSide<Data extends Record<string, any>, FieldNames>(data: Data[], filter: Datatable.Filter<FieldNames>, count?: number, serverSide?: boolean) {
 
+  const [recordsCount, setRecordsCount] = useState(0);
   const [records, setRecords] = useState<Record<string, any>[]>([]);
 
   useEffect(() => {
@@ -20,11 +21,24 @@ export function useClientSide<Data extends Record<string, any>, FieldNames>(data
     const withOperationFilter = applyOperationFilter(withSetFilter, operationFilter);
     const withSortOrder = applySortOrder(withOperationFilter, sortOrder);
     const withPage = applyPage(withSortOrder, page);
-
+    
+    setRecordsCount(withSortOrder.length);
     setRecords(withPage);
   }, [serverSide, filter])
 
-  return records
+  if (serverSide) {
+    return {
+      data: data,
+      count: count ?? -1,
+      numberOfRows: data.length,
+    }
+  }
+
+  return {
+    data: records,
+    count: recordsCount,
+    numberOfRows: records.length,
+  }
 }
 
 function applyPage(data: Record<string, any>[], page?: Datatable.UsePagination.Page) {
@@ -69,24 +83,21 @@ function applySetFilter<FieldNames extends string>(data: Record<string, any>[], 
 
 function applyOperationFilter(data: Record<string, any>[], operationFilter?: Datatable.UseOperationFilter.OperationFilter<any>) {
   if (!operationFilter) return data;
-  return data.filter(item => checkCondition(item, operationFilter));
+  return data.filter(row => checkCondition(row, operationFilter));
 }
 
-function checkCondition(item: any, filter: any) {
+function checkCondition(row: any, filter: any) {
   for (const key in filter) {
-    const filterConfig = filter[key];
-    const { operation, value, and, or } = filterConfig;
-    const itemValue = item[key];
-    if (!applyOperation(itemValue, operation, value)) {
-      if (or && checkCondition(item, { [key]: or })) return true;
+    const { operation, value, and, or } = filter[key];
+    const rowValue = row[key];
+    if (!applyOperation(rowValue, operation, value)) {
+      if (or && checkCondition(row, { [key]: or })) return true;
       return false;
     }
-    if (and && !checkCondition(item, { [key]: and })) return false;
-    return true;
+    if (and && !checkCondition(row, { [key]: and })) return false;
   }
   return true;
 }
-
 
 function applyOperation(itemValue: any, operation: string, filterValue?: string) {
   if (filterValue === undefined) return false;
@@ -156,9 +167,11 @@ function convertToType(value1: any, value2: any) {
       value2 = Boolean(value2);
     }
   } else if (typeOfValue1 === "string") {
-    const dateValue = Date.parse(value2);
-    if (!isNaN(dateValue)) {
-      value2 = new Date(dateValue);
+    const value1Date = Date.parse(value1);
+    const value2Date = Date.parse(value2);
+    if (!isNaN(value1Date) && !isNaN(value2Date)) {
+      value1 = new Date(value1Date);
+      value2 = new Date(value2Date);
     }
   }
 

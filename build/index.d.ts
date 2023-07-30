@@ -47,9 +47,9 @@ declare namespace Datatable {
     columns: Datatable.ColumnConfig<FieldNames>;
 
     /**
-     * The total number of records in the database.
+     * The total number of records in the database. (before pagination is applied)
      */
-    count: number;
+    count?: number;
 
     /**
      * If serverSide is true, you need to handle the filters here and update data.
@@ -303,7 +303,7 @@ declare namespace Datatable {
 declare function BaseDatatable<FieldNames extends string>(props: Datatable.DatatableProps<FieldNames>): react_jsx_runtime.JSX.Element;
 
 declare function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>): {
-    data: Data[];
+    data: Record<string, any>[];
     columns: Datatable.ColumnConfig<FieldNames>;
     sortable: Datatable.UseSortable.HookReturn<string>;
     pagination: Datatable.UsePagination.HookReturn;

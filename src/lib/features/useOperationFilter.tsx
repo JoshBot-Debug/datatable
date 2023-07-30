@@ -59,11 +59,12 @@ function OperationFilter<Operation extends string>(props: Datatable.UseOperation
     const andOr = formData.get("and-or") as "and" | "or"
     const secondOperation = formData.get("second-operation") as any
     const secondValue = formData.get("second-value") as any
+    const isSingle = allowEmptyValue(firstOperation);
     const next: Datatable.UseOperationFilter.OperationValue<Operation> = {
       operation: firstOperation,
       value: firstValue,
-      [andOr]: { operation: secondOperation, value: secondValue }
     }
+    if(!isSingle) next[andOr] = { operation: secondOperation, value: secondValue }
     setValue(next);
     onChange({ [field]: next })
   }

@@ -41,9 +41,9 @@ export declare namespace Datatable {
     columns: Datatable.ColumnConfig<FieldNames>;
 
     /**
-     * The total number of records in the database.
+     * The total number of records in the database. (before pagination is applied)
      */
-    count: number;
+    count?: number;
 
     /**
      * If serverSide is true, you need to handle the filters here and update data.
