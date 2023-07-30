@@ -95,7 +95,7 @@
     "web-vitals": "^2.1.4"
   },
   "description": "A datatable that comes with the most popular features.",
-  "keywords": [],
+  "keywords": ["datatable", "react datatable", "server sided datatable", "client sided datatable", "react js datatable", "table"],
   "author": "Joshua Joseph Myers",
   "license": "ISC"
 }
