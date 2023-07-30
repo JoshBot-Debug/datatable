@@ -39,14 +39,25 @@ export declare namespace Datatable {
 
     data: Data[];
     columns: Datatable.ColumnConfig<FieldNames>;
+
+    /**
+     * The total number of records in the database.
+     */
     count: number;
 
+    /**
+     * If serverSide is true, you need to handle the filters here and update data.
+     */
     onFilter?: (filter: Filter<FieldNames>) => void;
 
     initialSortOrder?: Filter<FieldNames>["sortOrder"];
     initialPage?: Filter<FieldNames>["page"];
     initialOperationFilter?: Filter<FieldNames>["operationFilter"];
     initialSetFilter?: Filter<FieldNames>["setFilter"];
+
+    /**
+     * Default is true
+     */
     serverSide?: boolean;
   }
 

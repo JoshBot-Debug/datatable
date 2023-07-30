@@ -24,7 +24,7 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
       currentRowsPerPage: 50,
     },
     initialOperationFilter,
-    serverSide,
+    serverSide = true,
   } = config;
 
   const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
