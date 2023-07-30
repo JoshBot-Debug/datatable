@@ -105,6 +105,7 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
   const { Header, Row, ...selectableController } = selectable;
   const { OperationFilter, ...operationFilterController } = operationFilter;
   const { SetFilter, ...setFilterController } = setFilter;
+  const { Sort, ...sortableController } = sortable;
 
   const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
 
@@ -147,12 +148,12 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
 
   const renderSort = (column: Datatable.Column<FieldNames>) => {
     return (
-      <sortable.Sort
+      <Sort
         key={column.field}
         column={column}
-        sortDirection={sortable.sortOrder[column.field]?.sortDirection}
-        orderIndex={sortable.sortOrder[column.field]?.orderIndex}
-        isMultiSort={Object.keys(sortable.sortOrder).length > 1}
+        sortDirection={sortableController.sortOrder[column.field]?.sortDirection}
+        orderIndex={sortableController.sortOrder[column.field]?.orderIndex}
+        isMultiSort={Object.keys(sortableController.sortOrder).length > 1}
       />
     )
   }
