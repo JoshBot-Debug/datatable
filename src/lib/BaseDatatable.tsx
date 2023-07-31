@@ -57,7 +57,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
               key={String(column.field)}
               column={column}
               onClick={onColumnClick}
-              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
+              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''} ${column.field === "email" ? 'email' : ''}`}
             >
               <div className="column-header-options">
                 {(column.sortable && renderSort) && renderSort(column)}
@@ -114,13 +114,13 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
                       </div>
                     )}
 
-                    {columns.map((col, cIndex) => (
+                    {columns.map((column, cIndex) => (
                       <div
                         key={cIndex}
-                        className={`table-cell ${col.omit ? 'hide' : ''}`}
-                        title={row[col.field] !== undefined ? String(row[col.field]) : undefined}
+                        className={`table-cell ${column.omit ? 'hide' : ''} ${column.field === "email" ? 'email' : ''}`}
+                        title={row[column.field] !== undefined ? String(row[column.field]) : undefined}
                       >
-                        {(col.renderCell ?? Cell)(row[col.field], col, row)}
+                        {(column.renderCell ?? Cell)(row[column.field], column, row)}
                       </div>
                     ))}
 
