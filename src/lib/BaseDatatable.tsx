@@ -4,7 +4,7 @@ import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip
 import { Datatable } from "./types";
 
 
-export function BaseDatatable<FieldNames extends string>(props: Datatable.DatatableProps<FieldNames>) {
+export function BaseDatatable<Data extends Record<string, any>>(props: Datatable.DatatableProps<Data>) {
 
   const {
     data,
@@ -54,7 +54,7 @@ export function BaseDatatable<FieldNames extends string>(props: Datatable.Datata
 
           {columns.map((column) => (
             <TableHeader
-              key={column.field}
+              key={String(column.field)}
               column={column}
               onClick={onColumnClick}
               className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
@@ -154,7 +154,7 @@ function FilterMenu(props: { hasFilter: boolean; } & React.PropsWithChildren) {
   )
 }
 
-const Cell = <FieldNames extends string,>(value: any, column: Datatable.Column<FieldNames>) => {
+const Cell = <Data extends Record<string, any>,>(value: any, column: Datatable.Column<Data>) => {
 
   if (column.datatype === "paragraph") return <ParagraphCell text={value} />
 
@@ -232,7 +232,7 @@ const ParagraphCell = (props: { text: string; }) => {
   )
 }
 
-const TableHeader = <FieldNames extends string,>(props: Datatable.TableHeaderProps<FieldNames>) => {
+const TableHeader = <Data,>(props: Datatable.TableHeaderProps<Data>) => {
 
   const {
     column,

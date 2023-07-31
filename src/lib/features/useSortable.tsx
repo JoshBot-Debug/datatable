@@ -2,36 +2,31 @@ import { useEffect, useState } from "react";
 import { Datatable } from "../types";
 
 
-export default function useSortable<
-  FieldNames extends string
->(
-  config: Datatable.UseSortable.Config<FieldNames>
-): Datatable.UseSortable.HookReturn<FieldNames> {
+export default function useSortable<Data extends Record<string, any>>(
+  config: Datatable.UseSortable.Config<Data>
+): Datatable.UseSortable.HookReturn<Data> {
 
   const {
     onChange,
-    initialSortOrder = {} as Datatable.UseSortable.SortOrder<FieldNames>,
+    initialSortOrder = {},
   } = config;
 
   const [isMultiSort, setIsMultiSort] = useState(false);
 
-  const [sortOrder, setSortOrder] = useState<Datatable.UseSortable.SortOrder<FieldNames>>(initialSortOrder);
+  const [sortOrder, setSortOrder] = useState<Datatable.UseSortable.SortOrder<Data>>(initialSortOrder);
 
-  const onSingleSort = (column: Datatable.Column<FieldNames>) => {
-
-    const nextSortOrder = {
-      [column.field]: {
-        sortDirection: sortOrder[column.field]?.sortDirection === "asc" ? "desc" : "asc",
-        orderIndex: 1
-      }
-    } as Datatable.UseSortable.SortOrder<FieldNames>;
-
+  const onSingleSort = (column: Datatable.Column<Data>) => {
+    const nextSortOrder: Datatable.UseSortable.SortOrder<Data> = {};
+    nextSortOrder[column.field] = {
+      sortDirection: sortOrder[column.field]?.sortDirection === "asc" ? "desc" : "asc",
+      orderIndex: 1
+    }
     setSortOrder(nextSortOrder);
     onChange(nextSortOrder);
   }
 
-  const onMultiSort = (column: Datatable.Column<FieldNames>) => {
-    const nextSortOrder: Datatable.UseSortable.SortOrder<FieldNames> = {
+  const onMultiSort = (column: Datatable.Column<Data>) => {
+    const nextSortOrder: Datatable.UseSortable.SortOrder<Data> = {
       ...sortOrder,
     };
 
@@ -73,7 +68,7 @@ export default function useSortable<
 }
 
 
-const Sort = <FieldNames extends string,>(props: Datatable.UseSortable.SortProps<FieldNames>) => {
+const Sort = <FieldNames,>(props: Datatable.UseSortable.SortProps<FieldNames>) => {
 
   const {
     column,

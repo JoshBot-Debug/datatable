@@ -44,7 +44,8 @@
     user-select: none;
     position: sticky;
     top: 0;
-    padding: 0px;
+    padding-inline: 0px;
+    padding-block: 0px;
   }
 
   .table-header:not(:first-child)::before {
@@ -67,7 +68,6 @@
   .table-header-column-name {
     display: flex;
     margin-inline: 8px;
-    margin-block: 16px;
   }
 
   .table-row {
@@ -315,7 +315,6 @@
   .filter-options-button {
     display: flex;
     margin-inline: 8px;
-    height: 40px;
   }
 
   .operation-filter-container {

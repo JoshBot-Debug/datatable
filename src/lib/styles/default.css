@@ -40,7 +40,8 @@
           user-select: none;
   position: sticky;
   top: 0;
-  padding: 0px;
+  padding-inline: 0px;
+  padding-block: 0px;
 }
 .myers-datatable .table-header:not(:first-child)::before {
   content: "";
@@ -60,7 +61,6 @@
 .myers-datatable .table-header-column-name {
   display: flex;
   margin-inline: 8px;
-  margin-block: 16px;
 }
 .myers-datatable .table-row {
   border: 1px solid rgb(240, 240, 240);
@@ -262,7 +262,6 @@
 .myers-datatable .filter-options-button {
   display: flex;
   margin-inline: 8px;
-  height: 40px;
 }
 .myers-datatable .operation-filter-container {
   min-width: 182px;

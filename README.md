@@ -51,6 +51,10 @@ function MyListOfData() {
       { field: "phone", datatype: "phone" },
       { field: "is_active", datatype: "boolean"},
       { field: "bio", datatype: "paragraph" },
+      
+      // For custom fields that do not exist in "data", use @ts-ignore
+      // @ts-ignore
+      { field: "customField" },
     ],
   })
   

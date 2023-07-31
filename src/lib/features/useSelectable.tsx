@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Datatable } from "../types";
 
-export default function useSelectable<FieldNames extends string>(config: Datatable.UseSelectable.Config<FieldNames>): Datatable.UseSelectable.HookReturn<FieldNames> {
+export default function useSelectable(config: Datatable.UseSelectable.Config): Datatable.UseSelectable.HookReturn {
 
   const {
     numberOfRows,
@@ -73,7 +73,7 @@ function Header(props: Datatable.UseSelectable.HeaderProps) {
   )
 }
 
-function Row<FieldNames>(props: Datatable.UseSelectable.RowProps<FieldNames>) {
+function Row(props: Datatable.UseSelectable.RowProps) {
 
   const {
     index,

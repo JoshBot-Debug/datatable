@@ -1,16 +1,17 @@
 import { useId, useState } from "react";
 import { Datatable } from "../types";
 
-export default function useOperationFilter<Operation extends string>(config: Datatable.UseOperationFilter.Config): Datatable.UseOperationFilter.HookReturn<Operation> {
+export default function useOperationFilter<Data extends Record<string, any>, Operation extends string>(config: Datatable.UseOperationFilter.Config): Datatable.UseOperationFilter.HookReturn<Data, Operation> {
 
   const { onChange, initialOperationFilter } = config;
 
-  const [operationFilter, setFilter] = useState<Datatable.UseOperationFilter.OperationFilter<Operation>>(initialOperationFilter ?? {});
+  const [operationFilter, setFilter] = useState<Datatable.UseOperationFilter.OperationFilter<Data, Operation>>(initialOperationFilter ?? {});
 
-  const onSetOperationFilter = (filter: Datatable.UseOperationFilter.OperationFilter<Operation>) => {
-    const next = { ...operationFilter };
+  // TODO fix ts here
+  const onSetOperationFilter = (filter: Datatable.UseOperationFilter.OperationFilter<Data, Operation>) => {
+    const next: any = { ...operationFilter };
     for (const key in filter) {
-      const current = { ...filter[key] };
+      const current = { ...(filter as any)[key] };
       if (!current.operation) { delete next[key]; continue; }
       if (shouldRemoveKey(current.value, current.operation)) { delete next[key]; continue; }
       if (current.and && shouldRemoveKey(current.and.value, current.and.operation)) delete current.and;
@@ -36,7 +37,7 @@ function shouldRemoveKey(value: any, operation: any) {
   return String(value).length === 0 && !allowEmptyValue(operation)
 }
 
-function OperationFilter<Operation extends string>(props: Datatable.UseOperationFilter.OperationProps<Operation>) {
+function OperationFilter<Data extends Record<string, any>, Operation extends string>(props: Datatable.UseOperationFilter.OperationProps<Data, Operation>) {
 
   const {
     inputType,

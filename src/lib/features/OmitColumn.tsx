@@ -1,12 +1,12 @@
 import { useId } from "react";
 import { Datatable } from "../types";
 
-interface Props<FieldNames extends string> {
-  columns: Datatable.Column<FieldNames>[];
-  setColumns: (callback: (columns: Datatable.Column<FieldNames>[]) => Datatable.Column<FieldNames>[]) => void;
+interface Props<Data extends Record<string, any>> {
+  columns: Datatable.Column<Data>[];
+  setColumns: (callback: (columns: Datatable.Column<Data>[]) => Datatable.Column<Data>[]) => void;
 }
 
-export default function OmitColumn<FieldNames extends string>(config: Props<FieldNames>) {
+export default function OmitColumn<Data extends Record<string, any>>(config: Props<Data>) {
 
   const {
     columns,
@@ -17,11 +17,11 @@ export default function OmitColumn<FieldNames extends string>(config: Props<Fiel
 
   const isAllOmitted = !!columns.find(c => c.omit)
 
-  const onToggle = (column: Datatable.Column<FieldNames>) => {
+  const onToggle = (column: Datatable.Column<Data>) => {
     setColumns(prev => {
       const next = [...prev];
       for (let i = 0; i < next.length; i++) {
-        if (next[i].field !== column.field) continue;
+        if (next[i].field !== String(column.field)) continue;
         next[i] = { ...column, omit: !column.omit }
       }
       return next
@@ -49,17 +49,17 @@ export default function OmitColumn<FieldNames extends string>(config: Props<Fiel
         {
           columns.map(column => (
             <div
-              key={`columns-${column.field}`}
+              key={`columns-${String(column.field)}`}
               className="omit-column-list-item-container"
             >
               <input
-                id={`omit-column-list-item-${id}-${column.field}`}
+                id={`omit-column-list-item-${id}-${String(column.field)}`}
                 type="checkbox"
                 checked={!column.omit}
                 onChange={e => onToggle(column)}
               />
               <label
-                htmlFor={`omit-column-list-item-${id}-${column.field}`}
+                htmlFor={`omit-column-list-item-${id}-${String(column.field)}`}
                 className="omit-column-label"
               >{column.columnName}</label>
             </div>

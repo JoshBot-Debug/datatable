@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { Datatable } from "../types";
 
 
-
-export function useClientSide<Data extends Record<string, any>, FieldNames>(data: Data[], filter: Datatable.Filter<FieldNames>, count?: number, serverSide?: boolean) {
+export function useClientSide<Data extends Record<string, any>>(filter: Datatable.Filter<Data>, data: Data[] = [], count: number = -1, serverSide: boolean = true) {
 
   const [recordsCount, setRecordsCount] = useState(0);
-  const [records, setRecords] = useState<Record<string, any>[]>([]);
+  const [records, setRecords] = useState<Data[]>([]);
 
   useEffect(() => {
     if (serverSide) return;
@@ -21,7 +20,7 @@ export function useClientSide<Data extends Record<string, any>, FieldNames>(data
     const withOperationFilter = applyOperationFilter(withSetFilter, operationFilter);
     const withSortOrder = applySortOrder(withOperationFilter, sortOrder);
     const withPage = applyPage(withSortOrder, page);
-    
+
     setRecordsCount(withSortOrder.length);
     setRecords(withPage);
   }, [serverSide, filter])
@@ -29,7 +28,7 @@ export function useClientSide<Data extends Record<string, any>, FieldNames>(data
   if (serverSide) {
     return {
       data: data,
-      count: count ?? -1,
+      count: count,
       numberOfRows: data.length,
     }
   }
@@ -41,7 +40,7 @@ export function useClientSide<Data extends Record<string, any>, FieldNames>(data
   }
 }
 
-function applyPage(data: Record<string, any>[], page?: Datatable.UsePagination.Page) {
+function applyPage<Data extends Record<string, any>>(data: Data[], page?: Datatable.UsePagination.Page) {
   if (!page) return data;
   const { currentPage, currentRowsPerPage } = page;
   const startIndex = (currentPage - 1) * currentRowsPerPage;
@@ -49,7 +48,7 @@ function applyPage(data: Record<string, any>[], page?: Datatable.UsePagination.P
   return data.slice(startIndex, endIndex);
 }
 
-function applySortOrder<FieldNames extends string>(data: Record<string, any>[], sortOrder?: Datatable.UseSortable.SortOrder<FieldNames>) {
+function applySortOrder<Data extends Record<string, any>>(data: Data[], sortOrder?: Datatable.UseSortable.SortOrder<Data>) {
   if (!sortOrder) return data;
 
   return data.sort((a, b) => {
@@ -68,7 +67,7 @@ function applySortOrder<FieldNames extends string>(data: Record<string, any>[], 
   });
 }
 
-function applySetFilter<FieldNames extends string>(data: Record<string, any>[], setFilter?: Datatable.UseSetFilter.SetFilter<FieldNames>) {
+function applySetFilter<Data extends Record<string, any>>(data: Data[], setFilter?: Datatable.UseSetFilter.SetFilter<Data>) {
   if (!setFilter) return data;
   return data.filter(item => {
     for (const key in setFilter) {
@@ -81,7 +80,7 @@ function applySetFilter<FieldNames extends string>(data: Record<string, any>[], 
   });
 }
 
-function applyOperationFilter(data: Record<string, any>[], operationFilter?: Datatable.UseOperationFilter.OperationFilter<any>) {
+function applyOperationFilter<Data extends Record<string, any>>(data: Data[], operationFilter?: Datatable.UseOperationFilter.OperationFilter<Data, any>) {
   if (!operationFilter) return data;
   return data.filter(row => checkCondition(row, operationFilter));
 }

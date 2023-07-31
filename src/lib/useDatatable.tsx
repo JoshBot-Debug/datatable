@@ -10,7 +10,7 @@ import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 import { useClientSide } from "./features/useClientSIde";
 
-export default function useDatatable<FieldNames>(config: Datatable.Config<FieldNames>) {
+export default function useDatatable<Data extends Record<string, any>>(config: Datatable.Config<Data>) {
 
   const {
     columns,
@@ -26,20 +26,20 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
 
   const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
 
-  const [filter, updateFilter] = useState<Datatable.Filter<FieldNames>>({
+  const [filter, updateFilter] = useState<Datatable.Filter<Data>>({
     sortOrder: initialSortOrder ?? {},
     page: initialPage ?? {},
     operationFilter: initialOperationFilter ?? {},
     setFilter: initialSetFilter ?? {}
   });
 
-  const { data, count, numberOfRows } = useClientSide(config.data, filter, config.count, config.serverSide);
+  const { data, count, numberOfRows } = useClientSide<Data>(filter, config.data, config.count, config.serverSide);
 
-  const sortable = useSortable({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
+  const sortable = useSortable<Data>({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
   const pagination = usePagination({ initialPage, count, numberOfRows, onChange: page => updateFilter(prev => ({ ...prev, page })) });
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
-  const setFilter = useSetFilter({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
-  const operationFilter = useOperationFilter({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
+  const setFilter = useSetFilter<Data>({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
+  const operationFilter = useOperationFilter<Data, string>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
@@ -57,7 +57,7 @@ export default function useDatatable<FieldNames>(config: Datatable.Config<FieldN
 }
 
 
-function getInitialSetFilter<FieldNames>(columns: Datatable.ColumnConfig<FieldNames>): Datatable.UseSetFilter.SetFilter<FieldNames> {
+function getInitialSetFilter<Data extends Record<string, any>>(columns: Datatable.ColumnConfig<Data>): Datatable.UseSetFilter.SetFilter<Data> {
   return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: c.setOptions } : r, {})
 }
 
@@ -68,7 +68,7 @@ const date = ["Equal", "Not equal", "Is blank", "Greater than", "Greater than or
 const boolean = ["Is true", "Is false", "Is blank"];
 
 
-const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.UseOperationFilter.OperationProps<any>["inputType"]; } } = {
+const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputType: Datatable.UseOperationFilter.OperationProps<any, any>["inputType"]; } } = {
   boolean: { inputType: undefined, operation: boolean },
   date: { inputType: "date", operation: date },
   datetime: { inputType: "datetime-local", operation: date },
@@ -83,7 +83,7 @@ const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputTy
 }
 
 
-function RichDatatable<Data extends Record<string, any>, FieldNames extends string>(props: Datatable.RichDatatableProps<Data, FieldNames>) {
+function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDatatableProps<Data>) {
 
   const {
     data = [],
@@ -107,12 +107,12 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
   const { SetFilter, ...setFilterController } = setFilter;
   const { Sort, ...sortableController } = sortable;
 
-  const [columns, setColumns] = useState(getColumnDefaults<any>(props.columns as Partial<Datatable.Column<string>>[]));
+  const [columns, setColumns] = useState(getColumnDefaults(props.columns as Partial<Datatable.Column<Data>>[]));
 
-  const renderFilter = (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
+  const renderFilter = (column: Datatable.Column<Data>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
     const hasSetOptions = !!column.setOptions;
     const hasFilterOptions = !!column.filterOperations;
-    const hasSetFilter = (column.setOptions && setFilter.setFilter[column.field]?.length !== column.setOptions.length);
+    const hasSetFilter = !!(column.setOptions && setFilter.setFilter[column.field]?.length !== column.setOptions.length);
     const hasOperationFilter = !!operationFilterController.operationFilter[column.field];
     return (
       <FilterMenu hasFilter={hasOperationFilter || hasSetFilter}>
@@ -134,7 +134,7 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
             <>
               <span className="divider" />
               <SetFilter
-                field={column.field}
+                field={String(column.field)}
                 onChange={setFilterController.onSetFilter}
                 options={column.setOptions ?? []}
                 defaultValue={setFilterController.setFilter[column.field] ?? []}
@@ -146,10 +146,10 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     )
   }
 
-  const renderSort = (column: Datatable.Column<FieldNames>) => {
+  const renderSort = (column: Datatable.Column<Data>) => {
     return (
       <Sort
-        key={column.field}
+        key={String(column.field)}
         column={column}
         sortDirection={sortableController.sortOrder[column.field]?.sortDirection}
         orderIndex={sortableController.sortOrder[column.field]?.orderIndex}
@@ -165,7 +165,7 @@ function RichDatatable<Data extends Record<string, any>, FieldNames extends stri
     />
   )
 
-  const SelectCell = ({ row, index }: { index: number; row: Record<FieldNames, any>; }) => {
+  const SelectCell = ({ row, index }: { index: number; row: Data; }) => {
     const enabled = !isSelectable ? true : isSelectable(row);
     useEffect(() => { selectable.onDisableRow(!enabled, index); }, [enabled])
     return (

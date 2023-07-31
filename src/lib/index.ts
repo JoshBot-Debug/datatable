@@ -5,6 +5,7 @@ import usePagination from "./features/usePagination";
 import useSelectable from "./features/useSelectable";
 import useSortable from "./features/useSortable";
 import { Datatable } from "./types";
+import { useClientSide } from "./features/useClientSIde";
 
 export {
   type Datatable,
@@ -14,4 +15,5 @@ export {
   usePagination,
   useSelectable,
   useSortable,
+  useClientSide,
 }

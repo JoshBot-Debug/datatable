@@ -9,13 +9,13 @@ export declare namespace Datatable {
 
   type Filters = { [F in Datatype]?: React.ReactNode };
 
-  type Column<FieldNames extends string> = {
-    field: FieldNames;
+  type Column<Data extends Record<string, any>> = {
+    field: keyof Data;
     columnName: string;
     sortable: boolean;
     filterable: boolean;
     omit: boolean;
-    renderCell?: (value: any, column: Column<FieldNames>, row: Record<FieldNames, any>) => React.ReactNode;
+    renderCell?: (value: any, column: Column<Data>, row: Data) => React.ReactNode;
     setOptions?: string[];
     multiFilter?: boolean;
   } & ({
@@ -29,16 +29,16 @@ export declare namespace Datatable {
     filterOperations?: UseOperationFilter.BooleanFilterOperations[];
   })
 
-  type RowOptionMenuProps = { row: Record<FieldNames, any>; rowIndex: number; }
+  type RowOptionMenuProps<Data extends Record<string, any> = Record<string, any>> = { row: Data; rowIndex: number; }
 
   type AppsPanelProps = { OmitColumns: React.ReactNode; }
 
-  type ColumnConfig<FieldNames> = PartialKeys<Column<FieldNames>, "datatype" | "sortable" | "columnName" | "omit" | "filterable">[];
+  type ColumnConfig<Data> = PartialKeys<Column<Data>, "datatype" | "sortable" | "columnName" | "omit" | "filterable">[];
 
-  interface Config<FieldNames> {
+  interface Config<Data extends Record<string, any>> {
 
-    data: Data[];
-    columns: Datatable.ColumnConfig<FieldNames>;
+    data?: Data[];
+    columns: Datatable.ColumnConfig<Data>;
 
     /**
      * The total number of records in the database. (before pagination is applied)
@@ -48,12 +48,12 @@ export declare namespace Datatable {
     /**
      * If serverSide is true, you need to handle the filters here and update data.
      */
-    onFilter?: (filter: Filter<FieldNames>) => void;
+    onFilter?: (filter: Filter<Data>) => void;
 
-    initialSortOrder?: Filter<FieldNames>["sortOrder"];
-    initialPage?: Filter<FieldNames>["page"];
-    initialOperationFilter?: Filter<FieldNames>["operationFilter"];
-    initialSetFilter?: Filter<FieldNames>["setFilter"];
+    initialSortOrder?: Filter<Data>["sortOrder"];
+    initialPage?: Filter<Data>["page"];
+    initialOperationFilter?: Filter<Data>["operationFilter"];
+    initialSetFilter?: Filter<Data>["setFilter"];
 
     /**
      * Default is true
@@ -62,57 +62,57 @@ export declare namespace Datatable {
   }
 
 
-  interface RichDatatableProps<Data extends Record<string, any>, FieldNames> {
+  interface RichDatatableProps<Data extends Record<string, any>> {
     data?: Data[];
     isFetching?: boolean;
-    columns: Datatable.ColumnConfig<FieldNames>;
-    setFilter: Datatable.UseSetFilter.HookReturn<FieldNames>;
+    columns: Datatable.ColumnConfig<Data>;
+    setFilter: Datatable.UseSetFilter.HookReturn<Data>;
     operationFilter: Datatable.UseOperationFilter.HookReturn<string>;
-    sortable: Datatable.UseSortable.HookReturn<FieldNames>;
+    sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
-    selectable: Datatable.UseSelectable.HookReturn<FieldNames>;
-    RowOptionMenu?: React.FC<RowOptionMenuProps>;
+    selectable: Datatable.UseSelectable.HookReturn<Data>;
+    RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
-    isSelectable?: (row: Record<FieldNames, any>) => boolean;
+    isSelectable?: (row: Data) => boolean;
     NoData?: React.ReactNode;
-    onRowClick?: (row: Record<FieldNames, any>, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
   }
 
-  interface Filter<FieldNames> {
-    sortOrder?: UseSortable.SortOrder<FieldNames>;
-    page?: UsePagination.Page;
-    operationFilter?: UseOperationFilter.OperationFilter<TextFilterOperations | RangeFilterOperations | BooleanFilterOperations>;
-    setFilter?: UseSetFilter.SetFilter<FieldNames>;
+  interface Filter<Data extends Record<string, any>> {
+    sortOrder: UseSortable.SortOrder<Data>;
+    page: UsePagination.Page;
+    operationFilter: UseOperationFilter.OperationFilter<Data, UseOperationFilter.TextFilterOperations | UseOperationFilter.RangeFilterOperations | UseOperationFilter.BooleanFilterOperations>;
+    setFilter: UseSetFilter.SetFilter<Data>;
   }
 
 
-  interface TableHeaderProps<FieldNames extends string> extends React.PropsWithChildren {
-    column: Column<FieldNames>;
-    onClick?: (column: Column<FieldNames>) => void;
+  interface TableHeaderProps<Data> extends React.PropsWithChildren {
+    column: Column<Data>;
+    onClick?: (column: Column<Data>) => void;
     className?: string;
   }
 
   type DatatableFilterProps<Operation> = { multiFilter?: boolean; setOptions?: string[]; datatype: string; field: string; filterOperations?: Operation[] };
 
-  interface DatatableProps<FieldNames extends string> {
-    columns: Datatable.Column<FieldNames>[];
-    data: Record<FieldNames, any>[];
+  interface DatatableProps<Data extends Record<string, any>> {
+    columns: Datatable.Column<Data>[];
+    data: Data[];
     isFetching?: boolean;
-    onColumnClick?: (column: Datatable.Column<FieldNames>) => void;
+    onColumnClick?: (column: Datatable.Column<Data>) => void;
 
-    RowOptionMenu?: React.FC<RowOptionMenuProps>
+    RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>
     AppsPanel?: React.ReactNode;
 
-    renderFilter?: (column: Datatable.Column<FieldNames>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => React.ReactElement;
-    renderSort?: (column: Datatable.Column<FieldNames>) => React.ReactElement;
+    renderFilter?: (column: Datatable.Column<Data>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => React.ReactElement;
+    renderSort?: (column: Datatable.Column<Data>) => React.ReactElement;
     Footer?: React.ReactNode;
 
     hideSelect?: boolean;
     SelectHeader?: React.FC;
-    SelectCell?: React.FC<{ index: number; row: Record<FieldNames, any> }>;
+    SelectCell?: React.FC<{ index: number; row: Data }>;
     NoData?: React.ReactNode;
-    onRowClick?: (row: Record<FieldNames, any>, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
   }
 
@@ -120,19 +120,19 @@ export declare namespace Datatable {
 
   namespace UseSortable {
 
-    interface Config<FieldNames extends string> {
-      initialSortOrder?: SortOrder<FieldNames>;
-      onChange: (sortOrder: SortOrder<FieldNames>) => void;
+    interface Config<Data extends Record<string, any>> {
+      initialSortOrder?: SortOrder<Data>;
+      onChange: (sortOrder: SortOrder<Data>) => void;
     }
 
-    interface HookReturn<FieldNames extends string> {
-      sortOrder: SortOrder<FieldNames>;
-      Sort: (props: SortProps<FieldNames>) => JSX.Element | null;
-      onSort: (column: Column<FieldNames>) => void
+    interface HookReturn<Data extends Record<string, any>> {
+      sortOrder: SortOrder<Data>;
+      Sort: (props: SortProps<Data>) => JSX.Element | null;
+      onSort: (column: DatatableColumn<Data>) => void
     }
 
-    interface SortProps<FieldNames extends string> {
-      column: Column<FieldNames>;
+    interface SortProps<Data> {
+      column: Column<Data>;
       sortDirection?: SortDirection;
       orderIndex?: number;
       isMultiSort: boolean;
@@ -140,8 +140,8 @@ export declare namespace Datatable {
 
     type SortDirection = "asc" | "desc"
 
-    type SortOrder<FieldNames extends string> = {
-      [K in FieldNames]?: {
+    type SortOrder<Data extends Record<string, any>> = {
+      [K in keyof Data]?: {
         sortDirection: SortDirection;
         orderIndex: number;
       }
@@ -197,14 +197,14 @@ export declare namespace Datatable {
 
   namespace UseSelectable {
 
-    interface Config<FieldNames> {
+    interface Config {
       numberOfRows: number;
       onChange: (selectable: { isAllSelected: boolean; selectedRows: number[] }) => void;
     }
 
-    interface HookReturn<FieldNames> {
+    interface HookReturn {
       Header: (props: HeaderProps) => JSX.Element | null;
-      Row: (props: RowProps<FieldNames>) => JSX.Element | null;
+      Row: (props: RowProps) => JSX.Element | null;
       selectAll: (select: boolean) => void;
       selectedRows: number[];
       onSelectRow: (checked: boolean, rowIndex: number) => void;
@@ -217,7 +217,7 @@ export declare namespace Datatable {
       isAllSelected: boolean;
     }
 
-    interface RowProps<FieldNames> {
+    interface RowProps {
       index: number;
       disabled: boolean;
       checked: boolean;
@@ -229,17 +229,17 @@ export declare namespace Datatable {
 
   namespace UseSetFilter {
 
-    interface Config<FieldNames> {
-      onChange: (setFilter: SetFilter<FieldNames>) => void;
-      initialSetFilter?: SetFilter<FieldNames>;
+    interface Config<Data extends Record<string, any>> {
+      onChange: (setFilter: SetFilter<Data>) => void;
+      initialSetFilter?: SetFilter<Data>;
     }
 
-    type SetFilter<FieldNames> = { [F in FieldNames]?: string[] };
+    type SetFilter<Data extends Record<string, any>> = { [K in keyof Data]?: string[] };
 
-    interface HookReturn<FieldNames> {
+    interface HookReturn<Data extends Record<string, any>> {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
-      setFilter: SetFilter<FieldNames>;
-      onSetFilter: (filter: SetFilter<FieldNames>) => void;
+      setFilter: SetFilter<Data>;
+      onSetFilter: (filter: SetFilter<Data>) => void;
     }
 
 
@@ -266,14 +266,14 @@ export declare namespace Datatable {
       or?: OperationValue<Operation>
     }
 
-    type OperationFilter<Operation> = {
-      [field: string]: OperationValue<Operation>
+    type OperationFilter<Data extends Record<string, any>, Operation> = {
+      [key: keyof Data]: OperationValue<Operation>
     };
 
-    interface HookReturn<Operation> {
-      OperationFilter: (props: OperationProps<Operation>) => JSX.Element | null;
-      operationFilter: OperationFilter<Operation>;
-      onSetOperationFilter: (filter: OperationFilter<Operation>) => void;
+    interface HookReturn<Data extends Record<string, any>, Operation> {
+      OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
+      operationFilter: OperationFilter<Data, Operation>;
+      onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
     }
 
     type BooleanFilterOperations = "Is true" | "Is false" | "Is blank";
@@ -282,10 +282,10 @@ export declare namespace Datatable {
 
     type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
 
-    interface OperationProps<Operation> {
+    interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number";
-      field: string;
-      onChange: (result: UseOperationFilter.OperationFilter<Operation>) => void;
+      field: keyof Data;
+      onChange: (result: UseOperationFilter.OperationFilter<Data, Operation>) => void;
       filterOperations?: Operation[];
       currentValue?: UseOperationFilter.OperationValue<Operation>
       allowedOperations: Operation[];

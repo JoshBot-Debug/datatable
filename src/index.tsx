@@ -39,7 +39,7 @@ function App() {
     </>
   )
 
-  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
+  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<typeof data[number]>) => (<>
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 1</div>
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 2</div>
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 3</div>

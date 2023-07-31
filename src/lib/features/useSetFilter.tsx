@@ -1,13 +1,13 @@
 import { useId, useState } from "react";
 import { Datatable } from "../types";
 
-export default function useSetFilter<FieldNames>(config: Datatable.UseSetFilter.Config<FieldNames>): Datatable.UseSetFilter.HookReturn<FieldNames> {
+export default function useSetFilter<Data extends Record<string, any>>(config: Datatable.UseSetFilter.Config<Data>): Datatable.UseSetFilter.HookReturn<Data> {
 
   const { onChange, initialSetFilter } = config;
 
-  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<FieldNames>>(initialSetFilter ?? {});
+  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter ?? {});
 
-  const onSetFilter = (filter: Datatable.UseSetFilter.SetFilter<FieldNames>) => {
+  const onSetFilter = (filter: Datatable.UseSetFilter.SetFilter<Data>) => {
     const next = { ...setFilter };
     for (const key in filter) next[key] = filter[key];
     updateFilter(next);
