@@ -23,14 +23,17 @@
   width: 100%;
   height: -moz-fit-content;
   height: fit-content;
+  border-collapse: collapse;
 }
 .myers-datatable .table-cell {
   padding-block: 8px;
   padding-inline: 10px;
   white-space: nowrap;
   vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-.myers-datatable .table-header {
+.myers-datatable .table-header-cell {
   background-color: rgb(240, 240, 240);
   font-weight: bold;
   text-transform: capitalize;
@@ -42,8 +45,9 @@
   top: 0;
   padding-inline: 0px;
   padding-block: 0px;
+  overflow: visible;
 }
-.myers-datatable .table-header:not(:first-child)::before {
+.myers-datatable .table-header-cell:not(:first-child)::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -59,11 +63,12 @@
   align-items: center;
 }
 .myers-datatable .table-header-column-name {
-  display: flex;
   margin-inline: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .myers-datatable .table-row {
-  border: 1px solid rgb(240, 240, 240);
+  border-bottom: 1px solid rgb(240, 240, 240);
   transition: background-color 200ms linear;
 }
 .myers-datatable .table-row:nth-child(even) {
@@ -74,6 +79,8 @@
 }
 .myers-datatable .column-header-options {
   display: flex;
+  gap: 8px;
+  margin-inline: 8px;
 }
 .myers-datatable .sortable-table-header {
   cursor: pointer;
@@ -95,6 +102,11 @@
   height: 16px;
   fill: rgb(150, 150, 150);
 }
+.myers-datatable .select-header-cell {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+}
 .myers-datatable .boolean-svg {
   height: 24px;
   width: 24px;
@@ -112,7 +124,8 @@
   max-height: 24px;
 }
 .myers-datatable .cell-datatype-paragraph {
-  display: block;
+  width: 400px;
+  min-width: 400px;
   max-width: 400px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -261,7 +274,6 @@
 }
 .myers-datatable .filter-options-button {
   display: flex;
-  margin-inline: 8px;
 }
 .myers-datatable .operation-filter-container {
   min-width: 182px;
@@ -319,4 +331,20 @@
 }
 .myers-datatable .table-row-clickable {
   cursor: pointer;
+}
+.myers-datatable .email {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.myers-datatable .resizer-button {
+  all: unset;
+}
+.myers-datatable .resizer-active-svg {
+  color: rgb(50, 50, 50);
+}
+.myers-datatable .resizer-inactive-svg {
+  color: rgb(100, 100, 100);
 }/*# sourceMappingURL=default.css.map */
