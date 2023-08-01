@@ -41,6 +41,13 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const setFilter = useSetFilter<Data>({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter<Data, string>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
 
+  const [autoWidth, setAutoWidth] = useState<Record<keyof Data, { hasAutoSize: boolean, value: boolean }>>(columns.reduce((r, c) => ({ ...r, [c.field]: { hasAutoSize: typeof c.width === "number", value: typeof c.width === "number" } }), {} as any));
+
+  const toggleAutoWidth = (autoWidth?: boolean, field?: string) => {
+    if (field) return setAutoWidth(prev => ({ ...prev, [field]: { ...prev[field], value: autoWidth ? autoWidth : !prev[field].value } }));
+    setAutoWidth(prev => Object.keys(prev).reduce((r, c) => ({ ...r, [c]: { ...prev[c], value: autoWidth ? autoWidth : !prev[c].value } }), {} as any));
+  }
+
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
   return {
@@ -51,6 +58,8 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     selectable,
     setFilter,
     operationFilter,
+    autoWidth,
+    toggleAutoWidth,
     updateFilter,
     Datatable: RichDatatable,
   }
@@ -99,6 +108,8 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     NoData,
     onRowClick,
     showOptionsOnRowClick,
+    autoWidth,
+    toggleAutoWidth,
   } = props;
 
   const { Pagination, ...paginationController } = pagination;
@@ -193,6 +204,8 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
       NoData={NoData}
       onRowClick={onRowClick}
       showOptionsOnRowClick={showOptionsOnRowClick}
+      autoWidth={autoWidth}
+      toggleAutoWidth={toggleAutoWidth}
       Footer={
         !Pagination
           ? null

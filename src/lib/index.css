@@ -1,6 +1,5 @@
 .myers-datatable .table-container {
   display: table;
-  border-collapse: collapse;
 }
 .myers-datatable .table-row {
   display: table-row;
@@ -9,7 +8,7 @@
 .myers-datatable .table-cell {
   display: table-cell;
 }
-.myers-datatable .table-header {
+.myers-datatable .table-header-row {
   z-index: 1;
 }
 .myers-datatable .spinner {

@@ -2,7 +2,6 @@
 
   .table-container {
     display: table;
-    border-collapse: collapse;
   }
 
   .table-row {
@@ -14,7 +13,7 @@
     display: table-cell;
   }
 
-  .table-header {
+  .table-header-row {
     z-index: 1;
   }
 

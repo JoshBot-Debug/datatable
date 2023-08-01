@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./index.css"
 import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
@@ -22,49 +22,59 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     NoData,
     onRowClick,
     showOptionsOnRowClick,
+    autoWidth,
+    toggleAutoWidth,
   } = props;
+
 
   return (
     <div className="myers-datatable">
       <div className="table-scroll-container">
         <div className="table-container">
 
-          <div className="table-cell table-header apps-button-header-cell" >
-            {
-              AppsPanel && (
-                <Popper
-                  Icon={IoApps}
-                  mainAxisOffset={20}
-                  crossAxisOffset={10}
-                  placement="bottom-end"
-                  className="app-panel-button"
-                >
-                  {AppsPanel}
-                </Popper>
-              )
-            }
+          <div className="table-header-row table-row">
+            <div className="table-cell table-header-cell apps-button-header-cell" >
+              {
+                AppsPanel && (
+                  <Popper
+                    Icon={IoApps}
+                    mainAxisOffset={20}
+                    crossAxisOffset={10}
+                    placement="bottom-end"
+                    className="app-panel-button"
+                  >
+                    {AppsPanel}
+                  </Popper>
+                )
+              }
+            </div>
+
+            {(!hideSelect && !!SelectHeader) && (
+              <TableHeader
+                className="select-header-cell"
+                column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
+              >
+                <SelectHeader />
+              </TableHeader>
+            )}
+
+            {columns.map((column) => (
+              <TableHeader
+                key={String(column.field)}
+                column={column}
+                onClick={onColumnClick}
+                autoWidth={autoWidth}
+                className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
+              >
+
+                <div className="column-header-options">
+                  {(column.sortable && renderSort) && renderSort(column)}
+                  {(!!autoWidth && autoWidth[column.field].hasAutoSize) && <Resizer field={String(column.field)} active={autoWidth[column.field].value} toggleAutoWidth={toggleAutoWidth} />}
+                  {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
+                </div>
+              </TableHeader>
+            ))}
           </div>
-
-
-          {(!hideSelect && !!SelectHeader) && (
-            <TableHeader column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}>
-              <SelectHeader />
-            </TableHeader>
-          )}
-
-          {columns.map((column) => (
-            <TableHeader
-              key={String(column.field)}
-              column={column}
-              onClick={onColumnClick}
-              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''} ${column.field === "email" ? 'email' : ''}`}
-            >
-              <div className="column-header-options">
-                {(column.sortable && renderSort) && renderSort(column)}
-                {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
-              </div>
-            </TableHeader>
-          ))}
 
           {data.map((row, rIndex) => (
             <PopperRow
@@ -114,15 +124,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
                       </div>
                     )}
 
-                    {columns.map((column, cIndex) => (
-                      <div
-                        key={cIndex}
-                        className={`table-cell ${column.omit ? 'hide' : ''} ${column.field === "email" ? 'email' : ''}`}
-                        title={row[column.field] !== undefined ? String(row[column.field]) : undefined}
-                      >
-                        {(column.renderCell ?? Cell)(row[column.field], column, row)}
-                      </div>
-                    ))}
+                    {columns.map((column, cIndex) => <Cell key={cIndex} column={column} row={row} autoWidth={!autoWidth ? false : autoWidth[column.field].value} />)}
 
                   </div>
                 )
@@ -134,6 +136,40 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
       </div>
       {Footer}
     </div >
+  )
+}
+
+function Resizer(props: {
+  field: string;
+  active: boolean;
+  toggleAutoWidth: (autoWidth?: boolean, field?: string) => void;
+}) {
+  const { field, active, toggleAutoWidth } = props;
+
+  const onResize = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleAutoWidth(undefined, field)
+  }
+
+  return (
+    <button
+      type="button"
+      className={`resizer-button ${active ? 'resizer-active-button' : 'resizer-inactive-button'}`}
+      onClick={onResize}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+        className={`resizer-svg header-svg ${active ? 'resizer-active-svg' : 'resizer-inactive-svg'}`}
+      >
+        {
+          active
+            ? <path fill="currentColor" d="M368 192h-16v-80a96 96 0 10-192 0v80h-16a64.07 64.07 0 00-64 64v176a64.07 64.07 0 0064 64h224a64.07 64.07 0 0064-64V256a64.07 64.07 0 00-64-64zm-48 0H192v-80a64 64 0 11128 0z" />
+            : <path fill="currentColor" d="M368 192H192v-80a64 64 0 11128 0 16 16 0 0032 0 96 96 0 10-192 0v80h-16a64.07 64.07 0 00-64 64v176a64.07 64.07 0 0064 64h224a64.07 64.07 0 0064-64V256a64.07 64.07 0 00-64-64z" />
+        }
+      </svg>
+
+    </button>
   )
 }
 
@@ -154,9 +190,44 @@ function FilterMenu(props: { hasFilter: boolean; } & React.PropsWithChildren) {
   )
 }
 
-const Cell = <Data extends Record<string, any>,>(value: any, column: Datatable.Column<Data>) => {
+const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; autoWidth?: boolean }) => {
 
-  if (column.datatype === "paragraph") return <ParagraphCell text={value} />
+  const { column, row, autoWidth } = props;
+
+  const title = row[column.field] !== undefined ? String(row[column.field]) : undefined;
+
+  const style = !autoWidth ? undefined : {
+    minWidth: column.width,
+    maxWidth: column.width,
+    width: column.width,
+  }
+
+  if (column.renderCell) {
+    return (
+      <div
+        className={`table-cell ${column.omit ? 'hide' : ''}`}
+        title={title}
+        style={style}
+      >
+        {column.renderCell(row[column.field], column, row)}
+      </div>
+    )
+  }
+
+  if (column.datatype === "paragraph") return <ParagraphCell column={column} title={title} text={row[column.field]} style={style} />
+
+  return (
+    <div
+      className={`table-cell ${column.omit ? 'hide' : ''}`}
+      title={title}
+      style={style}
+    >
+      {DatatypeCell(row[column.field], column)}
+    </div>
+  )
+}
+
+const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Datatable.Column<Data>) => {
 
   if (column.datatype === "name") return <span className="cell-datatype-name" >{value}</span>
 
@@ -215,20 +286,24 @@ const Cell = <Data extends Record<string, any>,>(value: any, column: Datatable.C
     </a>
   }
 
-  return value
+  return value;
 }
 
-const ParagraphCell = (props: { text: string; }) => {
+const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; text: string; title?: string; style: any; }) => {
 
-  const { text } = props;
+  const { text, title, column, style } = props;
 
   const [open, setOpen] = useState(false);
 
   return (
-    <span
-      className={`cell-datatype-paragraph ${open ? 'cell-datatype-paragraph-open' : 'cell-datatype-paragraph-closed'}`}
+    <div
+      className={`table-cell cell-datatype-paragraph ${column.omit ? 'hide' : ''} ${open ? 'cell-datatype-paragraph-open' : 'cell-datatype-paragraph-closed'}`}
+      title={title}
       onClick={(e) => { e.stopPropagation(); setOpen(o => !o) }}
-    >{text}</span>
+      style={style}
+    >
+      {text}
+    </div>
   )
 }
 
@@ -238,27 +313,24 @@ const TableHeader = <Data,>(props: Datatable.TableHeaderProps<Data>) => {
     column,
     children,
     className = "",
-    onClick
+    onClick,
   } = props;
 
   const ref = useRef(null);
-  const [maxWidth, setMaxWidth] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!ref.current) return;
-    const computedStyle = getComputedStyle(ref.current);
-    const fontSize = Number(computedStyle.fontSize.replace("px", ""));
-    const characters = column.columnName.length
-    setMaxWidth(Math.floor(fontSize / 1.5) * characters)
-  }, [column.columnName]);
+  const autoWidth = !props.autoWidth ? false : props.autoWidth[column.field];
 
   return (
     <div
       ref={ref}
       key={column.columnName}
-      className={`table-cell table-header ${className}`}
+      className={`table-cell table-header-cell ${className}`}
       onClick={() => onClick && onClick(column)}
-      style={{ minWidth: maxWidth ? maxWidth : undefined }}
+      style={!autoWidth ? undefined : {
+        minWidth: column.width,
+        maxWidth: column.width,
+        width: column.width,
+      }}
       title={column.columnName}
     >
       <div className="table-header-children-container">

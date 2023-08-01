@@ -5,7 +5,6 @@
   flex-direction: column;
   height: 100%;
 
-
   .hide {
     display: none !important;
   }
@@ -27,6 +26,7 @@
   .table-container {
     width: 100%;
     height: fit-content;
+    border-collapse: collapse;
   }
 
   .table-cell {
@@ -34,9 +34,11 @@
     padding-inline: 10px;
     white-space: nowrap;
     vertical-align: middle;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
-  .table-header {
+  .table-header-cell {
     background-color: rgb(240, 240, 240);
     font-weight: bold;
     text-transform: capitalize;
@@ -46,9 +48,10 @@
     top: 0;
     padding-inline: 0px;
     padding-block: 0px;
+    overflow: visible;
   }
 
-  .table-header:not(:first-child)::before {
+  .table-header-cell:not(:first-child)::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -66,12 +69,13 @@
   }
 
   .table-header-column-name {
-    display: flex;
     margin-inline: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .table-row {
-    border: 1px solid rgb(240, 240, 240);
+    border-bottom: 1px solid rgb(240, 240, 240);
     transition: background-color 200ms linear;
 
     &:nth-child(even) {
@@ -85,8 +89,9 @@
 
   .column-header-options {
     display: flex;
+    gap: 8px;
+    margin-inline: 8px;
   }
-
 
   .sortable-table-header {
     cursor: pointer;
@@ -112,6 +117,11 @@
     fill: rgb(150, 150, 150);
   }
 
+  .select-header-cell {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+  }
 
   .boolean-svg {
     height: 24px;
@@ -135,7 +145,8 @@
   }
 
   .cell-datatype-paragraph {
-    display: block;
+    width: 400px;
+    min-width: 400px;
     max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -314,7 +325,6 @@
 
   .filter-options-button {
     display: flex;
-    margin-inline: 8px;
   }
 
   .operation-filter-container {
@@ -381,5 +391,26 @@
 
   .table-row-clickable {
     cursor: pointer;
+  }
+
+  .email {
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+
+  .resizer-button {
+    all: unset;
+  }
+
+  .resizer-active-svg {
+    color: rgb(50, 50, 50);
+  }
+
+  .resizer-inactive-svg {
+    color: rgb(100, 100, 100);
   }
 }

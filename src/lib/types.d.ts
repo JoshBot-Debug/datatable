@@ -18,6 +18,7 @@ export declare namespace Datatable {
     renderCell?: (value: any, column: Column<Data>, row: Data) => React.ReactNode;
     setOptions?: string[];
     multiFilter?: boolean;
+    width?: number;
   } & ({
     datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
     filterOperations?: UseOperationFilter.TextFilterOperations[];
@@ -77,6 +78,8 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+    autoWidth: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
+    toggleAutoWidth: (autoWidth?: boolean, field?: string) => void
   }
 
   interface Filter<Data extends Record<string, any>> {
@@ -91,6 +94,7 @@ export declare namespace Datatable {
     column: Column<Data>;
     onClick?: (column: Column<Data>) => void;
     className?: string;
+    autoWidth?: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
   }
 
   type DatatableFilterProps<Operation> = { multiFilter?: boolean; setOptions?: string[]; datatype: string; field: string; filterOperations?: Operation[] };
@@ -114,6 +118,8 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+    autoWidth?: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
+    toggleAutoWidth: (autoWidth?: boolean, field?: string) => void;
   }
 
 
