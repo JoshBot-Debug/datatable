@@ -30,7 +30,7 @@ export default function useOperationFilter<Data extends Record<string, any>, Ope
 }
 
 function allowEmptyValue(value: string) {
-  return ["Is blank", "Is true", "Is false"].includes(value)
+  return ["Is blank", "Not blank", "Is true", "Is false"].includes(value)
 }
 
 function shouldRemoveKey(value: any, operation: any) {

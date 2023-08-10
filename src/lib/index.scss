@@ -1,30 +1,53 @@
 .myers-datatable {
 
   .table-container {
-    display: table;
+    display: flex;
+    flex-direction: column;
   }
 
   .table-row {
-    display: table-row;
-    position: relative;
+    border-collapse: collapse;
+    display: flex;
   }
 
   .table-cell {
-    display: table-cell;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .table-header-row {
     z-index: 1;
   }
 
+  .spinner-background {
+    position: absolute;
+    background-color: white;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .spinner-row {
+    display: flex;
+    align-items: center;
+  }
+
   .spinner {
     border: 4px solid #f3f3f3; /* Light grey */
     border-top: 4px solid #7e7e7e; /* Blue */
     border-radius: 50%;
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     animation: spin 1s linear infinite;
     margin-left: 5px;
+  }
+
+  .spinner-row {
+    z-index: 1;
+    position: absolute;
+    width: 100%;
   }
 
   .spinner-loading-text {
@@ -34,16 +57,5 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
-
-  .spinner-container {
-    position: absolute;
-    background-color: white;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
   }
 }

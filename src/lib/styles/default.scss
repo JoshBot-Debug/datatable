@@ -16,26 +16,27 @@
   }
 
   .table-scroll-container {
-    display: flex;
     flex: 1;
     overflow: auto;
-    flex-direction: column;
     position: relative;
-  }
-
-  .table-container {
-    width: 100%;
-    height: fit-content;
-    border-collapse: collapse;
   }
 
   .table-cell {
     padding-block: 8px;
     padding-inline: 10px;
+    box-sizing: border-box;
     white-space: nowrap;
     vertical-align: middle;
-    text-overflow: ellipsis;
+  }
+
+  .text-wrapper {
     overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .table-header-row {
+    position: sticky;
+    top: 0px;
   }
 
   .table-header-cell {
@@ -44,22 +45,9 @@
     text-transform: capitalize;
     font-size: small;
     user-select: none;
-    position: sticky;
-    top: 0;
     padding-inline: 0px;
     padding-block: 0px;
     overflow: visible;
-  }
-
-  .table-header-cell:not(:first-child)::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 1px;
-    height: 50%;
-    background-color: rgb(190, 190, 190);
-    transform: translateY(-50%);
   }
 
   .table-header-children-container {
@@ -121,6 +109,7 @@
     width: 40px;
     min-width: 40px;
     max-width: 40px;
+    align-items: center;
   }
 
   .boolean-svg {
@@ -141,7 +130,7 @@
   }
 
   .cell-datatype-image {
-    max-height: 24px;
+    max-height: 20px;
   }
 
   .cell-datatype-paragraph {
@@ -213,8 +202,7 @@
   }
 
   .apps-button-header-cell {
-    width: 16px;
-    height: 16px;
+    display: block;
   }
 
   .header-svg {
@@ -361,6 +349,7 @@
     text-align: center;
     transition: background-color 300ms ease-in-out;
     cursor: pointer;
+
     &:hover {
       background-color: rgb(240, 240, 240);
     }
@@ -391,26 +380,5 @@
 
   .table-row-clickable {
     cursor: pointer;
-  }
-
-  .email {
-    width: 50px;
-    min-width: 50px;
-    max-width: 50px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-
-  .resizer-button {
-    all: unset;
-  }
-
-  .resizer-active-svg {
-    color: rgb(50, 50, 50);
-  }
-
-  .resizer-inactive-svg {
-    color: rgb(100, 100, 100);
   }
 }

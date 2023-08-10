@@ -5,7 +5,7 @@ export declare namespace Datatable {
 
   type Include<T, U> = T extends U ? T : never
 
-  type Datatype = "string" | "boolean" | "date" | "datetime" | "image" | "link" | "email" | "phone" | "name" | "paragraph" | "number";
+  type Datatype = "string" | "boolean" | "date" | "datetime" | "image" | "link" | "email" | "phone" | "name" | "paragraph" | "number" | "time";
 
   type Filters = { [F in Datatype]?: React.ReactNode };
 
@@ -23,7 +23,7 @@ export declare namespace Datatable {
     datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
     filterOperations?: UseOperationFilter.TextFilterOperations[];
   } | {
-    datatype: Include<Datatype, "date" | "datetime" | "number">;
+    datatype: Include<Datatype, "date" | "datetime" | "number" | "time">;
     filterOperations?: UseOperationFilter.RangeFilterOperations[];
   } | {
     datatype: Include<Datatype, "boolean">;
@@ -78,8 +78,6 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
-    autoWidth: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
-    toggleAutoWidth: (autoWidth?: boolean, field?: string) => void
   }
 
   interface Filter<Data extends Record<string, any>> {
@@ -94,7 +92,7 @@ export declare namespace Datatable {
     column: Column<Data>;
     onClick?: (column: Column<Data>) => void;
     className?: string;
-    autoWidth?: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
+    width?: number;
   }
 
   type DatatableFilterProps<Operation> = { multiFilter?: boolean; setOptions?: string[]; datatype: string; field: string; filterOperations?: Operation[] };
@@ -118,8 +116,6 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
-    autoWidth?: Record<keyof Data, { hasAutoSize: boolean, value: boolean }>;
-    toggleAutoWidth: (autoWidth?: boolean, field?: string) => void;
   }
 
 
@@ -289,7 +285,7 @@ export declare namespace Datatable {
     type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
 
     interface OperationProps<Data extends Record<string, any>, Operation> {
-      inputType?: "text" | "date" | "datetime-local" | "number";
+      inputType?: "text" | "date" | "datetime-local" | "number" | "time";
       field: keyof Data;
       onChange: (result: UseOperationFilter.OperationFilter<Data, Operation>) => void;
       filterOperations?: Operation[];

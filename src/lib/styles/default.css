@@ -13,25 +13,24 @@
   vertical-align: middle;
 }
 .myers-datatable .table-scroll-container {
-  display: flex;
   flex: 1;
   overflow: auto;
-  flex-direction: column;
   position: relative;
-}
-.myers-datatable .table-container {
-  width: 100%;
-  height: -moz-fit-content;
-  height: fit-content;
-  border-collapse: collapse;
 }
 .myers-datatable .table-cell {
   padding-block: 8px;
   padding-inline: 10px;
+  box-sizing: border-box;
   white-space: nowrap;
   vertical-align: middle;
-  text-overflow: ellipsis;
+}
+.myers-datatable .text-wrapper {
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+.myers-datatable .table-header-row {
+  position: sticky;
+  top: 0px;
 }
 .myers-datatable .table-header-cell {
   background-color: rgb(240, 240, 240);
@@ -41,21 +40,9 @@
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
-  position: sticky;
-  top: 0;
   padding-inline: 0px;
   padding-block: 0px;
   overflow: visible;
-}
-.myers-datatable .table-header-cell:not(:first-child)::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 1px;
-  height: 50%;
-  background-color: rgb(190, 190, 190);
-  transform: translateY(-50%);
 }
 .myers-datatable .table-header-children-container {
   display: flex;
@@ -106,6 +93,7 @@
   width: 40px;
   min-width: 40px;
   max-width: 40px;
+  align-items: center;
 }
 .myers-datatable .boolean-svg {
   height: 24px;
@@ -121,7 +109,7 @@
   text-transform: capitalize;
 }
 .myers-datatable .cell-datatype-image {
-  max-height: 24px;
+  max-height: 20px;
 }
 .myers-datatable .cell-datatype-paragraph {
   width: 400px;
@@ -181,8 +169,7 @@
   margin: 14px;
 }
 .myers-datatable .apps-button-header-cell {
-  width: 16px;
-  height: 16px;
+  display: block;
 }
 .myers-datatable .header-svg {
   display: flex;
@@ -331,20 +318,4 @@
 }
 .myers-datatable .table-row-clickable {
   cursor: pointer;
-}
-.myers-datatable .email {
-  width: 50px;
-  min-width: 50px;
-  max-width: 50px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.myers-datatable .resizer-button {
-  all: unset;
-}
-.myers-datatable .resizer-active-svg {
-  color: rgb(50, 50, 50);
-}
-.myers-datatable .resizer-inactive-svg {
-  color: rgb(100, 100, 100);
 }/*# sourceMappingURL=default.css.map */

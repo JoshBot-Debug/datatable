@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import "./index.css"
 import { FloatingArrow, FloatingFocusManager, Placement, arrow, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { Datatable } from "./types";
+import { useResizer } from "./helpers";
 
 
 export function BaseDatatable<Data extends Record<string, any>>(props: Datatable.DatatableProps<Data>) {
@@ -21,155 +22,116 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     SelectCell,
     NoData,
     onRowClick,
-    showOptionsOnRowClick,
-    autoWidth,
-    toggleAutoWidth,
+    showOptionsOnRowClick
   } = props;
 
+  const selectWidth = 50;
+  const appPanelColWidth = 50;
+
+  const resizer = useResizer({
+    columns,
+    isFetching,
+    extraWidth: selectWidth + appPanelColWidth
+  });
 
   return (
     <div className="myers-datatable">
-      <div className="table-scroll-container">
-        <div className="table-container">
-
-          <div className="table-header-row table-row">
-            <div className="table-cell table-header-cell apps-button-header-cell" >
-              {
-                AppsPanel && (
-                  <Popper
-                    Icon={IoApps}
-                    mainAxisOffset={20}
-                    crossAxisOffset={10}
-                    placement="bottom-end"
-                    className="app-panel-button"
-                  >
-                    {AppsPanel}
-                  </Popper>
-                )
-              }
-            </div>
-
-            {(!hideSelect && !!SelectHeader) && (
-              <TableHeader
-                className="select-header-cell"
-                column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
-              >
-                <SelectHeader />
-              </TableHeader>
-            )}
-
-            {columns.map((column) => (
-              <TableHeader
-                key={String(column.field)}
-                column={column}
-                onClick={onColumnClick}
-                autoWidth={autoWidth}
-                className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
-              >
-
-                <div className="column-header-options">
-                  {(column.sortable && renderSort) && renderSort(column)}
-                  {(!!autoWidth && autoWidth[column.field].hasAutoSize) && <Resizer field={String(column.field)} active={autoWidth[column.field].value} toggleAutoWidth={toggleAutoWidth} />}
-                  {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
-                </div>
-              </TableHeader>
-            ))}
+      <div ref={resizer.containerRef} className="table-scroll-container">
+        <div className="table-header-row table-row">
+          <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
+            {
+              AppsPanel && (
+                <Popper
+                  Icon={IoApps}
+                  mainAxisOffset={20}
+                  crossAxisOffset={10}
+                  placement="bottom-end"
+                  className="app-panel-button"
+                >
+                  {AppsPanel}
+                </Popper>
+              )
+            }
           </div>
 
-          {data.map((row, rIndex) => (
-            <PopperRow
-              key={rIndex}
-              crossAxisOffset={0}
-              placement="right-start"
-              PopUp={!RowOptionMenu ? null : <RowOptionMenu row={row} rowIndex={rIndex} />}
-              useCursorOffset={!!showOptionsOnRowClick}
+          {(!hideSelect && !!SelectHeader) && (
+            <TableHeader
+              className="select-header-cell"
+              column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
+              width={selectWidth}
             >
-              {
-                (triggerProps) => (
-                  <div
-                    className={`table-row ${(!!onRowClick || showOptionsOnRowClick) ? 'table-row-clickable' : ''}`}
-                    onClick={(e) => {
-                      onRowClick && onRowClick(row, e);
-                      showOptionsOnRowClick && triggerProps.onClick(e);
-                    }}
-                  >
+              <SelectHeader />
+            </TableHeader>
+          )}
 
-                    <div className="table-cell">
-                      {
-                        RowOptionMenu && (
-                          <button
-                            {...triggerProps}
-                            onClick={(e) => { e.stopPropagation(); triggerProps.onClick(e) }}
-                          >
-                            <IoEllipsisVertical />
-                          </button>
-                        )
-                      }
-                      {
-                        isFetching && (
-                          <div className="spinner-container">
-                            <div className="spinner"></div>
-                            <span className="spinner-loading-text">Loading</span>
-                          </div>
-                        )
-                      }
-                    </div>
+          {columns.map((column) => (
+            <TableHeader
+              key={String(column.field)}
+              column={column}
+              onClick={onColumnClick}
+              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
+              width={resizer.getWidth(column)}
+            >
 
-                    {(!hideSelect && !!SelectCell) && (
-                      <div className="table-cell">
-                        <SelectCell
-                          index={rIndex}
-                          row={row}
-                        />
-                      </div>
-                    )}
-
-                    {columns.map((column, cIndex) => <Cell key={cIndex} column={column} row={row} autoWidth={!autoWidth ? false : autoWidth[column.field].value} />)}
-
-                  </div>
-                )
-              }
-            </PopperRow>
+              <div className="column-header-options">
+                {(column.sortable && renderSort) && renderSort(column)}
+                {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
+              </div>
+            </TableHeader>
           ))}
         </div>
+
+        {data.map((row, rIndex) => (
+          <PopperRow
+            key={rIndex}
+            crossAxisOffset={0}
+            placement="right-start"
+            PopUp={!RowOptionMenu ? null : <RowOptionMenu row={row} rowIndex={rIndex} />}
+            useCursorOffset={!!showOptionsOnRowClick}
+          >
+            {
+              (triggerProps) => (
+                <div
+                  className={`table-row ${(!!onRowClick || showOptionsOnRowClick) ? 'table-row-clickable' : ''}`}
+                  onClick={(e) => {
+                    onRowClick && onRowClick(row, e);
+                    showOptionsOnRowClick && triggerProps.onClick(e);
+                  }}
+                >
+
+                  <div className="table-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
+                    {
+                      RowOptionMenu && (
+                        <button
+                          {...triggerProps}
+                          onClick={(e) => { e.stopPropagation(); triggerProps.onClick(e) }}
+                        >
+                          <IoEllipsisVertical />
+                        </button>
+                      )
+                    }
+                  </div>
+
+                  {(!hideSelect && !!SelectCell) && (
+                    <div className="table-cell" style={{ width: selectWidth, minWidth: selectWidth, maxWidth: selectWidth }}>
+                      <SelectCell
+                        index={rIndex}
+                        row={row}
+                      />
+                    </div>
+                  )}
+
+                  {columns.map((column, cIndex) => <Cell key={cIndex} column={column} row={row} width={resizer.getWidth(column)} />)}
+
+                </div>
+              )
+            }
+          </PopperRow>
+        ))}
         {(data.length === 0 && !isFetching) && (NoData ? NoData : <DefaultNoData />)}
       </div>
       {Footer}
     </div >
-  )
-}
-
-function Resizer(props: {
-  field: string;
-  active: boolean;
-  toggleAutoWidth: (autoWidth?: boolean, field?: string) => void;
-}) {
-  const { field, active, toggleAutoWidth } = props;
-
-  const onResize = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    toggleAutoWidth(undefined, field)
-  }
-
-  return (
-    <button
-      type="button"
-      className={`resizer-button ${active ? 'resizer-active-button' : 'resizer-inactive-button'}`}
-      onClick={onResize}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 512 512"
-        className={`resizer-svg header-svg ${active ? 'resizer-active-svg' : 'resizer-inactive-svg'}`}
-      >
-        {
-          active
-            ? <path fill="currentColor" d="M368 192h-16v-80a96 96 0 10-192 0v80h-16a64.07 64.07 0 00-64 64v176a64.07 64.07 0 0064 64h224a64.07 64.07 0 0064-64V256a64.07 64.07 0 00-64-64zm-48 0H192v-80a64 64 0 11128 0z" />
-            : <path fill="currentColor" d="M368 192H192v-80a64 64 0 11128 0 16 16 0 0032 0 96 96 0 10-192 0v80h-16a64.07 64.07 0 00-64 64v176a64.07 64.07 0 0064 64h224a64.07 64.07 0 0064-64V256a64.07 64.07 0 00-64-64z" />
-        }
-      </svg>
-
-    </button>
   )
 }
 
@@ -190,16 +152,16 @@ function FilterMenu(props: { hasFilter: boolean; } & React.PropsWithChildren) {
   )
 }
 
-const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; autoWidth?: boolean }) => {
+const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; width?: number; }) => {
 
-  const { column, row, autoWidth } = props;
+  const { column, row, width } = props;
 
   const title = row[column.field] !== undefined ? String(row[column.field]) : undefined;
 
-  const style = !autoWidth ? undefined : {
-    minWidth: column.width,
-    maxWidth: column.width,
-    width: column.width,
+  const style = {
+    width: width,
+    minWidth: width,
+    maxWidth: width,
   }
 
   if (column.renderCell) {
@@ -229,32 +191,43 @@ const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Colu
 
 const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Datatable.Column<Data>) => {
 
-  if (column.datatype === "name") return <span className="cell-datatype-name" >{value}</span>
+  if (column.datatype === "name") return <span className="cell-datatype-name text-wrapper">{value}</span>
 
-  if (column.datatype === "link") return <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
+  if (column.datatype === "link") return <a className="text-wrapper" href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
 
-  if (column.datatype === "email") return <a href={`mailto:${value}`}>{value}</a>
+  if (column.datatype === "email") return <a className="text-wrapper" href={`mailto:${value}`}>{value}</a>
+
 
   if (column.datatype === "date") {
-    return !value ? "" : new Date(value).toLocaleString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+
+    return (
+      <span
+        className="text-wrapper"
+      >{!value ? "" : new Date(value).toLocaleString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })}
+      </span>
+    )
   }
 
   if (column.datatype === "datetime") {
-    return !value ? "" : new Date(value).toLocaleString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return (
+      <span
+        className="text-wrapper"
+      >{!value ? "" : new Date(value).toLocaleString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })}
+      </span>
+    )
   }
 
   if (column.datatype === "boolean") {
-
     return (
       <>
         {
@@ -275,8 +248,9 @@ const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Dat
       phone.number = parts[1];
     }
     const formattedNumber = phone.number.slice(0, 3) + "-" + phone.number.slice(3, 6) + "-" + phone.number.slice(6);
-    if (phone.code) return `${phone.code} ${formattedNumber}`
-    return formattedNumber
+
+    if (phone.code) return <span className="text-wrapper">{`${phone.code} ${formattedNumber}`}</span>
+    return <span className="text-wrapper">{formattedNumber}</span>
   }
 
   if (column.datatype === "image") {
@@ -286,10 +260,10 @@ const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Dat
     </a>
   }
 
-  return value;
+  return <span className="text-wrapper">{value}</span>;
 }
 
-const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; text: string; title?: string; style: any; }) => {
+const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; text: string; title?: string; style: any }) => {
 
   const { text, title, column, style } = props;
 
@@ -302,7 +276,7 @@ const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datat
       onClick={(e) => { e.stopPropagation(); setOpen(o => !o) }}
       style={style}
     >
-      {text}
+      <span className="text-wrapper">{text}</span>
     </div>
   )
 }
@@ -314,24 +288,20 @@ const TableHeader = <Data,>(props: Datatable.TableHeaderProps<Data>) => {
     children,
     className = "",
     onClick,
+    width
   } = props;
-
-  const ref = useRef(null);
-
-  const autoWidth = !props.autoWidth ? false : props.autoWidth[column.field];
 
   return (
     <div
-      ref={ref}
       key={column.columnName}
       className={`table-cell table-header-cell ${className}`}
       onClick={() => onClick && onClick(column)}
-      style={!autoWidth ? undefined : {
-        minWidth: column.width,
-        maxWidth: column.width,
-        width: column.width,
-      }}
       title={column.columnName}
+      style={{
+        width: width,
+        minWidth: width,
+        maxWidth: width,
+      }}
     >
       <div className="table-header-children-container">
         {!!column.columnName && <span className="table-header-column-name">{column.columnName}</span>}

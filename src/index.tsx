@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from 'react-dom/client';
 import { data } from "./data";
 
@@ -16,21 +16,21 @@ function App() {
     data: data,
     count: data.length,
     serverSide: false,
+    onFilter: console.log,
     columns: [
-      { field: "emp_id", datatype: "number", sortable: false },
-      { field: "name", width: 200, datatype: "string", multiFilter: true },
-      { field: "email", width: 200, datatype: "email", },
+      { field: "emp_id", width: 100, datatype: "number", sortable: false },
+      { field: "name", width: 100, datatype: "string", multiFilter: true },
+      { field: "email", datatype: "email", },
       { field: "dob", datatype: "date" },
       { field: "image", datatype: "image" },
-      { field: "phone", width: 200, columnName: "Phone And a really long header", datatype: "phone" },
+      { field: "phone", columnName: "Phone And a really long header", datatype: "phone" },
       { field: "is_active", datatype: "boolean" },
-      { field: "bio", datatype: "paragraph" },
+      { field: "bio", width: 500, datatype: "paragraph" },
     ],
   })
 
   const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
     <>
-      <button onClick={() => controller.toggleAutoWidth()} style={{ padding: 8 }}>Auto Width</button>
       <button onClick={() => controller.selectable.selectAll(true)} style={{ padding: 8 }}>Check All</button>
       <button onClick={() => controller.selectable.selectAll(false)} style={{ padding: 8 }}>Uncheck All</button>
       <button onClick={() => controller.updateFilter(prev => ({ ...prev, ["custom"]: "Hello!" }))} style={{ padding: 8 }}>Custom filter option</button>
@@ -46,7 +46,6 @@ function App() {
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 3</div>
     <div onClick={() => setIsFetching(p => !p)} style={{ padding: 8 }}>Row Option 4</div>
   </>);
-
 
   return (
     <Datatable

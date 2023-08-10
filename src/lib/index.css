@@ -1,24 +1,44 @@
 .myers-datatable .table-container {
-  display: table;
+  display: flex;
+  flex-direction: column;
 }
 .myers-datatable .table-row {
-  display: table-row;
-  position: relative;
+  border-collapse: collapse;
+  display: flex;
 }
 .myers-datatable .table-cell {
-  display: table-cell;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .myers-datatable .table-header-row {
   z-index: 1;
+}
+.myers-datatable .spinner-background {
+  position: absolute;
+  background-color: white;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+.myers-datatable .spinner-row {
+  display: flex;
+  align-items: center;
 }
 .myers-datatable .spinner {
   border: 4px solid #f3f3f3; /* Light grey */
   border-top: 4px solid #7e7e7e; /* Blue */
   border-radius: 50%;
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   animation: spin 1s linear infinite;
   margin-left: 5px;
+}
+.myers-datatable .spinner-row {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
 }
 .myers-datatable .spinner-loading-text {
   margin-left: 10px;
@@ -30,14 +50,4 @@
   100% {
     transform: rotate(360deg);
   }
-}
-.myers-datatable .spinner-container {
-  position: absolute;
-  background-color: white;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
 }/*# sourceMappingURL=index.css.map */
