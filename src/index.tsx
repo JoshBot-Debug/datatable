@@ -16,10 +16,9 @@ function App() {
     data: data,
     count: data.length,
     serverSide: false,
-    onFilter: console.log,
     columns: [
-      { field: "emp_id", width: 100, datatype: "number", sortable: false },
-      { field: "name", width: 100, datatype: "string", multiFilter: true },
+      { field: "emp_id", datatype: "number", sortable: false },
+      { field: "name", datatype: "string", multiFilter: true },
       { field: "email", datatype: "email", },
       { field: "dob", datatype: "date" },
       { field: "image", datatype: "image" },
