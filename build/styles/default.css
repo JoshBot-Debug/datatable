@@ -14,7 +14,8 @@
 }
 .myers-datatable .table-scroll-container {
   flex: 1;
-  overflow: auto;
+  overflow-y: scroll;
+  overflow-x: auto;
   position: relative;
 }
 .myers-datatable .table-cell {
@@ -43,6 +44,7 @@
   padding-inline: 0px;
   padding-block: 0px;
   overflow: visible;
+  position: relative;
 }
 .myers-datatable .table-header-children-container {
   display: flex;

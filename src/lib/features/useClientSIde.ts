@@ -132,15 +132,15 @@ function applyOperation(itemValue: any, operation: string, filterValue?: string)
   }
 
   if (operation === "Contains") {
-    return iValue.includes(fValue);
+    return String(iValue).includes(String(fValue));
   }
 
   if (operation === "Starts with") {
-    return iValue.startsWith(fValue);
+    return String(iValue).startsWith(String(fValue));
   }
 
   if (operation === "Ends with") {
-    return iValue.endsWith(fValue);
+    return String(iValue).endsWith(String(fValue));
   }
 
   if (operation === "Is true") {
@@ -166,6 +166,14 @@ function convertToType(value1: any, value2: any) {
       value2 = Boolean(value2);
     }
   } else if (typeOfValue1 === "string") {
+    const value1Num = Number(value1);
+    const value2Num = Number(value2);
+
+    if(!isNaN(value1Num) && !isNaN(value2Num)) {
+      value1 = value1Num;
+      value2 = value2Num;
+    }
+
     const value1Date = Date.parse(value1);
     const value2Date = Date.parse(value2);
     if (!isNaN(value1Date) && !isNaN(value2Date)) {

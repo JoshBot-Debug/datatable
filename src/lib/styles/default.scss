@@ -17,7 +17,8 @@
 
   .table-scroll-container {
     flex: 1;
-    overflow: auto;
+    overflow-y: scroll;
+    overflow-x: auto;
     position: relative;
   }
 
@@ -48,6 +49,7 @@
     padding-inline: 0px;
     padding-block: 0px;
     overflow: visible;
+    position: relative;
   }
 
   .table-header-children-container {

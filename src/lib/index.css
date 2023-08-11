@@ -3,8 +3,9 @@
   flex-direction: column;
 }
 .myers-datatable .table-row {
-  border-collapse: collapse;
   display: flex;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 .myers-datatable .table-cell {
   display: flex;

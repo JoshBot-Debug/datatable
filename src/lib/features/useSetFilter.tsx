@@ -3,9 +3,12 @@ import { Datatable } from "../types";
 
 export default function useSetFilter<Data extends Record<string, any>>(config: Datatable.UseSetFilter.Config<Data>): Datatable.UseSetFilter.HookReturn<Data> {
 
-  const { onChange, initialSetFilter } = config;
+  const {
+    onChange,
+    initialSetFilter = {}
+  } = config;
 
-  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter ?? {});
+  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter);
 
   const onSetFilter = (filter: Datatable.UseSetFilter.SetFilter<Data>) => {
     const next = { ...setFilter };
@@ -14,10 +17,13 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
     onChange(next);
   }
 
+  const reset = () => updateFilter(initialSetFilter);
+
   return {
     SetFilter,
     setFilter,
     onSetFilter,
+    reset,
   }
 }
 

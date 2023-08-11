@@ -37,6 +37,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
   return (
     <div className="myers-datatable">
       <div ref={resizer.containerRef} className="table-scroll-container">
+        
         <div className="table-header-row table-row">
           <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
             {
@@ -128,6 +129,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
             }
           </PopperRow>
         ))}
+
         {(data.length === 0 && !isFetching) && (NoData ? NoData : <DefaultNoData />)}
       </div>
       {Footer}

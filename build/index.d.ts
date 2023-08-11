@@ -2,7 +2,7 @@ import * as react_jsx_runtime from 'react/jsx-runtime';
 import styleInject from '/home/josh/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
 import * as react from 'react';
 
-var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  border-collapse: collapse;\n  display: flex;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner-background {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n}\n.myers-datatable .spinner-row {\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 20px;\n  height: 20px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n}\n.myers-datatable .spinner-row {\n  z-index: 1;\n  position: absolute;\n  width: 100%;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}";
+var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner-background {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n}\n.myers-datatable .spinner-row {\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 20px;\n  height: 20px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n}\n.myers-datatable .spinner-row {\n  z-index: 1;\n  position: absolute;\n  width: 100%;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}";
 styleInject(css_248z);
 
 declare namespace Datatable {
@@ -74,10 +74,10 @@ declare namespace Datatable {
     isFetching?: boolean;
     columns: Datatable.ColumnConfig<Data>;
     setFilter: Datatable.UseSetFilter.HookReturn<Data>;
-    operationFilter: Datatable.UseOperationFilter.HookReturn<string>;
+    operationFilter: Datatable.UseOperationFilter.HookReturn<Data, any>;
     sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
-    selectable: Datatable.UseSelectable.HookReturn<Data>;
+    selectable: Datatable.UseSelectable.HookReturn;
     RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Data) => boolean;
@@ -136,7 +136,8 @@ declare namespace Datatable {
     interface HookReturn<Data extends Record<string, any>> {
       sortOrder: SortOrder<Data>;
       Sort: (props: SortProps<Data>) => JSX.Element | null;
-      onSort: (column: DatatableColumn<Data>) => void
+      onSort: (column: DatatableColumn<Data>) => void;
+      reset: () => void;
     }
 
     interface SortProps<Data> {
@@ -178,6 +179,7 @@ declare namespace Datatable {
       lastPage: () => void;
       firstPage: () => void;
       onChangeRowsPerPage: (rowsPerPage: number) => void;
+      reset: () => void;
     }
 
 
@@ -218,6 +220,7 @@ declare namespace Datatable {
       onSelectRow: (checked: boolean, rowIndex: number) => void;
       isAllSelected: boolean;
       onDisableRow: (disabled: boolean, rowIndex: number) => void;
+      reset: () => void;
     }
 
     interface HeaderProps {
@@ -248,6 +251,7 @@ declare namespace Datatable {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<Data>;
       onSetFilter: (filter: SetFilter<Data>) => void;
+      reset: () => void;
     }
 
 
@@ -275,20 +279,21 @@ declare namespace Datatable {
     }
 
     type OperationFilter<Data extends Record<string, any>, Operation> = {
-      [key: keyof Data]: OperationValue<Operation>
+      [K in keyof Data]?: OperationValue<Operation>
     };
 
     interface HookReturn<Data extends Record<string, any>, Operation> {
       OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
       operationFilter: OperationFilter<Data, Operation>;
       onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
+      reset: () => void;
     }
 
-    type BooleanFilterOperations = "Is true" | "Is false" | "Is blank";
+    type BooleanFilterOperations = "Is true" | "Is false" | "Is blank" | "Not blank";
 
-    type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank";
+    type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank" | "Not blank";
 
-    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
+    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank" | "Not blank";
 
     interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number" | "time";
@@ -314,6 +319,7 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     operationFilter: Datatable.UseOperationFilter.HookReturn<Data, string>;
     updateFilter: react.Dispatch<react.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
+    reset: () => void;
 };
 declare function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDatatableProps<Data>): react_jsx_runtime.JSX.Element;
 

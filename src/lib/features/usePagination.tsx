@@ -5,12 +5,12 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
 
   const {
     onChange,
-    initialPage,
+    initialPage = {} as Datatable.UsePagination.Page,
     numberOfRows,
     count
   } = config;
 
-  const [page, setPage] = useState<Datatable.UsePagination.Page>(initialPage ?? {} as Datatable.UsePagination.Page);
+  const [page, setPage] = useState(initialPage);
 
   const lastPageNumber = Math.ceil(count / page.currentRowsPerPage);
 
@@ -30,7 +30,9 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
     })
   }
 
-  useEffect(() => { onChange(page); }, [])
+  useEffect(() => { onChange(page); }, []);
+
+  const reset = () => setPage(initialPage);
 
   return {
     page,
@@ -43,6 +45,7 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
     previousPage,
     goToPage,
     onChangeRowsPerPage,
+    reset,
   }
 }
 

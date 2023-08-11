@@ -3,11 +3,13 @@ import { Datatable } from "../types";
 
 export default function useOperationFilter<Data extends Record<string, any>, Operation extends string>(config: Datatable.UseOperationFilter.Config): Datatable.UseOperationFilter.HookReturn<Data, Operation> {
 
-  const { onChange, initialOperationFilter } = config;
+  const {
+    onChange,
+    initialOperationFilter = {}
+  } = config;
 
-  const [operationFilter, setFilter] = useState<Datatable.UseOperationFilter.OperationFilter<Data, Operation>>(initialOperationFilter ?? {});
+  const [operationFilter, setFilter] = useState<Datatable.UseOperationFilter.OperationFilter<Data, Operation>>(initialOperationFilter);
 
-  // TODO fix ts here
   const onSetOperationFilter = (filter: Datatable.UseOperationFilter.OperationFilter<Data, Operation>) => {
     const next: any = { ...operationFilter };
     for (const key in filter) {
@@ -22,10 +24,13 @@ export default function useOperationFilter<Data extends Record<string, any>, Ope
     onChange(next);
   }
 
+  const reset = () => setFilter(initialOperationFilter);
+  
   return {
     OperationFilter,
     operationFilter,
     onSetOperationFilter,
+    reset,
   }
 }
 
@@ -67,12 +72,12 @@ function OperationFilter<Data extends Record<string, any>, Operation extends str
     }
     if(!isSingle) next[andOr] = { operation: secondOperation, value: secondValue }
     setValue(next);
-    onChange({ [field]: next })
+    onChange({ [field]: next } as any)
   }
 
   const onClear = () => {
     setValue(undefined);
-    onChange({ [field]: {} as any })
+    onChange({ [field]: {} } as any)
   }
 
   const isOr = !!value?.or;

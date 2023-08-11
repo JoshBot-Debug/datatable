@@ -26,12 +26,14 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
 
   const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
 
-  const [filter, updateFilter] = useState<Datatable.Filter<Data>>({
+  const initialFilters = {
     sortOrder: initialSortOrder ?? {},
     page: initialPage ?? {},
     operationFilter: initialOperationFilter ?? {},
     setFilter: initialSetFilter ?? {}
-  });
+  }
+
+  const [filter, updateFilter] = useState<Datatable.Filter<Data>>(initialFilters);
 
   const { data, count, numberOfRows } = useClientSide<Data>(filter, config.data, config.count, config.serverSide);
 
@@ -43,6 +45,15 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
+  const reset = () => {
+    sortable.reset();
+    pagination.reset();
+    selectable.reset();
+    setFilter.reset();
+    operationFilter.reset();
+    updateFilter(initialFilters);
+  }
+
   return {
     data,
     columns,
@@ -53,6 +64,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     operationFilter,
     updateFilter,
     Datatable: RichDatatable,
+    reset,
   }
 }
 

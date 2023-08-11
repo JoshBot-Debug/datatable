@@ -58,12 +58,18 @@ export default function useSortable<Data extends Record<string, any>>(
     }
   }, [])
 
-  useEffect(() => { onChange(sortOrder); }, [])
+  useEffect(() => { onChange(sortOrder); }, []);
+
+  const reset = () => {
+    setIsMultiSort(false);
+    setSortOrder(initialSortOrder);
+  }
 
   return {
     sortOrder,
     Sort,
-    onSort: isMultiSort ? onMultiSort : onSingleSort
+    onSort: isMultiSort ? onMultiSort : onSingleSort,
+    reset
   }
 }
 

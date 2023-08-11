@@ -34,7 +34,16 @@ export function useResizer<Data extends Record<string, any>>(config: ResizerProp
 
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
-  const totalFixedWidth = columns.reduce((r, c) => (c.width ? ({ width: r.width + c.width, columns: r.columns + 1 }) : r), { width: 0, columns: 0 });
+  const totalFixedWidth = columns.reduce((r, c) => ((c.width && !c.omit) ? ({ width: r.width + c.width, columns: r.columns + 1 }) : r), { width: 0, columns: 0 });
+
+  const visibleColumns = columns.reduce((r, c) => c.omit ? r : r + 1, 0);
+
+  const lastFixedWidthColumn = columns.reduceRight((result, current) => {
+    if (result === null) return null;
+    if (current.omit) return result;
+    if (!current.width) return null;
+    return result || current.field;
+  }, false as false | null | (string | number | symbol));
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -44,12 +53,23 @@ export function useResizer<Data extends Record<string, any>>(config: ResizerProp
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(element);
     return () => { resizeObserver.disconnect(); };
-  }, [containerRef.current, isFetching])
+  }, [containerRef.current, isFetching, columns])
 
   const getWidth = <Data extends Record<string, any>,>(column: Datatable.Column<Data>) => {
+    // The minimum width of a column when auto width is calculated.
+    // This ensure we don't have columns with an auto width less than 150px
+    const minAutoWidth = 150;
+
+    // If this is the last column with a fixed width
+    // and all other columns also have fixed widths,
+    // make this last column stretch to the end, ignore it's fixed width.
+    if (lastFixedWidthColumn === column.field && column.width) return Math.max(((containerWidth - (extraWidth + totalFixedWidth.width - column.width)) / Math.max((visibleColumns - totalFixedWidth.columns - 1), 1)), minAutoWidth);
+    
+    // If this col has a width, use it.
     if (column.width) return column.width;
-    const calcWidth = ((containerWidth - (extraWidth + totalFixedWidth.width)) / (columns.length - totalFixedWidth.columns));
-    return Math.max(calcWidth, 150)
+
+    // Auto calculate the remaining space and set the width.
+    return Math.max(((containerWidth - (extraWidth + totalFixedWidth.width)) / Math.max((visibleColumns - totalFixedWidth.columns), 1)), minAutoWidth);
   }
 
   return { containerRef, getWidth }

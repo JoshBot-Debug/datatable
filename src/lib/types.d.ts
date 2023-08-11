@@ -68,10 +68,10 @@ export declare namespace Datatable {
     isFetching?: boolean;
     columns: Datatable.ColumnConfig<Data>;
     setFilter: Datatable.UseSetFilter.HookReturn<Data>;
-    operationFilter: Datatable.UseOperationFilter.HookReturn<string>;
+    operationFilter: Datatable.UseOperationFilter.HookReturn<Data, any>;
     sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
-    selectable: Datatable.UseSelectable.HookReturn<Data>;
+    selectable: Datatable.UseSelectable.HookReturn;
     RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Data) => boolean;
@@ -130,7 +130,8 @@ export declare namespace Datatable {
     interface HookReturn<Data extends Record<string, any>> {
       sortOrder: SortOrder<Data>;
       Sort: (props: SortProps<Data>) => JSX.Element | null;
-      onSort: (column: DatatableColumn<Data>) => void
+      onSort: (column: DatatableColumn<Data>) => void;
+      reset: () => void;
     }
 
     interface SortProps<Data> {
@@ -172,6 +173,7 @@ export declare namespace Datatable {
       lastPage: () => void;
       firstPage: () => void;
       onChangeRowsPerPage: (rowsPerPage: number) => void;
+      reset: () => void;
     }
 
 
@@ -212,6 +214,7 @@ export declare namespace Datatable {
       onSelectRow: (checked: boolean, rowIndex: number) => void;
       isAllSelected: boolean;
       onDisableRow: (disabled: boolean, rowIndex: number) => void;
+      reset: () => void;
     }
 
     interface HeaderProps {
@@ -242,6 +245,7 @@ export declare namespace Datatable {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<Data>;
       onSetFilter: (filter: SetFilter<Data>) => void;
+      reset: () => void;
     }
 
 
@@ -269,20 +273,21 @@ export declare namespace Datatable {
     }
 
     type OperationFilter<Data extends Record<string, any>, Operation> = {
-      [key: keyof Data]: OperationValue<Operation>
+      [K in keyof Data]?: OperationValue<Operation>
     };
 
     interface HookReturn<Data extends Record<string, any>, Operation> {
       OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
       operationFilter: OperationFilter<Data, Operation>;
       onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
+      reset: () => void;
     }
 
-    type BooleanFilterOperations = "Is true" | "Is false" | "Is blank";
+    type BooleanFilterOperations = "Is true" | "Is false" | "Is blank" | "Not blank";
 
-    type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank";
+    type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank" | "Not blank";
 
-    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank";
+    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank" | "Not blank";
 
     interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number" | "time";
