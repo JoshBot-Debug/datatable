@@ -321,7 +321,7 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     operationFilter: Datatable.UseOperationFilter.HookReturn<Data, string>;
     updateFilter: react.Dispatch<react.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
-    reset: (empty?: boolean) => void;
+    reset: (useInitialFilters?: boolean) => void;
 };
 declare function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDatatableProps<Data>): react_jsx_runtime.JSX.Element;
 
