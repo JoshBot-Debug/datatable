@@ -6,6 +6,7 @@
   display: flex;
   width: -moz-fit-content;
   width: fit-content;
+  position: relative;
 }
 .myers-datatable .table-cell {
   display: flex;
@@ -15,34 +16,20 @@
 .myers-datatable .table-header-row {
   z-index: 1;
 }
-.myers-datatable .spinner-background {
-  position: absolute;
-  background-color: white;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-}
-.myers-datatable .spinner-row {
-  display: flex;
-  align-items: center;
-}
 .myers-datatable .spinner {
   border: 4px solid #f3f3f3; /* Light grey */
   border-top: 4px solid #7e7e7e; /* Blue */
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   animation: spin 1s linear infinite;
   margin-left: 5px;
-}
-.myers-datatable .spinner-row {
-  z-index: 1;
-  position: absolute;
-  width: 100%;
+  position: sticky;
+  left: 0px;
 }
 .myers-datatable .spinner-loading-text {
   margin-left: 10px;
+  color: rgb(37, 37, 37);
 }
 @keyframes spin {
   0% {
@@ -51,4 +38,20 @@
   100% {
     transform: rotate(360deg);
   }
+}
+.myers-datatable .spinner-container {
+  position: absolute;
+  background-color: white;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.myers-datatable .spinner-wrapper {
+  display: flex;
+  align-items: center;
+  position: sticky;
+  left: 0px;
 }/*# sourceMappingURL=index.css.map */

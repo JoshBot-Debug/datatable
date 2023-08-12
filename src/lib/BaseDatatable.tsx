@@ -25,7 +25,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     showOptionsOnRowClick
   } = props;
 
-  const selectWidth = 50;
+  const selectWidth = hideSelect ? 0 : 50;
   const appPanelColWidth = 50;
 
   const resizer = useResizer({
@@ -37,7 +37,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
   return (
     <div className="myers-datatable">
       <div ref={resizer.containerRef} className="table-scroll-container">
-        
+
         <div className="table-header-row table-row">
           <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
             {
@@ -100,6 +100,17 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
                   }}
                 >
 
+                  {
+                    isFetching && (
+                      <div className="spinner-container">
+                        <div className="spinner-wrapper">
+                          <div className="spinner"></div>
+                          <span className="spinner-loading-text">Loading</span>
+                        </div>
+                      </div>
+                    )
+                  }
+
                   <div className="table-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
                     {
                       RowOptionMenu && (
@@ -112,6 +123,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
                       )
                     }
                   </div>
+
 
                   {(!hideSelect && !!SelectCell) && (
                     <div className="table-cell" style={{ width: selectWidth, minWidth: selectWidth, maxWidth: selectWidth }}>
@@ -197,7 +209,7 @@ const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Dat
 
   if (column.datatype === "link") return <a className="text-wrapper" href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
 
-  if (column.datatype === "email") return <a className="text-wrapper" href={`mailto:${value}`}>{value}</a>
+  if (column.datatype === "email") return <a className="text-wrapper" href={`mailto:${value}`} target="_blank" rel="noreferrer">{value}</a>
 
 
   if (column.datatype === "date") {

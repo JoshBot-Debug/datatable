@@ -46,8 +46,8 @@ function App() {
   )
 
   const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<Data>) => (<>
-    <button className="elegance-button" onClick={() => { }} style={{ padding: 8 }}>Row Option 1</button>
-    <button className="elegance-button" onClick={() => { }} style={{ padding: 8 }}>Row Option 2</button>
+    <button className="elegance-button" onClick={() => setIsFetching(true)} style={{ padding: 8 }}>Fetching On</button>
+    <button className="elegance-button" onClick={() => setIsFetching(false)} style={{ padding: 8 }}>Fetching Off</button>
   </>);
 
   return (

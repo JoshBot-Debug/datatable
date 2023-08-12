@@ -2,7 +2,7 @@ import * as react_jsx_runtime from 'react/jsx-runtime';
 import styleInject from '/home/josh/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
 import * as react from 'react';
 
-var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner-background {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n}\n.myers-datatable .spinner-row {\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 20px;\n  height: 20px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n}\n.myers-datatable .spinner-row {\n  z-index: 1;\n  position: absolute;\n  width: 100%;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}";
+var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}";
 styleInject(css_248z);
 
 declare namespace Datatable {
@@ -273,6 +273,7 @@ declare namespace Datatable {
 
     type OperationValue<Operation> = {
       operation: Operation;
+      datatype: Datatype;
       value?: string;
       and?: OperationValue<Operation>
       or?: OperationValue<Operation>
@@ -298,6 +299,7 @@ declare namespace Datatable {
     interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number" | "time";
       field: keyof Data;
+      datatype: Datatype;
       onChange: (result: UseOperationFilter.OperationFilter<Data, Operation>) => void;
       filterOperations?: Operation[];
       currentValue?: UseOperationFilter.OperationValue<Operation>
@@ -319,7 +321,7 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     operationFilter: Datatable.UseOperationFilter.HookReturn<Data, string>;
     updateFilter: react.Dispatch<react.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
-    reset: () => void;
+    reset: (empty?: boolean) => void;
 };
 declare function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDatatableProps<Data>): react_jsx_runtime.JSX.Element;
 

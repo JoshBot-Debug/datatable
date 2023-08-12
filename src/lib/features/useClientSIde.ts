@@ -87,9 +87,9 @@ function applyOperationFilter<Data extends Record<string, any>>(data: Data[], op
 
 function checkCondition(row: any, filter: any) {
   for (const key in filter) {
-    const { operation, value, and, or } = filter[key];
+    const { operation, value, and, or, datatype } = filter[key] as Datatable.UseOperationFilter.OperationValue<any>;
     const rowValue = row[key];
-    if (!applyOperation(rowValue, operation, value)) {
+    if (!applyOperation(datatype, rowValue, operation, value)) {
       if (or && checkCondition(row, { [key]: or })) return true;
       return false;
     }
@@ -98,10 +98,14 @@ function checkCondition(row: any, filter: any) {
   return true;
 }
 
-function applyOperation(itemValue: any, operation: string, filterValue?: string) {
+function applyOperation(datatype: Datatable.Datatype, itemValue: any, operation: string, filterValue?: string) {
   if (filterValue === undefined) return false;
 
-  const [iValue, fValue] = convertToType(itemValue, filterValue);
+  const [iValue, fValue] = convertToType(itemValue, filterValue, datatype);
+
+  if (operation === "Not blank") {
+    return !(iValue === undefined || iValue === null || iValue === "");
+  }
 
   if (operation === "Is blank") {
     return iValue === undefined || iValue === null || iValue === "";
@@ -154,33 +158,37 @@ function applyOperation(itemValue: any, operation: string, filterValue?: string)
   return true;
 }
 
-function convertToType(value1: any, value2: any) {
-  const typeOfValue1 = typeof value1;
+function convertToType(itemValue: any, filterValue: any, datatype: Datatable.Datatype) {
+  const typeOfValue1 = typeof itemValue;
 
   if (typeOfValue1 === "number") {
-    value2 = Number(value2);
+    filterValue = Number(filterValue);
   } else if (typeOfValue1 === "boolean") {
-    if (value2 === "true" || value2 === "false") {
-      value2 = value2 === "true";
+    if (filterValue === "true" || filterValue === "false") {
+      filterValue = filterValue === "true";
     } else {
-      value2 = Boolean(value2);
+      filterValue = Boolean(filterValue);
     }
   } else if (typeOfValue1 === "string") {
-    const value1Num = Number(value1);
-    const value2Num = Number(value2);
+    const value1Num = Number(itemValue);
+    const value2Num = Number(filterValue);
 
-    if(!isNaN(value1Num) && !isNaN(value2Num)) {
-      value1 = value1Num;
-      value2 = value2Num;
+    if (!isNaN(value1Num) && !isNaN(value2Num)) {
+      itemValue = value1Num;
+      filterValue = value2Num;
     }
 
-    const value1Date = Date.parse(value1);
-    const value2Date = Date.parse(value2);
+    const value1Date = Date.parse(itemValue);
+    const value2Date = Date.parse(filterValue);
     if (!isNaN(value1Date) && !isNaN(value2Date)) {
-      value1 = new Date(value1Date);
-      value2 = new Date(value2Date);
+      itemValue = new Date(value1Date);
+      filterValue = new Date(value2Date);
     }
   }
 
-  return [value1, value2];
+  // Add :00 to time values because html input type "time" does not add seconds.
+  // this is done to make equals work
+  if (datatype === "time") filterValue = `${filterValue}:00`
+
+  return [itemValue, filterValue];
 }

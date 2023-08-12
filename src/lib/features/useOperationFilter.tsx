@@ -45,8 +45,9 @@ function shouldRemoveKey(value: any, operation: any) {
 function OperationFilter<Data extends Record<string, any>, Operation extends string>(props: Datatable.UseOperationFilter.OperationProps<Data, Operation>) {
 
   const {
-    inputType,
     field,
+    datatype,
+    inputType,
     currentValue,
     allowedOperations,
     onChange,
@@ -69,8 +70,9 @@ function OperationFilter<Data extends Record<string, any>, Operation extends str
     const next: Datatable.UseOperationFilter.OperationValue<Operation> = {
       operation: firstOperation,
       value: firstValue,
+      datatype,
     }
-    if(!isSingle) next[andOr] = { operation: secondOperation, value: secondValue }
+    if(!isSingle) next[andOr] = { operation: secondOperation, value: secondValue, datatype }
     setValue(next);
     onChange({ [field]: next } as any)
   }

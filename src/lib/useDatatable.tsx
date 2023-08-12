@@ -18,7 +18,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     initialSortOrder,
     initialPage = {
       currentPage: 1,
-      rowsPerPage: [50, 100, 200, 500],
+      rowsPerPage: [50, 100, 200],
       currentRowsPerPage: 50,
     },
     initialOperationFilter,
@@ -45,13 +45,22 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
-  const reset = () => {
+  const reset = (empty?: boolean) => {
     sortable.reset();
     pagination.reset();
     selectable.reset();
     setFilter.reset();
     operationFilter.reset();
-    updateFilter(initialFilters);
+    updateFilter(
+      !empty
+        ? initialFilters
+        : {
+          sortOrder: {},
+          page: {},
+          operationFilter: {},
+          setFilter: {}
+        } as any
+    );
   }
 
   return {
@@ -133,6 +142,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
           ((!hasSetOptions || hasFilterOptions) || column.multiFilter) && (
             <OperationFilter
               field={column.field}
+              datatype={column.datatype}
               inputType={columnOperations[column.datatype].inputType}
               filterOperations={column.filterOperations}
               allowedOperations={columnOperations[column.datatype].operation}

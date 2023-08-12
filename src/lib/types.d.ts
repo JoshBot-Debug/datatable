@@ -267,6 +267,7 @@ export declare namespace Datatable {
 
     type OperationValue<Operation> = {
       operation: Operation;
+      datatype: Datatype;
       value?: string;
       and?: OperationValue<Operation>
       or?: OperationValue<Operation>
@@ -292,6 +293,7 @@ export declare namespace Datatable {
     interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number" | "time";
       field: keyof Data;
+      datatype: Datatype;
       onChange: (result: UseOperationFilter.OperationFilter<Data, Operation>) => void;
       filterOperations?: Operation[];
       currentValue?: UseOperationFilter.OperationValue<Operation>
