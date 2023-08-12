@@ -45,14 +45,14 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
-  const reset = (empty?: boolean) => {
+  const reset = (useInitialFilters: boolean = true) => {
     sortable.reset();
     pagination.reset();
     selectable.reset();
     setFilter.reset();
     operationFilter.reset();
     updateFilter(
-      !empty
+      useInitialFilters
         ? initialFilters
         : {
           sortOrder: {},
