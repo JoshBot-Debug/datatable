@@ -22,7 +22,9 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     SelectCell,
     NoData,
     onRowClick,
-    showOptionsOnRowClick
+    showOptionsOnRowClick,
+    minColumnSize,
+    columnNameFontSize
   } = props;
 
   const selectWidth = hideSelect ? 0 : 50;
@@ -31,7 +33,9 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
   const resizer = useResizer({
     columns,
     isFetching,
-    extraWidth: selectWidth + appPanelColWidth
+    extraWidth: selectWidth + appPanelColWidth,
+    minColumnSize,
+    columnNameFontSize,
   });
 
   return (

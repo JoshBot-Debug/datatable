@@ -78,6 +78,20 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+
+    /**
+     * If specified, this will be the minimum column width.
+     * The prop "columnNameFontSize" will be ignored.
+     */
+    minColumnSize?: number;
+
+    /**
+     * Is specified, the column width will be autocalculated based on the number of characters and the fontsize of the column name.
+     * If the prop "minColumnSize" is set, this prop will be ignored.
+     * The column size may not fit the column name, this will not ensure that the column name will be visible. If you want the column name to be visible,
+     * on the column, set the "width" prop.
+     */
+    columnNameFontSize?: number;
   }
 
   interface Filter<Data extends Record<string, any>> {
@@ -116,6 +130,9 @@ export declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+
+    minColumnSize?: number;
+    columnNameFontSize?: number;
   }
 
 
@@ -267,7 +284,6 @@ export declare namespace Datatable {
 
     type OperationValue<Operation> = {
       operation: Operation;
-      datatype: Datatype;
       value?: string;
       and?: OperationValue<Operation>
       or?: OperationValue<Operation>

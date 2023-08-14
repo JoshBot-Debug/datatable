@@ -88,6 +88,7 @@ function Row(props: Datatable.UseSelectable.RowProps) {
   return (
     <input
       checked={checked}
+      onClick={e => e.stopPropagation()}
       onChange={e => onChange(e.target.checked, index)}
       disabled={disabled}
       type="checkbox"

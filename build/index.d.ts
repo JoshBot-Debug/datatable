@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import styleInject from '/home/josh/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
+import styleInject from '/home/joshua/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
 import * as react from 'react';
 
 var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}";
@@ -84,6 +84,20 @@ declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+
+    /**
+     * If specified, this will be the minimum column width.
+     * The prop "columnNameFontSize" will be ignored.
+     */
+    minColumnSize?: number;
+
+    /**
+     * Is specified, the column width will be autocalculated based on the number of characters and the fontsize of the column name.
+     * If the prop "minColumnSize" is set, this prop will be ignored.
+     * The column size may not fit the column name, this will not ensure that the column name will be visible. If you want the column name to be visible,
+     * on the column, set the "width" prop.
+     */
+    columnNameFontSize?: number;
   }
 
   interface Filter<Data extends Record<string, any>> {
@@ -122,6 +136,9 @@ declare namespace Datatable {
     NoData?: React.ReactNode;
     onRowClick?: (row: Data, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
     showOptionsOnRowClick?: boolean;
+
+    minColumnSize?: number;
+    columnNameFontSize?: number;
   }
 
 
@@ -273,7 +290,6 @@ declare namespace Datatable {
 
     type OperationValue<Operation> = {
       operation: Operation;
-      datatype: Datatype;
       value?: string;
       and?: OperationValue<Operation>
       or?: OperationValue<Operation>

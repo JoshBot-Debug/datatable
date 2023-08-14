@@ -22,7 +22,7 @@ function App() {
     columns: [
       { field: "id", width: 85, datatype: "number" },
       { field: "status", setOptions: status, multiFilter: true },
-      { field: "fullName", width: 250 },
+      { field: "fullName", columnName: "full name and long col name" },
       { field: "firstName" },
       { field: "middleName" },
       { field: "lastName" },
@@ -57,6 +57,7 @@ function App() {
       AppsPanel={AppsPanel}
       isSelectable={row => row.isActive}
       showOptionsOnRowClick
+      columnNameFontSize={16}
       {...controller}
     />
   )

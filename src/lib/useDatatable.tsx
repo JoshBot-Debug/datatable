@@ -121,6 +121,8 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     NoData,
     onRowClick,
     showOptionsOnRowClick,
+    minColumnSize,
+    columnNameFontSize,
   } = props;
 
   const { Pagination, ...paginationController } = pagination;
@@ -216,6 +218,8 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
       NoData={NoData}
       onRowClick={onRowClick}
       showOptionsOnRowClick={showOptionsOnRowClick}
+      minColumnSize={minColumnSize}
+      columnNameFontSize={columnNameFontSize}
       Footer={
         !Pagination
           ? null

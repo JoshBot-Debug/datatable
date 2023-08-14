@@ -87,9 +87,9 @@ function applyOperationFilter<Data extends Record<string, any>>(data: Data[], op
 
 function checkCondition(row: any, filter: any) {
   for (const key in filter) {
-    const { operation, value, and, or, datatype } = filter[key] as Datatable.UseOperationFilter.OperationValue<any>;
+    const { operation, value, and, or } = filter[key] as Datatable.UseOperationFilter.OperationValue<any>;
     const rowValue = row[key];
-    if (!applyOperation(datatype, rowValue, operation, value)) {
+    if (!applyOperation(rowValue, operation, value)) {
       if (or && checkCondition(row, { [key]: or })) return true;
       return false;
     }
@@ -98,10 +98,10 @@ function checkCondition(row: any, filter: any) {
   return true;
 }
 
-function applyOperation(datatype: Datatable.Datatype, itemValue: any, operation: string, filterValue?: string) {
+function applyOperation(itemValue: any, operation: string, filterValue?: string) {
   if (filterValue === undefined) return false;
 
-  const [iValue, fValue] = convertToType(itemValue, filterValue, datatype);
+  const [iValue, fValue] = convertToType(itemValue, filterValue);
 
   if (operation === "Not blank") {
     return !(iValue === undefined || iValue === null || iValue === "");
@@ -158,7 +158,7 @@ function applyOperation(datatype: Datatable.Datatype, itemValue: any, operation:
   return true;
 }
 
-function convertToType(itemValue: any, filterValue: any, datatype: Datatable.Datatype) {
+function convertToType(itemValue: any, filterValue: any) {
   const typeOfValue1 = typeof itemValue;
 
   if (typeOfValue1 === "number") {
@@ -185,10 +185,6 @@ function convertToType(itemValue: any, filterValue: any, datatype: Datatable.Dat
       filterValue = new Date(value2Date);
     }
   }
-
-  // Add :00 to time values because html input type "time" does not add seconds.
-  // this is done to make equals work
-  if (datatype === "time") filterValue = `${filterValue}:00`
 
   return [itemValue, filterValue];
 }

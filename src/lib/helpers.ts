@@ -20,6 +20,8 @@ interface ResizerProps<Data extends Record<string, any>> {
   columns: Datatable.Column<Data>[];
   extraWidth: number;
   isFetching?: boolean;
+  minColumnSize?: number;
+  columnNameFontSize?: number;
 }
 
 export function useResizer<Data extends Record<string, any>>(config: ResizerProps<Data>) {
@@ -28,6 +30,8 @@ export function useResizer<Data extends Record<string, any>>(config: ResizerProp
     columns,
     isFetching,
     extraWidth,
+    minColumnSize,
+    columnNameFontSize,
   } = config;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,15 +60,24 @@ export function useResizer<Data extends Record<string, any>>(config: ResizerProp
   }, [containerRef.current, isFetching, columns])
 
   const getWidth = <Data extends Record<string, any>,>(column: Datatable.Column<Data>) => {
-    // The minimum width of a column when auto width is calculated.
-    // This ensure we don't have columns with an auto width less than 150px
-    const minAutoWidth = 150;
+
+    const baseSize = column.columnName.length * ((columnNameFontSize ?? 16) / 2); // Calculate base size
+
+    // Calculate reduction using a quadratic function
+    const reduction = Math.pow(column.columnName.length, 1.1) - column.columnName.length; // Adjust the exponent as needed
+
+    // Calculate approximate size with reduction
+    const approxSize = baseSize + 1 - (reduction < 3 ? 0 : reduction);
+
+    // If there is a minColumnWidth, use it.
+    // Approx size + 40 (col icon size) + 16 (col icon margin) + 16 (text span margin)
+    const minAutoWidth = minColumnSize ? minColumnSize : columnNameFontSize ? approxSize + 40 + 16 + 16 : 150;
 
     // If this is the last column with a fixed width
     // and all other columns also have fixed widths,
     // make this last column stretch to the end, ignore it's fixed width.
     if (lastFixedWidthColumn === column.field && column.width) return Math.max(((containerWidth - (extraWidth + totalFixedWidth.width - column.width)) / Math.max((visibleColumns - totalFixedWidth.columns - 1), 1)), minAutoWidth);
-    
+
     // If this col has a width, use it.
     if (column.width) return column.width;
 
