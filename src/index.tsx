@@ -19,6 +19,9 @@ function App() {
     data: responseData,
     count: responseData.length,
     serverSide: false,
+    initialSortOrder: {
+      id: { orderIndex: 1, sortDirection: "desc" }
+    },
     columns: [
       { field: "id", width: 85, datatype: "number" },
       { field: "status", setOptions: status, multiFilter: true },
@@ -40,12 +43,14 @@ function App() {
 
   const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
     <>
-      <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Reset Filters</button>
+      <button className="elegance-button" onClick={() => controller.reset(true)} style={{ padding: 8 }}>Reset Filters</button>
+      <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Clear Filters</button>
       {OmitColumns}
     </>
   )
 
   const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<Data>) => (<>
+    <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Fetching On</button>
     <button className="elegance-button" onClick={() => setIsFetching(true)} style={{ padding: 8 }}>Fetching On</button>
     <button className="elegance-button" onClick={() => setIsFetching(false)} style={{ padding: 8 }}>Fetching Off</button>
   </>);

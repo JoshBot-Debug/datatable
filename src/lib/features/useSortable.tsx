@@ -60,9 +60,11 @@ export default function useSortable<Data extends Record<string, any>>(
 
   useEffect(() => { onChange(sortOrder); }, []);
 
-  const reset = () => {
+  const reset = (useInitialFilters?: boolean) => {
+    const resetValue = useInitialFilters ? initialSortOrder : {};
     setIsMultiSort(false);
-    setSortOrder(initialSortOrder);
+    setSortOrder(resetValue);
+    return resetValue
   }
 
   return {

@@ -10,27 +10,30 @@ import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 import { useClientSide } from "./features/useClientSIde";
 
+const defaultPage: Datatable.UsePagination.Page = {
+  currentPage: 1,
+  rowsPerPage: [50, 100, 200],
+  currentRowsPerPage: 50,
+}
+
 export default function useDatatable<Data extends Record<string, any>>(config: Datatable.Config<Data>) {
 
   const {
     columns,
     onFilter,
     initialSortOrder,
-    initialPage = {
-      currentPage: 1,
-      rowsPerPage: [50, 100, 200],
-      currentRowsPerPage: 50,
-    },
+    initialPage = defaultPage,
     initialOperationFilter,
   } = config;
 
-  const initialSetFilter = config.initialSetFilter ?? getInitialSetFilter(columns);
+  const defaultSetFilter = getInitialSetFilter(columns);
+  const initialSetFilter = config.initialSetFilter ?? defaultSetFilter;
 
   const initialFilters = {
-    sortOrder: initialSortOrder ?? {},
+    sortOrder: initialSortOrder ?? {} as Datatable.UseSortable.SortOrder<Data>,
     page: initialPage ?? {},
-    operationFilter: initialOperationFilter ?? {},
-    setFilter: initialSetFilter ?? {}
+    operationFilter: initialOperationFilter ?? {} as Datatable.UseOperationFilter.OperationFilter<Data, Datatable.AllOperations>,
+    setFilter: initialSetFilter ?? {} as Datatable.UseSetFilter.SetFilter<Data>
   }
 
   const [filter, updateFilter] = useState<Datatable.Filter<Data>>(initialFilters);
@@ -38,29 +41,28 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const { data, count, numberOfRows } = useClientSide<Data>(filter, config.data, config.count, config.serverSide);
 
   const sortable = useSortable<Data>({ initialSortOrder, onChange: sortOrder => updateFilter(prev => ({ ...prev, sortOrder })) });
-  const pagination = usePagination({ initialPage, count, numberOfRows, onChange: page => updateFilter(prev => ({ ...prev, page })) });
+  const pagination = usePagination({ initialPage, count, numberOfRows, defaultPage, onChange: page => updateFilter(prev => ({ ...prev, page })) });
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
-  const setFilter = useSetFilter<Data>({ initialSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
-  const operationFilter = useOperationFilter<Data, string>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
+  const setFilter = useSetFilter<Data>({ initialSetFilter, defaultSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
+  const operationFilter = useOperationFilter<Data, Datatable.AllOperations>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
-  const reset = (useInitialFilters: boolean = true) => {
-    sortable.reset();
-    pagination.reset();
+  /**
+   * If useInitialFilters is true, the datatable filters will be reset to the initialFilters.
+   * If useInitialFilters is false, all filters will be cleared.
+   * @param useInitialFilters reset and use initial filter?
+   * @default useInitialFilters false
+   */
+  const reset = (useInitialFilters?: boolean) => {
     selectable.reset();
-    setFilter.reset();
-    operationFilter.reset();
-    updateFilter(
-      useInitialFilters
-        ? initialFilters
-        : {
-          sortOrder: {},
-          page: {},
-          operationFilter: {},
-          setFilter: {}
-        } as any
-    );
+    const resetValue = {
+      sortOrder: sortable.reset(useInitialFilters),
+      page: pagination.reset(useInitialFilters),
+      operationFilter: operationFilter.reset(useInitialFilters),
+      setFilter: setFilter.reset(useInitialFilters)
+    }
+    updateFilter(resetValue);
   }
 
   return {

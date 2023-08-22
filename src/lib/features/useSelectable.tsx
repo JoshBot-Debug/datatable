@@ -44,7 +44,10 @@ export default function useSelectable(config: Datatable.UseSelectable.Config): D
 
   useEffect(() => { onChange({ isAllSelected, selectedRows }); }, [isAllSelected, selectedRows])
 
-  const reset = () => selectAll(false);
+  const reset = () => {
+    selectAll(false);
+    return false;
+  };
 
   return {
     Header,

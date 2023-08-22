@@ -1,14 +1,14 @@
 import { useId, useState } from "react";
 import { Datatable } from "../types";
 
-export default function useOperationFilter<Data extends Record<string, any>, Operation extends string>(config: Datatable.UseOperationFilter.Config): Datatable.UseOperationFilter.HookReturn<Data, Operation> {
+export default function useOperationFilter<Data extends Record<string, any>, Operation extends string>(config: Datatable.UseOperationFilter.Config<Data, Operation>): Datatable.UseOperationFilter.HookReturn<Data, Operation> {
 
   const {
     onChange,
-    initialOperationFilter = {}
+    initialOperationFilter
   } = config;
 
-  const [operationFilter, setFilter] = useState<Datatable.UseOperationFilter.OperationFilter<Data, Operation>>(initialOperationFilter);
+  const [operationFilter, setFilter] = useState(initialOperationFilter ?? {});
 
   const onSetOperationFilter = (filter: Datatable.UseOperationFilter.OperationFilter<Data, Operation>) => {
     const next: any = { ...operationFilter };
@@ -24,7 +24,11 @@ export default function useOperationFilter<Data extends Record<string, any>, Ope
     onChange(next);
   }
 
-  const reset = () => setFilter(initialOperationFilter);
+  const reset = (useInitialFilters?: boolean) => {
+    const resetValue = useInitialFilters ? initialOperationFilter ?? {} as Datatable.UseOperationFilter.OperationFilter<Data, Operation> : {} as Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
+    setFilter(resetValue);
+    return resetValue;
+  }
 
   return {
     OperationFilter,

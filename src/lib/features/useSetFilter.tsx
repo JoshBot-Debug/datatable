@@ -5,10 +5,11 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
 
   const {
     onChange,
-    initialSetFilter = {}
+    initialSetFilter,
+    defaultSetFilter,
   } = config;
 
-  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter);
+  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter ?? defaultSetFilter);
 
   const onSetFilter = (filter: Datatable.UseSetFilter.SetFilter<Data>) => {
     const next = { ...setFilter };
@@ -17,7 +18,11 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
     onChange(next);
   }
 
-  const reset = () => updateFilter(initialSetFilter);
+  const reset = (useInitialFilters?: boolean) => {
+    const resetValue = useInitialFilters ? initialSetFilter ?? defaultSetFilter : defaultSetFilter;
+    updateFilter(resetValue);
+    return resetValue;
+  }
 
   return {
     SetFilter,
