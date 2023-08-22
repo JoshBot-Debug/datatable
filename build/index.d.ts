@@ -100,10 +100,12 @@ declare namespace Datatable {
     columnNameFontSize?: number;
   }
 
+  type AllOperations = UseOperationFilter.TextFilterOperations | UseOperationFilter.RangeFilterOperations | UseOperationFilter.BooleanFilterOperations;
+
   interface Filter<Data extends Record<string, any>> {
     sortOrder: UseSortable.SortOrder<Data>;
     page: UsePagination.Page;
-    operationFilter: UseOperationFilter.OperationFilter<Data, UseOperationFilter.TextFilterOperations | UseOperationFilter.RangeFilterOperations | UseOperationFilter.BooleanFilterOperations>;
+    operationFilter: UseOperationFilter.OperationFilter<Data, AllOperations>;
     setFilter: UseSetFilter.SetFilter<Data>;
   }
 
@@ -154,7 +156,7 @@ declare namespace Datatable {
       sortOrder: SortOrder<Data>;
       Sort: (props: SortProps<Data>) => JSX.Element | null;
       onSort: (column: DatatableColumn<Data>) => void;
-      reset: () => void;
+      reset: (useInitialFilters?: boolean) => Datatable.UseSortable.SortOrder<Data>;
     }
 
     interface SortProps<Data> {
@@ -179,6 +181,7 @@ declare namespace Datatable {
 
     interface Config {
       initialPage?: Page;
+      defaultPage: Page;
       numberOfRows: number;
       count: number;
       onChange: (page: Page) => void;
@@ -196,7 +199,7 @@ declare namespace Datatable {
       lastPage: () => void;
       firstPage: () => void;
       onChangeRowsPerPage: (rowsPerPage: number) => void;
-      reset: () => void;
+      reset: (useInitialFilters?: boolean) => Datatable.UsePagination.Page;
     }
 
 
@@ -237,7 +240,7 @@ declare namespace Datatable {
       onSelectRow: (checked: boolean, rowIndex: number) => void;
       isAllSelected: boolean;
       onDisableRow: (disabled: boolean, rowIndex: number) => void;
-      reset: () => void;
+      reset: () => boolean;
     }
 
     interface HeaderProps {
@@ -259,7 +262,8 @@ declare namespace Datatable {
 
     interface Config<Data extends Record<string, any>> {
       onChange: (setFilter: SetFilter<Data>) => void;
-      initialSetFilter?: SetFilter<Data>;
+      initialSetFilter?: UseSetFilter.SetFilter<Data>;
+      defaultSetFilter: UseSetFilter.SetFilter<Data>;
     }
 
     type SetFilter<Data extends Record<string, any>> = { [K in keyof Data]?: string[] };
@@ -268,7 +272,7 @@ declare namespace Datatable {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<Data>;
       onSetFilter: (filter: SetFilter<Data>) => void;
-      reset: () => void;
+      reset: (useInitialFilters?: boolean) => Datatable.UseSetFilter.SetFilter<Data>;
     }
 
 
@@ -283,9 +287,9 @@ declare namespace Datatable {
 
   namespace UseOperationFilter {
 
-    interface Config {
+    interface Config<Data extends Record<string, any>, Operation> {
       onChange: (setFilter: SetFilter) => void;
-      initialOperationFilter?: OperationFilter;
+      initialOperationFilter?: UseOperationFilter.OperationFilter<Data, Operation>;
     }
 
     type OperationValue<Operation> = {
@@ -303,7 +307,7 @@ declare namespace Datatable {
       OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
       operationFilter: OperationFilter<Data, Operation>;
       onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
-      reset: () => void;
+      reset: (useInitialFilters?: boolean) => Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
     }
 
     type BooleanFilterOperations = "Is true" | "Is false" | "Is blank" | "Not blank";
@@ -334,7 +338,7 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     pagination: Datatable.UsePagination.HookReturn;
     selectable: Datatable.UseSelectable.HookReturn;
     setFilter: Datatable.UseSetFilter.HookReturn<Data>;
-    operationFilter: Datatable.UseOperationFilter.HookReturn<Data, string>;
+    operationFilter: Datatable.UseOperationFilter.HookReturn<Data, Datatable.AllOperations>;
     updateFilter: react.Dispatch<react.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
     reset: (useInitialFilters?: boolean) => void;
