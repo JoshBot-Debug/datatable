@@ -131,6 +131,38 @@ const EditableCell: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (p
     )
   }
 
+  if (inputType === "date") {
+    const date = new Date(value);
+    const formattedDate = date.toISOString().split("T")[0];
+    return (
+      <input
+        className={`editable-cell-input`}
+        type={inputType}
+        value={formattedDate}
+        onChange={e => onChange(e.target.value)}
+        onClick={e => e.stopPropagation()}
+        step={1}
+      />
+    )
+  }
+
+  if (inputType === "datetime-local") {
+    const parsedDatetime = new Date(value);
+    const offsetMinutes = parsedDatetime.getTimezoneOffset();
+    const adjustedDatetime = new Date(parsedDatetime.getTime() - parsedDatetime.getMilliseconds());
+    const formattedDatetime = new Date(adjustedDatetime.getTime() - offsetMinutes * 60000).toISOString().replace(/\.\d{3}Z$/, "");
+    return (
+      <input
+        className={`editable-cell-input`}
+        type={inputType}
+        value={formattedDatetime}
+        onChange={e => onChange(e.target.value)}
+        onClick={e => e.stopPropagation()}
+        step={1}
+      />
+    )
+  }
+
   return (
     <input
       className={`editable-cell-input`}
@@ -138,6 +170,7 @@ const EditableCell: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (p
       value={value}
       onChange={e => onChange(e.target.value)}
       onClick={e => e.stopPropagation()}
+      step={1}
     />
   )
 }

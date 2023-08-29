@@ -9,15 +9,23 @@ import data from "./data.json";
 // import { useDatatable, Datatable } from "@jjmyers/datatable";
 // import "@jjmyers/datatable/build/styles/default.css" // OR elegance.css
 
-const responseData = data as Data[];
-
 function App() {
+
+  const [responseData, setResponseData] = useState(data as Data[]);
 
   const [isFetching, setIsFetching] = useState(false);
 
   const onSaveChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
-    console.log({ dirtyRows })
-    setTimeout(() => resolve(true), 3000)
+    setResponseData(prev => {
+      const next = [...prev];
+      for (let i = 0; i < dirtyRows.length; i++) {
+        const editedRow = dirtyRows[i];
+        const index = next.findIndex(r => r.id === editedRow.id);
+        if (index > 0) next[index] = { ...next[index], ...editedRow }
+      }
+      return next;
+    })
+    resolve(true)
   })
 
   const { Datatable, ...controller } = useDatatable<Data>({

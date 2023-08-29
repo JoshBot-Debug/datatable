@@ -46,10 +46,6 @@ function shouldRemoveKey(value: any, operation: any) {
   return String(value).length === 0 && !allowEmptyValue(operation)
 }
 
-function handleDatatypeValue(value: string, datatype: Datatable.Datatype) {
-  if (value && datatype === "time") return `${value}:00`;
-  return value;
-}
 
 function OperationFilter<Data extends Record<string, any>, Operation extends string>(props: Datatable.UseOperationFilter.OperationProps<Data, Operation>) {
 
@@ -71,10 +67,10 @@ function OperationFilter<Data extends Record<string, any>, Operation extends str
   const onFormChange = (e: React.ChangeEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
     const firstOperation = formData.get("first-operation") as any
-    const firstValue = handleDatatypeValue(formData.get("first-value") as any, datatype)
+    const firstValue = formData.get("first-value") as any
     const andOr = formData.get("and-or") as "and" | "or"
     const secondOperation = formData.get("second-operation") as any
-    const secondValue = handleDatatypeValue(formData.get("second-value") as any, datatype)
+    const secondValue = formData.get("second-value") as any
     const isSingle = allowEmptyValue(firstOperation);
     const next: Datatable.UseOperationFilter.OperationValue<Operation> = { operation: firstOperation, value: firstValue }
     if (!isSingle) next[andOr] = { operation: secondOperation, value: secondValue }
@@ -126,6 +122,7 @@ function OperationFilter<Data extends Record<string, any>, Operation extends str
           onChange={doNothing}
           placeholder="Filter..."
           name="first-value"
+          step={1}
           autoFocus
         />
 
@@ -156,6 +153,7 @@ function OperationFilter<Data extends Record<string, any>, Operation extends str
             placeholder="Filter..."
             value={!isOr ? value?.and?.value ?? "" : value.or?.value ?? ""}
             onChange={doNothing}
+            step={1}
             autoFocus
           />
         </div>

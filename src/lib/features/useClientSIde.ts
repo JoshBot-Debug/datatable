@@ -23,7 +23,7 @@ export function useClientSide<Data extends Record<string, any>>(filter: Datatabl
 
     setRecordsCount(withSortOrder.length);
     setRecords(withPage);
-  }, [serverSide, filter])
+  }, [serverSide, filter, data])
 
   if (serverSide) {
     return {
