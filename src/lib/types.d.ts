@@ -60,8 +60,15 @@ export declare namespace Datatable {
      * Default is true
      */
     serverSide?: boolean;
+    onSaveChanges?: (dirtyRows: Data[]) => Promise<any>;
   }
 
+  namespace EditableCells {
+    type HookReturn = {
+      isEditable: boolean;
+      EditableCell: () => React.ReactElement;
+    }
+  }
 
   interface RichDatatableProps<Data extends Record<string, any>> {
     data?: Data[];
@@ -72,6 +79,7 @@ export declare namespace Datatable {
     sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
     selectable: Datatable.UseSelectable.HookReturn;
+    editableCells: Datatable.EditableCells.HookReturn;
     RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Data) => boolean;
@@ -135,6 +143,7 @@ export declare namespace Datatable {
 
     minColumnSize?: number;
     columnNameFontSize?: number;
+    renderCell?: ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => React.ReactNode;
   }
 
 

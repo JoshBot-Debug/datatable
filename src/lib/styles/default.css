@@ -29,9 +29,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.myers-datatable .table-header-row {
-  position: sticky;
-  top: 0px;
+.myers-datatable .table-header-panel {
+  background-color: rgb(240, 240, 240);
 }
 .myers-datatable .table-header-cell {
   background-color: rgb(240, 240, 240);
@@ -184,6 +183,42 @@
 .myers-datatable .header-svg:hover {
   fill: rgb(150, 150, 150);
   color: rgb(150, 150, 150);
+}
+.myers-datatable .io-checkmark-outline, .myers-datatable .io-close-outline {
+  width: 16px;
+  height: 16px;
+}
+.myers-datatable .table-header-panel-button-disabled > *,
+.myers-datatable .table-header-panel-button-disabled {
+  color: gray;
+  cursor: default;
+}
+.myers-datatable .edit-row-button {
+  all: unset;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  background-color: #DDE6ED;
+  position: absolute;
+  right: 0px;
+  border-radius: 100%;
+  padding: 3px;
+}
+.myers-datatable .edit-row-button:hover {
+  background-color: #c6c6c6;
+}
+.myers-datatable .edit-row-button:hover svg {
+  color: #27374D;
+}
+.myers-datatable .io-pencil {
+  color: gray;
+}
+.myers-datatable .edit-row-cell {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
 }
 .myers-datatable .apps-button {
   display: flex;

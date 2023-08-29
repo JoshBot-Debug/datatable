@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BaseDatatable } from "./BaseDatatable";
 import useSortable from "./features/useSortable";
 import { getColumnDefaults } from "./helpers";
@@ -9,6 +9,7 @@ import { type Datatable } from "./types";
 import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 import { useClientSide } from "./features/useClientSIde";
+import useEditableCell from "./features/useEditableCell";
 
 const defaultPage: Datatable.UsePagination.Page = {
   currentPage: 1,
@@ -24,6 +25,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     initialSortOrder,
     initialPage = defaultPage,
     initialOperationFilter,
+    onSaveChanges,
   } = config;
 
   const defaultSetFilter = getInitialSetFilter(columns);
@@ -45,6 +47,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter<Data>({ initialSetFilter, defaultSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter<Data, Datatable.AllOperations>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
+  const editableCells = useEditableCell<Data>(onSaveChanges);
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
@@ -73,6 +76,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     selectable,
     setFilter,
     operationFilter,
+    editableCells,
     updateFilter,
     Datatable: RichDatatable,
     reset,
@@ -125,6 +129,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     showOptionsOnRowClick,
     minColumnSize,
     columnNameFontSize,
+    editableCells
   } = props;
 
   const { Pagination, ...paginationController } = pagination;
@@ -132,6 +137,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
   const { OperationFilter, ...operationFilterController } = operationFilter;
   const { SetFilter, ...setFilterController } = setFilter;
   const { Sort, ...sortableController } = sortable;
+  const { EditableCell, ...editableCellsController } = editableCells;
 
   const [columns, setColumns] = useState(getColumnDefaults(props.columns as Partial<Datatable.Column<Data>>[]));
 
@@ -185,6 +191,16 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     )
   }
 
+  const renderCell = ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => {
+    if (!editableCellsController.isEditable) return <>{Cell}</>;
+    return (
+      <span className="edit-row-cell">
+        {Cell}
+        <button type="button" className="edit-row-button"><IoPencil /></button>
+      </span>
+    )
+  }
+
   const SelectHeader = () => (
     <Header
       selectAll={selectableController.selectAll}
@@ -222,6 +238,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
       showOptionsOnRowClick={showOptionsOnRowClick}
       minColumnSize={minColumnSize}
       columnNameFontSize={columnNameFontSize}
+      renderCell={renderCell}
       Footer={
         !Pagination
           ? null
@@ -237,3 +254,16 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
   )
 }
 
+
+function IoPencil() {
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="header-svg io-pencil"
+    >
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="44" d="M358.62 129.28L86.49 402.08 70 442l39.92-16.49 272.8-272.13-24.1-24.1zM413.07 74.84l-11.79 11.78 24.1 24.1 11.79-11.79a16.51 16.51 0 000-23.34l-.75-.75a16.51 16.51 0 00-23.35 0z" />
+    </svg>
+  )
+}

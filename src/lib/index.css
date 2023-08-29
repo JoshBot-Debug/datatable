@@ -13,8 +13,37 @@
   flex-direction: column;
   justify-content: center;
 }
-.myers-datatable .table-header-row {
+.myers-datatable .table-header-panel {
+  height: 45px;
+}
+.myers-datatable .table-header-panel-row {
+  position: fixed;
+  height: 45px;
+  left: 0px;
+  gap: 8px;
+  right: 8px; /* 0px + scrollbar width */
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+.myers-datatable .sticky-header {
   z-index: 1;
+  position: sticky;
+  top: 0px;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.myers-datatable .table-header-panel-button {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.myers-datatable .table-header-panel-button:first-child {
+  margin-right: 8px;
 }
 .myers-datatable .spinner {
   border: 4px solid #f3f3f3; /* Light grey */

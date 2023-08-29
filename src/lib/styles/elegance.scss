@@ -55,9 +55,8 @@
     text-overflow: ellipsis;
   }
 
-  .table-header-row {
-    position: sticky;
-    top: 0px;
+  .table-header-panel {
+    background-color: #DDE6ED;
   }
 
   .table-header-cell {
@@ -65,7 +64,7 @@
     color: #27374D;
 
     text-transform: capitalize;
-    
+
     user-select: none;
     padding-inline: 0px;
     padding-block: 0px;
@@ -241,6 +240,64 @@
       fill: #526D82;
       color: #526D82;
     }
+  }
+
+  .io-checkmark-outline {
+    width: 16px;
+    height: 16px;
+    color: green;
+
+    &:hover {
+      color: green;
+    }
+  }
+
+  .io-close-outline {
+    width: 16px;
+    height: 16px;
+    color: red;
+
+    &:hover {
+      color: red;
+    }
+  }
+
+  .table-header-panel-button-disabled>*,
+  .table-header-panel-button-disabled {
+    color: gray;
+    cursor: default;
+  }
+
+  .edit-row-button {
+    all: unset;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+    background-color: #DDE6ED;
+    position: absolute;
+    right: 0px;
+    border-radius: 100%;
+    padding: 3px;
+
+    &:hover {
+      background-color: #c6c6c6;
+
+      svg {
+        color: #27374D;
+      }
+    }
+  }
+
+  .io-pencil {
+    color: gray;
+  }
+
+  .edit-row-cell {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
   }
 
   .apps-button {

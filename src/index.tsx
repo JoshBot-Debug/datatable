@@ -15,10 +15,16 @@ function App() {
 
   const [isFetching, setIsFetching] = useState(false);
 
+  const onSaveChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
+    console.log({ dirtyRows })
+    setTimeout(() => resolve(true), 3000)
+  })
+  
   const { Datatable, ...controller } = useDatatable<Data>({
     data: responseData,
     count: responseData.length,
     serverSide: false,
+    onSaveChanges: onSaveChanges,
     initialSortOrder: {
       id: { orderIndex: 1, sortDirection: "desc" }
     },

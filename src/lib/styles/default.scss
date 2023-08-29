@@ -35,10 +35,10 @@
     text-overflow: ellipsis;
   }
 
-  .table-header-row {
-    position: sticky;
-    top: 0px;
+  .table-header-panel {
+    background-color: rgb(240, 240, 240);
   }
+
 
   .table-header-cell {
     background-color: rgb(240, 240, 240);
@@ -219,6 +219,48 @@
       fill: rgb(150, 150, 150);
       color: rgb(150, 150, 150);
     }
+  }
+
+  .io-checkmark-outline, .io-close-outline {
+    width: 16px;
+    height: 16px;
+  }
+
+  .table-header-panel-button-disabled>*,
+  .table-header-panel-button-disabled {
+    color: gray;
+    cursor: default;
+  }
+
+  .edit-row-button {
+    all: unset;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+    background-color: #DDE6ED;
+    position: absolute;
+    right: 0px;
+    border-radius: 100%;
+    padding: 3px;
+
+    &:hover {
+      background-color: #c6c6c6;
+      svg {
+        color: #27374D;
+      }
+    }
+  }
+
+  .io-pencil {
+    color: gray;
+  }
+
+  .edit-row-cell {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
   }
 
   .apps-button {

@@ -24,7 +24,8 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     onRowClick,
     showOptionsOnRowClick,
     minColumnSize,
-    columnNameFontSize
+    columnNameFontSize,
+    renderCell,
   } = props;
 
   const selectWidth = hideSelect ? 0 : 50;
@@ -42,48 +43,56 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
     <div className="myers-datatable">
       <div ref={resizer.containerRef} className="table-scroll-container">
 
-        <div className="table-header-row table-row">
-          <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
-            {
-              AppsPanel && (
-                <Popper
-                  Icon={IoApps}
-                  mainAxisOffset={20}
-                  crossAxisOffset={10}
-                  placement="bottom-end"
-                  className="app-panel-button"
-                >
-                  {AppsPanel}
-                </Popper>
-              )
-            }
+        <div className="sticky-header">
+          <div className="table-header-panel">
+            <div className="table-header-panel-row">
+              <button className={`table-header-panel-button`} type="button"><IoCheckmarkOutline />Save</button>|
+              <button className={`table-header-panel-button table-header-panel-button-disabled`} type="button"><IoCloseOutline />Clear</button>
+            </div>
           </div>
+          <div className="table-header-row table-row">
+            <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
+              {
+                AppsPanel && (
+                  <Popper
+                    Icon={IoApps}
+                    mainAxisOffset={20}
+                    crossAxisOffset={10}
+                    placement="bottom-end"
+                    className="app-panel-button"
+                  >
+                    {AppsPanel}
+                  </Popper>
+                )
+              }
+            </div>
 
-          {(!hideSelect && !!SelectHeader) && (
-            <TableHeader
-              className="select-header-cell"
-              column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
-              width={selectWidth}
-            >
-              <SelectHeader />
-            </TableHeader>
-          )}
+            {(!hideSelect && !!SelectHeader) && (
+              <TableHeader
+                className="select-header-cell"
+                column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
+                width={selectWidth}
+              >
+                <SelectHeader />
+              </TableHeader>
+            )}
 
-          {columns.map((column) => (
-            <TableHeader
-              key={String(column.field)}
-              column={column}
-              onClick={onColumnClick}
-              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
-              width={resizer.getWidth(column)}
-            >
+            {columns.map((column) => (
+              <TableHeader
+                key={String(column.field)}
+                column={column}
+                onClick={onColumnClick}
+                className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
+                width={resizer.getWidth(column)}
+              >
 
-              <div className="column-header-options">
-                {(column.sortable && renderSort) && renderSort(column)}
-                {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
-              </div>
-            </TableHeader>
-          ))}
+                <div className="column-header-options">
+                  {(column.sortable && renderSort) && renderSort(column)}
+                  {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
+                </div>
+              </TableHeader>
+            ))}
+          </div>
         </div>
 
         {data.map((row, rIndex) => (
@@ -138,7 +147,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
                     </div>
                   )}
 
-                  {columns.map((column, cIndex) => <Cell key={cIndex} column={column} row={row} width={resizer.getWidth(column)} />)}
+                  {columns.map((column, cIndex) => <Cell key={cIndex} column={column} row={row} width={resizer.getWidth(column)} renderCell={renderCell} />)}
 
                 </div>
               )
@@ -170,9 +179,9 @@ function FilterMenu(props: { hasFilter: boolean; } & React.PropsWithChildren) {
   )
 }
 
-const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; width?: number; }) => {
+const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; width?: number; renderCell?: ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => React.ReactNode; }) => {
 
-  const { column, row, width } = props;
+  const { column, row, width, renderCell } = props;
 
   const title = row[column.field] !== undefined ? String(row[column.field]) : undefined;
 
@@ -189,12 +198,17 @@ const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Colu
         title={title}
         style={style}
       >
-        {column.renderCell(row[column.field], column, row)}
+        {
+          renderCell
+            ? renderCell({ column, row }, column.renderCell(row[column.field], column, row))
+            :
+            column.renderCell(row[column.field], column, row)
+        }
       </div>
     )
   }
 
-  if (column.datatype === "paragraph") return <ParagraphCell column={column} title={title} text={row[column.field]} style={style} />
+  if (column.datatype === "paragraph") return <ParagraphCell column={column} row={row} title={title} text={row[column.field]} style={style} renderCell={renderCell} />
 
   return (
     <div
@@ -202,7 +216,11 @@ const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Colu
       title={title}
       style={style}
     >
-      {DatatypeCell(row[column.field], column)}
+      {
+        renderCell
+          ? renderCell({ column, row }, DatatypeCell(row[column.field], column))
+          : DatatypeCell(row[column.field], column)
+      }
     </div>
   )
 }
@@ -281,9 +299,9 @@ const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Dat
   return <span className="text-wrapper">{value}</span>;
 }
 
-const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; text: string; title?: string; style: any }) => {
+const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datatable.Column<Data>; row: Data; text: string; title?: string; style: any; renderCell?: ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => React.ReactNode; }) => {
 
-  const { text, title, column, style } = props;
+  const { text, title, column, row, style, renderCell } = props;
 
   const [open, setOpen] = useState(false);
 
@@ -294,7 +312,11 @@ const ParagraphCell = <Data extends Record<string, any>,>(props: { column: Datat
       onClick={(e) => { e.stopPropagation(); setOpen(o => !o) }}
       style={style}
     >
-      <span className="text-wrapper">{text}</span>
+      {
+        renderCell
+          ? renderCell({ column, row }, <span className="text-wrapper">{text}</span>)
+          : <span className="text-wrapper">{text}</span>
+      }
     </div>
   )
 }
@@ -419,6 +441,33 @@ function IoFunnel() {
     </svg>
   )
 }
+
+
+function IoCheckmarkOutline() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="header-svg io-checkmark-outline"
+    >
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M416 128L192 384l-96-96" />
+    </svg>
+  )
+}
+
+function IoCloseOutline() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="header-svg io-close-outline"
+    >
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M368 368L144 144M368 144L144 368" />
+    </svg>
+  )
+}
+
+
 
 function Popper(props: {
   className?: string;
