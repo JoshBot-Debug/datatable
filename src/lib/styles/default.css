@@ -184,9 +184,21 @@
   fill: rgb(150, 150, 150);
   color: rgb(150, 150, 150);
 }
-.myers-datatable .io-checkmark-outline, .myers-datatable .io-close-outline {
+.myers-datatable .io-checkmark-outline {
   width: 16px;
   height: 16px;
+  color: green;
+}
+.myers-datatable .io-checkmark-outline:hover {
+  color: green;
+}
+.myers-datatable .io-close-outline {
+  width: 16px;
+  height: 16px;
+  color: red;
+}
+.myers-datatable .io-close-outline:hover {
+  color: red;
 }
 .myers-datatable .table-header-panel-button-disabled > *,
 .myers-datatable .table-header-panel-button-disabled {
@@ -197,17 +209,18 @@
   all: unset;
   cursor: pointer;
   transition: all 200ms ease-in-out;
-  background-color: #DDE6ED;
+  background-color: #fff;
   position: absolute;
   right: 0px;
   border-radius: 100%;
   padding: 3px;
+  opacity: 0;
 }
-.myers-datatable .edit-row-button:hover {
-  background-color: #c6c6c6;
-}
-.myers-datatable .edit-row-button:hover svg {
+.myers-datatable .edit-row-button svg {
   color: #27374D;
+}
+.myers-datatable .edit-row-button-hover {
+  opacity: 1;
 }
 .myers-datatable .io-pencil {
   color: gray;
@@ -219,6 +232,16 @@
   display: flex;
   flex: 1;
   align-items: center;
+}
+.myers-datatable .editable-cell-input {
+  background-color: white;
+  outline: none;
+  display: flex;
+  border-radius: 3px;
+  border: 1px solid #c6c6c6;
+  padding: 4px;
+  font-weight: normal;
+  width: calc(100% - 36px);
 }
 .myers-datatable .apps-button {
   display: flex;

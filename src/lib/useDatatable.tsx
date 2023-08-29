@@ -26,6 +26,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     initialPage = defaultPage,
     initialOperationFilter,
     onSaveChanges,
+    uniqueRowIdentifier,
   } = config;
 
   const defaultSetFilter = getInitialSetFilter(columns);
@@ -47,7 +48,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter<Data>({ initialSetFilter, defaultSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter<Data, Datatable.AllOperations>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
-  const editableCells = useEditableCell<Data>(onSaveChanges);
+  const editableCells = useEditableCell<Data>(onSaveChanges, uniqueRowIdentifier);
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
@@ -108,6 +109,21 @@ const columnOperations: { [K in Datatable.Datatype]: { operation: any[], inputTy
   paragraph: { inputType: "text", operation: text },
   phone: { inputType: "text", operation: text },
   string: { inputType: "text", operation: text },
+}
+
+const editRows: { [K in Datatable.Datatype]: string } = {
+  boolean: "boolean",
+  time: "time",
+  date: "date",
+  datetime: "datetime-local",
+  email: "text",
+  image: "text",
+  link: "text",
+  name: "text",
+  number: "number",
+  paragraph: "textarea",
+  phone: "text",
+  string: "text",
 }
 
 
@@ -191,13 +207,50 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     )
   }
 
-  const renderCell = ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => {
+  const renderCell: Datatable.DatatableProps<Data>["renderCell"] = (column, row, Cell) => {
     if (!editableCellsController.isEditable) return <>{Cell}</>;
+    const isDirty = editableCellsController.isDirty(row, column.field);
+    const value = editableCellsController.dirtyValue(row, column.field);
+    if (column.editable === false) return Cell;
     return (
-      <span className="edit-row-cell">
-        {Cell}
-        <button type="button" className="edit-row-button"><IoPencil /></button>
-      </span>
+      <Hover className="edit-row-cell">
+        {isHover => (
+          <>
+            {
+              isDirty
+                ? (
+                  <EditableCell
+                    value={value === undefined ? row[column.field as any] : value}
+                    onChange={value => editableCellsController.onChange(row, column.field, value)}
+                    inputType={editRows[column.datatype]}
+                    setOptions={column.setOptions}
+                  />
+                )
+                : Cell
+            }
+            <button
+              type="button"
+              className={`edit-row-button ${isHover ? 'edit-row-button-hover' : ''}`}
+              onClick={e => { e.stopPropagation(); editableCellsController.onEdit(row, column.field, isDirty); }}
+            >
+              {isDirty ? <IoCloseOutline /> : <IoPencil />}
+            </button>
+          </>
+        )}
+      </Hover>
+    )
+  }
+
+  const renderHeaderPanel = () => {
+    const isDirty = editableCellsController.isDirty();
+    if (!isDirty || !editableCellsController.isEditable) return null;
+    return (
+      <div className="table-header-panel">
+        <div className="table-header-panel-row">
+          <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.save}><IoCheckmarkOutline />Save</button>|
+          <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.cancel}><IoCloseOutline />Cancel</button>
+        </div>
+      </div>
     )
   }
 
@@ -239,6 +292,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
       minColumnSize={minColumnSize}
       columnNameFontSize={columnNameFontSize}
       renderCell={renderCell}
+      renderHeaderPanel={renderHeaderPanel}
       Footer={
         !Pagination
           ? null
@@ -255,6 +309,21 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
 }
 
 
+function Hover(props: { className?: string; children: (isHover: boolean) => React.ReactNode }) {
+
+  const [isHover, setIsHover] = useState(false);
+
+  return (
+    <span
+      className={props.className}
+      onMouseOver={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      {props.children(isHover)}
+    </span>
+  )
+}
+
 function IoPencil() {
 
   return (
@@ -264,6 +333,30 @@ function IoPencil() {
       className="header-svg io-pencil"
     >
       <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="44" d="M358.62 129.28L86.49 402.08 70 442l39.92-16.49 272.8-272.13-24.1-24.1zM413.07 74.84l-11.79 11.78 24.1 24.1 11.79-11.79a16.51 16.51 0 000-23.34l-.75-.75a16.51 16.51 0 00-23.35 0z" />
+    </svg>
+  )
+}
+
+function IoCloseOutline() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="header-svg io-close-outline"
+    >
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M368 368L144 144M368 144L144 368" />
+    </svg>
+  )
+}
+
+function IoCheckmarkOutline() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 512 512"
+      className="header-svg io-checkmark-outline"
+    >
+      <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M416 128L192 384l-96-96" />
     </svg>
   )
 }

@@ -43,7 +43,7 @@
   font-size: 14px;
 }
 .myers-datatable .table-header-panel-button:first-child {
-  margin-right: 8px;
+  margin-right: 16px;
 }
 .myers-datatable .spinner {
   border: 4px solid #f3f3f3; /* Light grey */

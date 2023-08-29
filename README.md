@@ -17,6 +17,7 @@ If you find a bug or want a feature, raise an issue on GitHub.
 - Toggleable columns
 - A Seperate controller from component, to allow customization.
 - Added client sided data manipulation
+- Editable cells
 
 
 ## Example usage
@@ -48,16 +49,24 @@ function MyListOfData() {
 
   const [isFetching, setIsFetching] = useState(false);
 
+  const onSaveChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
+    console.log({ dirtyRows })
+    setTimeout(() => resolve(true), 3000)
+  })
+
   const { Datatable, ...controller } = useDatatable<Data>({
     data: data,         // An array of objects
     count: data.length, // This is the total number of records in the database
     serverSide: false,  // If this is false, data manipulation will be handled client sided. DEFAULT: true
     onFilter: console.log, // If serverSide is true, you need to handle the filters here and update data.
-    
+    onSaveChanges: onSaveChanges,
+    initialSortOrder: {
+      id: { orderIndex: 1, sortDirection: "desc" }
+    },
     columns: [
       // There are more props
       // You'll have to check them yourself
-      { field: "id", width: 85, datatype: "number" },
+      { field: "id", width: 85, datatype: "number", editable: false },
       { field: "status", setOptions: status, multiFilter: true },
       { field: "fullName", width: 250 },
       { field: "firstName" },
@@ -82,16 +91,19 @@ function MyListOfData() {
   // Just an example of how you can add buttons here and manipulate the datatable if needed.
   const AppsPanel = ({ OmitColumns }: Datatable.AppsPanelProps) => (
     <>
-      <button onClick={() => controller.reset()} style={{ padding: 8 }}>Reset Filters</button>
+      <button className="elegance-button" onClick={() => controller.reset(true)} style={{ padding: 8 }}>Reset Filters</button>
+      <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Clear Filters</button>
       {OmitColumns}
     </>
   )
 
   // Just an exmple of adding options to rows
-  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps) => (<>
-    <div onClick={() => {}} style={{ padding: 8 }}>Row Option 1</div>
-    <div onClick={() => {}} style={{ padding: 8 }}>Row Option 2</div>
-  </>);
+  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<Data>) => (
+    <>
+      <button className="elegance-button" onClick={() => setIsFetching(true)} style={{ padding: 8 }}>Fetching On</button>
+      <button className="elegance-button" onClick={() => setIsFetching(false)} style={{ padding: 8 }}>Fetching Off</button>
+    </>
+  );
 
 
   return (
@@ -105,6 +117,9 @@ function MyListOfData() {
 
       // Sometimes we want the row options to show when you click on a row, mostly when you have many columns and have to scroll to click options.
       showOptionsOnRowClick
+
+      // To auto-size the column
+      columnNameFontSize={16}
       {...controller}
     />
   )

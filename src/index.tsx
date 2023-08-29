@@ -19,7 +19,7 @@ function App() {
     console.log({ dirtyRows })
     setTimeout(() => resolve(true), 3000)
   })
-  
+
   const { Datatable, ...controller } = useDatatable<Data>({
     data: responseData,
     count: responseData.length,
@@ -29,7 +29,7 @@ function App() {
       id: { orderIndex: 1, sortDirection: "desc" }
     },
     columns: [
-      { field: "id", width: 85, datatype: "number" },
+      { field: "id", width: 85, datatype: "number", editable: false },
       { field: "status", setOptions: status, multiFilter: true },
       { field: "fullName", columnName: "full name and long col name" },
       { field: "firstName" },
@@ -55,11 +55,12 @@ function App() {
     </>
   )
 
-  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<Data>) => (<>
-    <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Fetching On</button>
-    <button className="elegance-button" onClick={() => setIsFetching(true)} style={{ padding: 8 }}>Fetching On</button>
-    <button className="elegance-button" onClick={() => setIsFetching(false)} style={{ padding: 8 }}>Fetching Off</button>
-  </>);
+  const RowOptionMenu = ({ row, rowIndex }: Datatable.RowOptionMenuProps<Data>) => (
+    <>
+      <button className="elegance-button" onClick={() => setIsFetching(true)} style={{ padding: 8 }}>Fetching On</button>
+      <button className="elegance-button" onClick={() => setIsFetching(false)} style={{ padding: 8 }}>Fetching Off</button>
+    </>
+  );
 
   return (
     <Datatable

@@ -221,9 +221,24 @@
     }
   }
 
-  .io-checkmark-outline, .io-close-outline {
+  .io-checkmark-outline {
     width: 16px;
     height: 16px;
+    color: green;
+
+    &:hover {
+      color: green;
+    }
+  }
+
+  .io-close-outline {
+    width: 16px;
+    height: 16px;
+    color: red;
+
+    &:hover {
+      color: red;
+    }
   }
 
   .table-header-panel-button-disabled>*,
@@ -236,18 +251,19 @@
     all: unset;
     cursor: pointer;
     transition: all 200ms ease-in-out;
-    background-color: #DDE6ED;
+    background-color: #fff;
     position: absolute;
     right: 0px;
     border-radius: 100%;
     padding: 3px;
-
-    &:hover {
-      background-color: #c6c6c6;
-      svg {
-        color: #27374D;
-      }
+    opacity: 0;
+    svg {
+      color: #27374D;
     }
+  }
+
+  .edit-row-button-hover {
+    opacity: 1;
   }
 
   .io-pencil {
@@ -261,6 +277,17 @@
     display: flex;
     flex: 1;
     align-items: center;
+  }
+
+  .editable-cell-input {
+    background-color: white;
+    outline: none;
+    display: flex;
+    border-radius: 3px;
+    border: 1px solid #c6c6c6;
+    padding: 4px;
+    font-weight: normal;
+    width: calc(100% - 36px);
   }
 
   .apps-button {

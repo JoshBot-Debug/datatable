@@ -19,6 +19,11 @@ export declare namespace Datatable {
     setOptions?: string[];
     multiFilter?: boolean;
     width?: number;
+
+    /**
+     * @default true
+     */
+    editable?: boolean;
   } & ({
     datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
     filterOperations?: UseOperationFilter.TextFilterOperations[];
@@ -61,13 +66,28 @@ export declare namespace Datatable {
      */
     serverSide?: boolean;
     onSaveChanges?: (dirtyRows: Data[]) => Promise<any>;
+
+    /**
+     * When using onSaveChanges, you must specify a unique field to identify a row.
+     * @default "id"
+     */
+    uniqueRowIdentifier?: string;
   }
 
   namespace EditableCells {
-    type HookReturn = {
+
+    type HookReturn<Data extends Record<string, any>> = {
       isEditable: boolean;
-      EditableCell: () => React.ReactElement;
+      EditableCell: (props: { inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
+      onChange: (row: Data, field: string | number | symbol, value: any) => void;
+      onEdit: (row: Data, field: string | number | symbol, cancelEdit: boolean) => void;
+      isDirty: (row?: Data, field?: string | number | symbol) => boolean;
+      dirtyValue: (row: Data, field: string | number | symbol) => string | undefined;
+      save: () => Promise<void>;
+      cancel: () => void;
+      isSaving: boolean;
     }
+
   }
 
   interface RichDatatableProps<Data extends Record<string, any>> {
@@ -79,7 +99,7 @@ export declare namespace Datatable {
     sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
     selectable: Datatable.UseSelectable.HookReturn;
-    editableCells: Datatable.EditableCells.HookReturn;
+    editableCells: Datatable.EditableCells.HookReturn<Data>;
     RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Data) => boolean;
@@ -143,7 +163,8 @@ export declare namespace Datatable {
 
     minColumnSize?: number;
     columnNameFontSize?: number;
-    renderCell?: ({ column, row }: { column: Datatable.Column<Data>, row: Data }, Cell: React.ReactNode) => React.ReactNode;
+    renderCell?: (column: Datatable.Column<Data>, row: Data, Cell: React.ReactNode) => React.ReactNode;
+    renderHeaderPanel?: () => React.ReactNode;
   }
 
 
