@@ -1,8 +1,8 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import styleInject from '/home/joshua/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
-import * as react from 'react';
+import React$1 from 'react';
 
-var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 1;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}";
+var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-panel {\n  height: 45px;\n}\n.myers-datatable .table-header-panel-row {\n  position: fixed;\n  height: 45px;\n  left: 0px;\n  gap: 8px;\n  right: 8px; /* 0px + scrollbar width */\n  display: flex;\n  flex-direction: row-reverse;\n  align-items: center;\n}\n.myers-datatable .sticky-header {\n  z-index: 1;\n  position: sticky;\n  top: 0px;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.myers-datatable .table-header-panel-button {\n  all: unset;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 4px;\n  cursor: pointer;\n  font-size: 14px;\n}\n.myers-datatable .table-header-panel-button:first-child {\n  margin-right: 16px;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}";
 styleInject(css_248z);
 
 declare namespace Datatable {
@@ -25,6 +25,11 @@ declare namespace Datatable {
     setOptions?: string[];
     multiFilter?: boolean;
     width?: number;
+
+    /**
+     * @default true
+     */
+    editable?: boolean;
   } & ({
     datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
     filterOperations?: UseOperationFilter.TextFilterOperations[];
@@ -66,8 +71,30 @@ declare namespace Datatable {
      * Default is true
      */
     serverSide?: boolean;
+    onSaveChanges?: (dirtyRows: Data[]) => Promise<any>;
+
+    /**
+     * When using onSaveChanges, you must specify a unique field to identify a row.
+     * @default "id"
+     */
+    uniqueRowIdentifier?: string;
   }
 
+  namespace EditableCells {
+
+    type HookReturn<Data extends Record<string, any>> = {
+      isEditable: boolean;
+      EditableCell: (props: { inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
+      onChange: (row: Data, field: string | number | symbol, value: any) => void;
+      onEdit: (row: Data, field: string | number | symbol, cancelEdit: boolean) => void;
+      isDirty: (row?: Data, field?: string | number | symbol) => boolean;
+      dirtyValue: (row: Data, field: string | number | symbol) => string | undefined;
+      save: () => Promise<void>;
+      cancel: () => void;
+      isSaving: boolean;
+    }
+
+  }
 
   interface RichDatatableProps<Data extends Record<string, any>> {
     data?: Data[];
@@ -78,6 +105,7 @@ declare namespace Datatable {
     sortable: Datatable.UseSortable.HookReturn<Data>;
     pagination: Datatable.UsePagination.HookReturn;
     selectable: Datatable.UseSelectable.HookReturn;
+    editableCells: Datatable.EditableCells.HookReturn<Data>;
     RowOptionMenu?: React.FC<RowOptionMenuProps<Data>>;
     AppsPanel?: React.FC<AppsPanelProps>;
     isSelectable?: (row: Data) => boolean;
@@ -141,6 +169,8 @@ declare namespace Datatable {
 
     minColumnSize?: number;
     columnNameFontSize?: number;
+    renderCell?: (column: Datatable.Column<Data>, row: Data, Cell: React.ReactNode) => React.ReactNode;
+    renderHeaderPanel?: () => React.ReactNode;
   }
 
 
@@ -339,7 +369,8 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     selectable: Datatable.UseSelectable.HookReturn;
     setFilter: Datatable.UseSetFilter.HookReturn<Data>;
     operationFilter: Datatable.UseOperationFilter.HookReturn<Data, Datatable.AllOperations>;
-    updateFilter: react.Dispatch<react.SetStateAction<Datatable.Filter<Data>>>;
+    editableCells: Datatable.EditableCells.HookReturn<Data>;
+    updateFilter: React$1.Dispatch<React$1.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
     reset: (useInitialFilters?: boolean) => void;
 };
