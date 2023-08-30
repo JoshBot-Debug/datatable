@@ -18,8 +18,8 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
     onChange(next);
   }
 
-  const reset = (useInitialFilters?: boolean) => {
-    const resetValue = useInitialFilters ? initialSetFilter ?? defaultSetFilter : defaultSetFilter;
+  const reset = (filter?: Datatable.UseSetFilter.SetFilter<Data>, useDefaultFilter?: boolean) => {
+    const resetValue = useDefaultFilter ? defaultSetFilter : filter ?? initialSetFilter ?? defaultSetFilter;
     updateFilter(resetValue);
     return resetValue;
   }

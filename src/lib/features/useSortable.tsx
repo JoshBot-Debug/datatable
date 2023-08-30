@@ -60,8 +60,8 @@ export default function useSortable<Data extends Record<string, any>>(
 
   useEffect(() => { onChange(sortOrder); }, []);
 
-  const reset = (useInitialFilters?: boolean) => {
-    const resetValue = useInitialFilters ? initialSortOrder : {};
+  const reset = (filter?: Datatable.UseSortable.SortOrder<Data>) => {
+    const resetValue = filter ?? initialSortOrder;
     setIsMultiSort(false);
     setSortOrder(resetValue);
     return resetValue

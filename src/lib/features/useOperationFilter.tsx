@@ -24,8 +24,8 @@ export default function useOperationFilter<Data extends Record<string, any>, Ope
     onChange(next);
   }
 
-  const reset = (useInitialFilters?: boolean) => {
-    const resetValue = useInitialFilters ? initialOperationFilter ?? {} as Datatable.UseOperationFilter.OperationFilter<Data, Operation> : {} as Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
+  const reset = (filter?: Datatable.UseOperationFilter.OperationFilter<Data, Operation>) => {
+    const resetValue = filter ?? initialOperationFilter ?? {} as Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
     setFilter(resetValue);
     return resetValue;
   }

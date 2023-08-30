@@ -41,7 +41,7 @@ export declare namespace Datatable {
 
   type ColumnConfig<Data> = PartialKeys<Column<Data>, "datatype" | "sortable" | "columnName" | "omit" | "filterable">[];
 
-  interface Config<Data extends Record<string, any>> {
+  interface Config<Data extends Record<string, any>> extends InitialFilters<Data> {
 
     data?: Data[];
     columns: Datatable.ColumnConfig<Data>;
@@ -56,11 +56,6 @@ export declare namespace Datatable {
      */
     onFilter?: (filter: Filter<Data>) => void;
 
-    initialSortOrder?: Filter<Data>["sortOrder"];
-    initialPage?: Filter<Data>["page"];
-    initialOperationFilter?: Filter<Data>["operationFilter"];
-    initialSetFilter?: Filter<Data>["setFilter"];
-
     /**
      * Default is true
      */
@@ -72,6 +67,13 @@ export declare namespace Datatable {
      * @default "id"
      */
     uniqueRowIdentifier?: string;
+  }
+
+  interface InitialFilters<Data extends Record<string, any>> {
+    initialSortOrder?: Filter<Data>["sortOrder"];
+    initialPage?: Filter<Data>["page"];
+    initialOperationFilter?: Filter<Data>["operationFilter"];
+    initialSetFilter?: Filter<Data>["setFilter"];
   }
 
   namespace EditableCells {
@@ -180,7 +182,7 @@ export declare namespace Datatable {
       sortOrder: SortOrder<Data>;
       Sort: (props: SortProps<Data>) => JSX.Element | null;
       onSort: (column: DatatableColumn<Data>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseSortable.SortOrder<Data>;
+      reset: (filter?: SortOrder<Data>) => SortOrder<Data>;
     }
 
     interface SortProps<Data> {
@@ -223,7 +225,7 @@ export declare namespace Datatable {
       lastPage: () => void;
       firstPage: () => void;
       onChangeRowsPerPage: (rowsPerPage: number) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UsePagination.Page;
+      reset: (filter?: Page, useDefaultPage?: boolean) => Page;
     }
 
 
@@ -296,7 +298,7 @@ export declare namespace Datatable {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<Data>;
       onSetFilter: (filter: SetFilter<Data>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseSetFilter.SetFilter<Data>;
+      reset: (filter?: SetFilter<Data>, useDefaultFilter?: boolean) => Datatable.UseSetFilter.SetFilter<Data>;
     }
 
 
@@ -313,7 +315,7 @@ export declare namespace Datatable {
 
     interface Config<Data extends Record<string, any>, Operation> {
       onChange: (setFilter: SetFilter) => void;
-      initialOperationFilter?: UseOperationFilter.OperationFilter<Data, Operation>;
+      initialOperationFilter?: OperationFilter<Data, Operation>;
     }
 
     type OperationValue<Operation> = {
@@ -331,7 +333,7 @@ export declare namespace Datatable {
       OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
       operationFilter: OperationFilter<Data, Operation>;
       onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
+      reset: (filter?: OperationFilter<Data, Operation>) => OperationFilter<Data, Operation>;
     }
 
     type BooleanFilterOperations = "Is true" | "Is false" | "Is blank" | "Not blank";

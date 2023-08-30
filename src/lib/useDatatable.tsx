@@ -33,10 +33,10 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const initialSetFilter = config.initialSetFilter ?? defaultSetFilter;
 
   const initialFilters = {
-    sortOrder: initialSortOrder ?? {} as Datatable.UseSortable.SortOrder<Data>,
+    sortOrder: initialSortOrder ?? {},
     page: initialPage ?? {},
-    operationFilter: initialOperationFilter ?? {} as Datatable.UseOperationFilter.OperationFilter<Data, Datatable.AllOperations>,
-    setFilter: initialSetFilter ?? {} as Datatable.UseSetFilter.SetFilter<Data>
+    operationFilter: initialOperationFilter ?? {},
+    setFilter: initialSetFilter ?? {}
   }
 
   const [filter, updateFilter] = useState<Datatable.Filter<Data>>(initialFilters);
@@ -61,12 +61,30 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const reset = (useInitialFilters?: boolean) => {
     selectable.reset();
     const resetValue = {
-      sortOrder: sortable.reset(useInitialFilters),
-      page: pagination.reset(useInitialFilters),
-      operationFilter: operationFilter.reset(useInitialFilters),
-      setFilter: setFilter.reset(useInitialFilters)
+      sortOrder: sortable.reset(useInitialFilters ? undefined : {}),
+      page: pagination.reset(undefined, !useInitialFilters),
+      operationFilter: operationFilter.reset(useInitialFilters ? undefined : {}),
+      setFilter: setFilter.reset(undefined, !useInitialFilters)
     }
     updateFilter(resetValue);
+  }
+
+  const getFilters = (): Datatable.InitialFilters<Data> => ({
+    initialSortOrder: sortable.sortOrder,
+    initialOperationFilter: operationFilter.operationFilter,
+    initialSetFilter: setFilter.setFilter,
+    initialPage: pagination.page
+  })
+
+  const setFilters = (initialFilters: Datatable.InitialFilters<Data>) => {
+    selectable.reset();
+    const resetValue = {
+      sortOrder: sortable.reset(initialFilters.initialSortOrder),
+      page: pagination.reset(initialFilters.initialPage),
+      operationFilter: operationFilter.reset(initialFilters.initialOperationFilter),
+      setFilter: setFilter.reset(initialFilters.initialSetFilter)
+    }
+    updateFilter(resetValue)
   }
 
   return {
@@ -81,6 +99,8 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     updateFilter,
     Datatable: RichDatatable,
     reset,
+    getFilters,
+    setFilters,
   }
 }
 

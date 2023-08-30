@@ -13,6 +13,7 @@ function App() {
 
   const [responseData, setResponseData] = useState(data as Data[]);
 
+  const [savedFilters, setSavedFilters] = useState<Datatable.InitialFilters<Data>>();
   const [isFetching, setIsFetching] = useState(false);
 
   const onSaveChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
@@ -59,6 +60,8 @@ function App() {
     <>
       <button className="elegance-button" onClick={() => controller.reset(true)} style={{ padding: 8 }}>Reset Filters</button>
       <button className="elegance-button" onClick={() => controller.reset()} style={{ padding: 8 }}>Clear Filters</button>
+      <button className="elegance-button" onClick={() => setSavedFilters(controller.getFilters())} style={{ padding: 8 }}>Save Filters</button>
+      <button className={`elegance-button ${!savedFilters ? 'elegance-button-disabled' : ''}`} disabled={!savedFilters} onClick={() => savedFilters && controller.setFilters(savedFilters)} style={{ padding: 8 }}>Apply Saved Filters</button>
       {OmitColumns}
     </>
   )
@@ -76,7 +79,6 @@ function App() {
       RowOptionMenu={RowOptionMenu}
       AppsPanel={AppsPanel}
       isSelectable={row => row.isActive}
-      showOptionsOnRowClick
       columnNameFontSize={16}
       {...controller}
     />

@@ -33,8 +33,8 @@ export default function usePagination(config: Datatable.UsePagination.Config): D
 
   useEffect(() => { onChange(page); }, []);
 
-  const reset = (useInitialFilters?: boolean) => {
-    const resetValue = useInitialFilters ? initialPage ?? defaultPage : defaultPage;
+  const reset = (filter?: Datatable.UsePagination.Page, useDefaultPage?: boolean) => {
+    const resetValue = useDefaultPage ? defaultPage : filter ?? initialPage ?? defaultPage;
     setPage(resetValue);
     return resetValue;
   }

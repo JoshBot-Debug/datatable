@@ -491,6 +491,13 @@
     }
   }
 
+  .elegance-button-disabled {
+    background-color: gray;
+    cursor: default;
+    &:hover {
+      background-color: gray;
+    }
+  }
 
   a {
     color: #1955a8;

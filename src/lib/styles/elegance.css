@@ -409,6 +409,13 @@
 .myers-datatable .elegance-button:hover {
   background-color: #526D82;
 }
+.myers-datatable .elegance-button-disabled {
+  background-color: gray;
+  cursor: default;
+}
+.myers-datatable .elegance-button-disabled:hover {
+  background-color: gray;
+}
 .myers-datatable a {
   color: #1955a8;
   text-transform: lowercase;
