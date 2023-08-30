@@ -20,7 +20,7 @@
   }
 
   .table-header-row {
-    z-index: 1;
+    z-index: 2;
     position: sticky;
     top: 0px;
     width: fit-content;
@@ -94,6 +94,7 @@
     width: 100%;
     display: flex;
     align-items: center;
+    z-index: 1;
   }
 
   .spinner-wrapper {
@@ -103,4 +104,8 @@
     left: 0px;
   }
 
+  .popup-floating-container {
+    z-index: 2;
+    outline: none;
+  }
 }

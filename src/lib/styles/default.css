@@ -252,10 +252,6 @@
   width: 20px;
   fill: black;
 }
-.myers-datatable .popup-floating-container {
-  z-index: 1;
-  outline: none;
-}
 .myers-datatable .popup-floating-arrow {
   fill: gray;
 }
