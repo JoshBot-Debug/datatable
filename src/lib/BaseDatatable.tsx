@@ -42,53 +42,52 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
 
   return (
     <div className="myers-datatable">
+      {renderHeaderPanel && renderHeaderPanel()}
+      
       <div ref={resizer.containerRef} className="table-scroll-container">
 
-        <div className="sticky-header">
-          {renderHeaderPanel && renderHeaderPanel()}
-          <div className="table-header-row table-row">
-            <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
-              {
-                AppsPanel && (
-                  <Popper
-                    Icon={IoApps}
-                    mainAxisOffset={20}
-                    crossAxisOffset={10}
-                    placement="bottom-end"
-                    className="app-panel-button"
-                  >
-                    {AppsPanel}
-                  </Popper>
-                )
-              }
-            </div>
-
-            {(!hideSelect && !!SelectHeader) && (
-              <TableHeader
-                className="select-header-cell"
-                column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
-                width={selectWidth}
-              >
-                <SelectHeader />
-              </TableHeader>
-            )}
-
-            {columns.map((column) => (
-              <TableHeader
-                key={String(column.field)}
-                column={column}
-                onClick={onColumnClick}
-                className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
-                width={resizer.getWidth(column)}
-              >
-
-                <div className="column-header-options">
-                  {(column.sortable && renderSort) && renderSort(column)}
-                  {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
-                </div>
-              </TableHeader>
-            ))}
+        <div className="table-header-row table-row">
+          <div className="table-cell table-header-cell apps-button-header-cell" style={{ width: appPanelColWidth, minWidth: appPanelColWidth, maxWidth: appPanelColWidth }}>
+            {
+              AppsPanel && (
+                <Popper
+                  Icon={IoApps}
+                  mainAxisOffset={20}
+                  crossAxisOffset={10}
+                  placement="bottom-end"
+                  className="app-panel-button"
+                >
+                  {AppsPanel}
+                </Popper>
+              )
+            }
           </div>
+
+          {(!hideSelect && !!SelectHeader) && (
+            <TableHeader
+              className="select-header-cell"
+              column={{ field: "_selectable", datatype: "string", columnName: "", sortable: false, omit: false, filterable: false }}
+              width={selectWidth}
+            >
+              <SelectHeader />
+            </TableHeader>
+          )}
+
+          {columns.map((column) => (
+            <TableHeader
+              key={String(column.field)}
+              column={column}
+              onClick={onColumnClick}
+              className={`${column.sortable ? 'sortable-table-header' : ''} ${column.omit ? 'hide' : ''}`}
+              width={resizer.getWidth(column)}
+            >
+
+              <div className="column-header-options">
+                {(column.sortable && renderSort) && renderSort(column)}
+                {(column.filterable && renderFilter) && renderFilter(column, FilterMenu)}
+              </div>
+            </TableHeader>
+          ))}
         </div>
 
         {data.map((row, rIndex) => (

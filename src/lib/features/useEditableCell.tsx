@@ -90,10 +90,11 @@ const EditableCell: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (p
 
   const {
     inputType,
-    value,
     onChange,
     setOptions
   } = props;
+
+  const value = (props.value === undefined || props.value === null) ? "" : props.value
 
   if (setOptions) {
     return (

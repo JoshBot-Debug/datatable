@@ -1,3 +1,6 @@
+.myers-datatable {
+  position: relative;
+}
 .myers-datatable .table-container {
   display: flex;
   flex-direction: column;
@@ -13,25 +16,26 @@
   flex-direction: column;
   justify-content: center;
 }
-.myers-datatable .table-header-panel {
-  height: 45px;
-}
-.myers-datatable .table-header-panel-row {
-  position: fixed;
-  height: 45px;
-  left: 0px;
-  gap: 8px;
-  right: 8px; /* 0px + scrollbar width */
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-}
-.myers-datatable .sticky-header {
+.myers-datatable .table-header-row {
   z-index: 1;
   position: sticky;
   top: 0px;
   width: -moz-fit-content;
   width: fit-content;
+}
+.myers-datatable .table-header-panel {
+  height: 45px;
+}
+.myers-datatable .table-header-panel-row {
+  position: absolute;
+  height: 45px;
+  left: 0px;
+  gap: 8px;
+  right: 8px;
+  /* 0px + scrollbar width */
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
 }
 .myers-datatable .table-header-panel-button {
   all: unset;
@@ -46,8 +50,10 @@
   margin-right: 16px;
 }
 .myers-datatable .spinner {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #7e7e7e; /* Blue */
+  border: 4px solid #f3f3f3;
+  /* Light grey */
+  border-top: 4px solid #7e7e7e;
+  /* Blue */
   border-radius: 50%;
   width: 15px;
   height: 15px;
