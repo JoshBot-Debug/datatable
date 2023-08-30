@@ -2,7 +2,7 @@ import * as react_jsx_runtime from 'react/jsx-runtime';
 import styleInject from '/home/joshua/Projects/@jjmyers/datatable/node_modules/style-inject/dist/style-inject.es.js';
 import React$1 from 'react';
 
-var css_248z = ".myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-panel {\n  height: 45px;\n}\n.myers-datatable .table-header-panel-row {\n  position: fixed;\n  height: 45px;\n  left: 0px;\n  gap: 8px;\n  right: 8px; /* 0px + scrollbar width */\n  display: flex;\n  flex-direction: row-reverse;\n  align-items: center;\n}\n.myers-datatable .sticky-header {\n  z-index: 1;\n  position: sticky;\n  top: 0px;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.myers-datatable .table-header-panel-button {\n  all: unset;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 4px;\n  cursor: pointer;\n  font-size: 14px;\n}\n.myers-datatable .table-header-panel-button:first-child {\n  margin-right: 16px;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3; /* Light grey */\n  border-top: 4px solid #7e7e7e; /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}";
+var css_248z = ".myers-datatable {\n  position: relative;\n}\n.myers-datatable .table-container {\n  display: flex;\n  flex-direction: column;\n}\n.myers-datatable .table-row {\n  display: flex;\n  width: -moz-fit-content;\n  width: fit-content;\n  position: relative;\n}\n.myers-datatable .table-cell {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.myers-datatable .table-header-row {\n  z-index: 2;\n  position: sticky;\n  top: 0px;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.myers-datatable .table-header-panel {\n  height: 45px;\n}\n.myers-datatable .table-header-panel-row {\n  position: absolute;\n  height: 45px;\n  left: 0px;\n  gap: 8px;\n  right: 8px;\n  /* 0px + scrollbar width */\n  display: flex;\n  flex-direction: row-reverse;\n  align-items: center;\n}\n.myers-datatable .table-header-panel-button {\n  all: unset;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  gap: 4px;\n  cursor: pointer;\n  font-size: 14px;\n}\n.myers-datatable .table-header-panel-button:first-child {\n  margin-right: 16px;\n}\n.myers-datatable .spinner {\n  border: 4px solid #f3f3f3;\n  /* Light grey */\n  border-top: 4px solid #7e7e7e;\n  /* Blue */\n  border-radius: 50%;\n  width: 15px;\n  height: 15px;\n  animation: spin 1s linear infinite;\n  margin-left: 5px;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .spinner-loading-text {\n  margin-left: 10px;\n  color: rgb(37, 37, 37);\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.myers-datatable .spinner-container {\n  position: absolute;\n  background-color: white;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  z-index: 1;\n}\n.myers-datatable .spinner-wrapper {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  left: 0px;\n}\n.myers-datatable .popup-floating-container {\n  z-index: 2;\n  outline: none;\n}";
 styleInject(css_248z);
 
 declare namespace Datatable {
@@ -47,7 +47,7 @@ declare namespace Datatable {
 
   type ColumnConfig<Data> = PartialKeys<Column<Data>, "datatype" | "sortable" | "columnName" | "omit" | "filterable">[];
 
-  interface Config<Data extends Record<string, any>> {
+  interface Config<Data extends Record<string, any>> extends InitialFilters<Data> {
 
     data?: Data[];
     columns: Datatable.ColumnConfig<Data>;
@@ -62,11 +62,6 @@ declare namespace Datatable {
      */
     onFilter?: (filter: Filter<Data>) => void;
 
-    initialSortOrder?: Filter<Data>["sortOrder"];
-    initialPage?: Filter<Data>["page"];
-    initialOperationFilter?: Filter<Data>["operationFilter"];
-    initialSetFilter?: Filter<Data>["setFilter"];
-
     /**
      * Default is true
      */
@@ -78,6 +73,13 @@ declare namespace Datatable {
      * @default "id"
      */
     uniqueRowIdentifier?: string;
+  }
+
+  interface InitialFilters<Data extends Record<string, any>> {
+    initialSortOrder?: Filter<Data>["sortOrder"];
+    initialPage?: Filter<Data>["page"];
+    initialOperationFilter?: Filter<Data>["operationFilter"];
+    initialSetFilter?: Filter<Data>["setFilter"];
   }
 
   namespace EditableCells {
@@ -186,7 +188,7 @@ declare namespace Datatable {
       sortOrder: SortOrder<Data>;
       Sort: (props: SortProps<Data>) => JSX.Element | null;
       onSort: (column: DatatableColumn<Data>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseSortable.SortOrder<Data>;
+      reset: (filter?: SortOrder<Data>) => SortOrder<Data>;
     }
 
     interface SortProps<Data> {
@@ -229,7 +231,7 @@ declare namespace Datatable {
       lastPage: () => void;
       firstPage: () => void;
       onChangeRowsPerPage: (rowsPerPage: number) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UsePagination.Page;
+      reset: (filter?: Page, useDefaultPage?: boolean) => Page;
     }
 
 
@@ -302,7 +304,7 @@ declare namespace Datatable {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
       setFilter: SetFilter<Data>;
       onSetFilter: (filter: SetFilter<Data>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseSetFilter.SetFilter<Data>;
+      reset: (filter?: SetFilter<Data>, useDefaultFilter?: boolean) => Datatable.UseSetFilter.SetFilter<Data>;
     }
 
 
@@ -319,7 +321,7 @@ declare namespace Datatable {
 
     interface Config<Data extends Record<string, any>, Operation> {
       onChange: (setFilter: SetFilter) => void;
-      initialOperationFilter?: UseOperationFilter.OperationFilter<Data, Operation>;
+      initialOperationFilter?: OperationFilter<Data, Operation>;
     }
 
     type OperationValue<Operation> = {
@@ -337,7 +339,7 @@ declare namespace Datatable {
       OperationFilter: (props: OperationProps<Data, Operation>) => JSX.Element | null;
       operationFilter: OperationFilter<Data, Operation>;
       onSetOperationFilter: (filter: OperationFilter<Data, Operation>) => void;
-      reset: (useInitialFilters?: boolean) => Datatable.UseOperationFilter.OperationFilter<Data, Operation>;
+      reset: (filter?: OperationFilter<Data, Operation>) => OperationFilter<Data, Operation>;
     }
 
     type BooleanFilterOperations = "Is true" | "Is false" | "Is blank" | "Not blank";
@@ -373,6 +375,8 @@ declare function useDatatable<Data extends Record<string, any>>(config: Datatabl
     updateFilter: React$1.Dispatch<React$1.SetStateAction<Datatable.Filter<Data>>>;
     Datatable: typeof RichDatatable;
     reset: (useInitialFilters?: boolean) => void;
+    getFilters: () => Datatable.InitialFilters<Data>;
+    setFilters: (initialFilters: Datatable.InitialFilters<Data>) => void;
 };
 declare function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDatatableProps<Data>): react_jsx_runtime.JSX.Element;
 
