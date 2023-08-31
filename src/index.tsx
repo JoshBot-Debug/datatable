@@ -16,7 +16,7 @@ function App() {
   const [savedFilters, setSavedFilters] = useState<Datatable.InitialFilters<Data>>();
   const [isFetching, setIsFetching] = useState(false);
 
-  const onSaveChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
+  const onSubmitChanges = (dirtyRows: Data[]) => new Promise((resolve) => {
     setResponseData(prev => {
       const next = [...prev];
       for (let i = 0; i < dirtyRows.length; i++) {
@@ -33,7 +33,9 @@ function App() {
     data: responseData,
     count: responseData.length,
     serverSide: false,
-    onSaveChanges: onSaveChanges,
+    onSubmitChanges: onSubmitChanges,
+    validateChanges: { "lastName": (value) => value.length > 3 ? "Max 3 characters" : null },
+    submitError: "Here is an error for you!",
     initialSortOrder: {
       id: { orderIndex: 1, sortDirection: "desc" }
     },

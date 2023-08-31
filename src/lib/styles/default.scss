@@ -446,4 +446,14 @@
   .table-row-clickable {
     cursor: pointer;
   }
+
+  .editable-cell-error-message {
+    font-size: 14px;
+    color: red;
+    margin-right: 16px;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 }

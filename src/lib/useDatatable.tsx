@@ -25,7 +25,9 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     initialSortOrder,
     initialPage = defaultPage,
     initialOperationFilter,
-    onSaveChanges,
+    onSubmitChanges,
+    submitError,
+    validateChanges,
     uniqueRowIdentifier,
   } = config;
 
@@ -48,7 +50,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   const selectable = useSelectable({ numberOfRows, onChange: select => updateFilter(prev => ({ ...prev, select })) });
   const setFilter = useSetFilter<Data>({ initialSetFilter, defaultSetFilter, onChange: setFilter => updateFilter(prev => ({ ...prev, setFilter })) });
   const operationFilter = useOperationFilter<Data, Datatable.AllOperations>({ initialOperationFilter, onChange: operationFilter => updateFilter(prev => ({ ...prev, operationFilter })) });
-  const editableCells = useEditableCell<Data>(onSaveChanges, uniqueRowIdentifier);
+  const editableCells = useEditableCell<Data>({ onSubmitChanges, uniqueRowIdentifier, submitError, validateChanges });
 
   useEffect(() => { onFilter && onFilter(filter); }, [filter]);
 
@@ -244,6 +246,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
                     onChange={value => editableCellsController.onChange(row, column.field, value)}
                     inputType={editRows[column.datatype]}
                     setOptions={column.setOptions}
+                    error={!editableCellsController.validationErrors ? undefined : editableCellsController.validationErrors[column.field]}
                   />
                 )
                 : Cell
@@ -269,6 +272,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
         <div className="table-header-panel-row">
           <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.save}><IoCheckmarkOutline />Save</button>|
           <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.cancel}><IoCloseOutline />Cancel</button>
+          {editableCellsController.submitError && <span title={editableCellsController.submitError} className="save-error-message">{editableCellsController.submitError}</span>}
         </div>
       </div>
     )

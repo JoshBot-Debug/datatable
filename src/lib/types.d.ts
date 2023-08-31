@@ -60,7 +60,16 @@ export declare namespace Datatable {
      * Default is true
      */
     serverSide?: boolean;
-    onSaveChanges?: (dirtyRows: Data[]) => Promise<any>;
+
+
+    onSubmitChanges?: (dirtyRows: Data[]) => Promise<any>;
+    submitError?: string;
+
+    /**
+     * An object that contains a validation function called on all keys of data.
+     * Return an error message from the function if there is an error, null otherwise
+     */
+    validateChanges?: { [K in keyof Data]?: (value: string) => string | null };
 
     /**
      * When using onSaveChanges, you must specify a unique field to identify a row.
@@ -80,7 +89,7 @@ export declare namespace Datatable {
 
     type HookReturn<Data extends Record<string, any>> = {
       isEditable: boolean;
-      EditableCell: (props: { inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
+      EditableCell: (props: { error?: string; inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
       onChange: (row: Data, field: string | number | symbol, value: any) => void;
       onEdit: (row: Data, field: string | number | symbol, cancelEdit: boolean) => void;
       isDirty: (row?: Data, field?: string | number | symbol) => boolean;
@@ -88,6 +97,15 @@ export declare namespace Datatable {
       save: () => Promise<void>;
       cancel: () => void;
       isSaving: boolean;
+      submitError?: string;
+      validationErrors?: { [K in keyof Data]?: string }
+    }
+
+    interface Config<Data extends Record<string, any>> {
+      submitError?: string;
+      onSubmitChanges?: (dirtyRows: Data[]) => Promise<any>;
+      uniqueRowIdentifier?: string;
+      validateChanges?: { [K in keyof Data]?: (value: string) => string | null };
     }
 
   }

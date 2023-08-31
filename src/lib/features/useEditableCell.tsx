@@ -2,8 +2,16 @@ import { useState } from "react"
 import { Datatable } from "../types"
 
 
-export default function useEditableCell<Data extends Record<string, any>>(onSaveChanges?: (dirtyRows: Data[]) => Promise<any>, uniqueRowIdentifier: string = "id"): Datatable.EditableCells.HookReturn<Data> {
+export default function useEditableCell<Data extends Record<string, any>>(config: Datatable.EditableCells.Config<Data>): Datatable.EditableCells.HookReturn<Data> {
 
+  const {
+    uniqueRowIdentifier = "id",
+    onSubmitChanges,
+    submitError,
+    validateChanges,
+  } = config;
+
+  const [validationErrors, setValidationErrors] = useState<{ [K in keyof Data]?: string }>({});
   const [isSaving, setIsSaving] = useState(false);
   const [dirtyRows, setDirtyRows] = useState<Record<string, any>>({});
 
@@ -15,20 +23,19 @@ export default function useEditableCell<Data extends Record<string, any>>(onSave
 
   const onEdit: Datatable.EditableCells.HookReturn<Data>["onEdit"] = (row, field, cancelEdit) => {
     const uid = getUid(row);
-    setDirtyRows(prev => {
-      const next = { ...prev };
-      if (cancelEdit) {
-        delete next[uid];
-        return next;
-      }
-      const currentRow = next[uid];
-      next[uid] = {
-        ...currentRow ? currentRow : {},
-        [field]: row[field as any],
-        [uniqueRowIdentifier]: uid
-      }
-      return next
-    })
+    const next = { ...dirtyRows };
+    if (cancelEdit && next[uid]) {
+      delete next[uid][field];
+      if (Object.keys(next[uid]).length === 1) return cancel();
+      return setDirtyRows(next);
+    }
+    const currentRow = next[uid];
+    next[uid] = {
+      ...currentRow ? currentRow : {},
+      [field]: row[field as any],
+      [uniqueRowIdentifier]: uid
+    }
+    setDirtyRows(next)
   }
 
   const isDirty: Datatable.EditableCells.HookReturn<Data>["isDirty"] = (row, field) => {
@@ -58,10 +65,32 @@ export default function useEditableCell<Data extends Record<string, any>>(onSave
   }
 
   const save: Datatable.EditableCells.HookReturn<Data>["save"] = async () => {
-    if (!onSaveChanges) return;
+    if (!onSubmitChanges) return;
+    setValidationErrors({});
+
+    if (validateChanges) {
+      let hasErrors = false;
+      const rows = Object.values(dirtyRows);
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        for (const key in row) {
+          if (!Object.prototype.hasOwnProperty.call(row, key)) continue;
+          const validator = validateChanges[key];
+          if (validator) {
+            const e = validator(row[key]);
+            if (e) {
+              setValidationErrors(prev => ({ ...prev, [key]: e }));
+              hasErrors = true;
+            }
+          }
+        }
+      }
+      if (hasErrors) return;
+    }
+
     setIsSaving(true);
     try {
-      await onSaveChanges(Object.values(dirtyRows));
+      await onSubmitChanges(Object.values(dirtyRows));
       cancel();
     }
     catch (e) { throw e; }
@@ -70,12 +99,15 @@ export default function useEditableCell<Data extends Record<string, any>>(onSave
 
   const cancel: Datatable.EditableCells.HookReturn<Data>["cancel"] = () => {
     setDirtyRows({});
+    setValidationErrors({});
     setIsSaving(false);
   }
 
   return {
-    isEditable: !!onSaveChanges,
+    isEditable: !!onSubmitChanges,
+    submitError,
     isSaving,
+    validationErrors,
     EditableCell,
     onEdit,
     isDirty,
@@ -86,7 +118,15 @@ export default function useEditableCell<Data extends Record<string, any>>(onSave
   }
 }
 
-const EditableCell: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (props) => {
+const EditableCell: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (props) => (
+  <div className="editable-cell-input-wrapper">
+    <Inputs {...props} />
+    {props.error && <span title={props.error} className="editable-cell-error-message">{props.error}</span>}
+  </div>
+)
+
+
+const Inputs: Datatable.EditableCells.HookReturn<any>["EditableCell"] = (props) => {
 
   const {
     inputType,
