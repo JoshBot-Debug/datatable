@@ -290,6 +290,28 @@
     width: calc(100% - 36px);
   }
 
+
+  .editable-cell-error-message {
+    font-size: 14px;
+    color: red;
+    margin-right: 16px;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .editable-cell-error-message {
+    font-size: 12px;
+    color: red;
+    white-space: break-spaces;
+    margin-top: 4px;
+  }
+
+  .editable-cell-input-checkbox {
+    width: fit-content;
+  }
+  
   .apps-button {
     display: flex;
   }
@@ -445,15 +467,5 @@
 
   .table-row-clickable {
     cursor: pointer;
-  }
-
-  .editable-cell-error-message {
-    font-size: 14px;
-    color: red;
-    margin-right: 16px;
-    max-width: 300px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
   }
 }

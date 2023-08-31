@@ -35,7 +35,6 @@ function App() {
     serverSide: false,
     onSubmitChanges: onSubmitChanges,
     validateChanges: { "lastName": (value) => value.length > 3 ? "Max 3 characters" : null },
-    submitError: "Here is an error for you!",
     initialSortOrder: {
       id: { orderIndex: 1, sortDirection: "desc" }
     },

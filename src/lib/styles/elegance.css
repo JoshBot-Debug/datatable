@@ -259,6 +259,21 @@
   font-weight: normal;
   width: calc(100% - 36px);
 }
+.myers-datatable .editable-cell-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.myers-datatable .editable-cell-error-message {
+  font-size: 12px;
+  color: red;
+  white-space: break-spaces;
+  margin-top: 4px;
+}
+.myers-datatable .editable-cell-input-checkbox {
+  width: -moz-fit-content;
+  width: fit-content;
+}
 .myers-datatable .apps-button {
   display: flex;
 }
@@ -428,15 +443,4 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-}
-.myers-datatable .editable-cell-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-.myers-datatable .editable-cell-error-message {
-  font-size: 12px;
-  color: red;
-  white-space: break-spaces;
-  margin-top: 4px;
 }/*# sourceMappingURL=elegance.css.map */

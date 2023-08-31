@@ -26,7 +26,7 @@ export default function useEditableCell<Data extends Record<string, any>>(config
     const next = { ...dirtyRows };
     if (cancelEdit && next[uid]) {
       delete next[uid][field];
-      if (Object.keys(next[uid]).length === 1) return cancel();
+      if (Object.keys(next[uid]).length === 1) delete next[uid];
       return setDirtyRows(next);
     }
     const currentRow = next[uid];
