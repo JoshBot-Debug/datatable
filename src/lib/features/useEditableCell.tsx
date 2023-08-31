@@ -11,7 +11,7 @@ export default function useEditableCell<Data extends Record<string, any>>(config
     validateChanges,
   } = config;
 
-  const [validationErrors, setValidationErrors] = useState<{ [K in keyof Data]?: string }>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [dirtyRows, setDirtyRows] = useState<Record<string, any>>({});
 
@@ -23,11 +23,20 @@ export default function useEditableCell<Data extends Record<string, any>>(config
 
   const onEdit: Datatable.EditableCells.HookReturn<Data>["onEdit"] = (row, field, cancelEdit) => {
     const uid = getUid(row);
-    const next = { ...dirtyRows };
-    if (cancelEdit && next[uid]) {
-      delete next[uid][field];
-      if (Object.keys(next[uid]).length === 1) delete next[uid];
-      return setDirtyRows(next);
+    const next = JSON.parse(JSON.stringify(dirtyRows));
+    const nextValidatorErrors = JSON.parse(JSON.stringify(validationErrors));
+    if (cancelEdit) {
+      if (nextValidatorErrors[uid]) {
+        delete nextValidatorErrors[uid][field];
+        if (Object.keys(nextValidatorErrors[uid]).length === 1) delete nextValidatorErrors[uid];
+      }
+      if (next[uid]) {
+        delete next[uid][field];
+        if (Object.keys(next[uid]).length === 1) delete next[uid];
+      }
+      setValidationErrors(nextValidatorErrors);
+      setDirtyRows(next);
+      return;
     }
     const currentRow = next[uid];
     next[uid] = {
@@ -60,8 +69,8 @@ export default function useEditableCell<Data extends Record<string, any>>(config
 
   const dirtyValue: Datatable.EditableCells.HookReturn<Data>["dirtyValue"] = (row, field) => {
     const uid = getUid(row);
-    if (dirtyRows[uid] === undefined || dirtyRows[uid][field] === undefined) return undefined
-    return dirtyRows[uid][field]
+    if (dirtyRows[uid] === undefined || dirtyRows[uid][field] === undefined) return undefined;
+    return dirtyRows[uid][field];
   }
 
   const save: Datatable.EditableCells.HookReturn<Data>["save"] = async () => {
@@ -71,15 +80,19 @@ export default function useEditableCell<Data extends Record<string, any>>(config
     if (validateChanges) {
       let hasErrors = false;
       const rows = Object.values(dirtyRows);
+      const nextValidatorErrors = JSON.parse(JSON.stringify(validationErrors));
       for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
+        const row: Data = rows[i];
         for (const key in row) {
           if (!Object.prototype.hasOwnProperty.call(row, key)) continue;
           const validator = validateChanges[key];
           if (validator) {
             const e = validator(row[key]);
             if (e) {
-              setValidationErrors(prev => ({ ...prev, [key]: e }));
+              const uid = getUid(row);
+              if (!nextValidatorErrors[uid]) nextValidatorErrors[uid] = {};
+              nextValidatorErrors[uid][key] = e;
+              setValidationErrors(nextValidatorErrors);
               hasErrors = true;
             }
           }
@@ -103,11 +116,17 @@ export default function useEditableCell<Data extends Record<string, any>>(config
     setIsSaving(false);
   }
 
+  const getValidationError: Datatable.EditableCells.HookReturn<Data>["getValidationError"] = (row, field) => {
+    const uid = getUid(row);
+    if (validationErrors[uid] && validationErrors[uid][field]) return validationErrors[uid][field];
+    return null;
+  }
+
   return {
     isEditable: !!onSubmitChanges,
     submitError,
     isSaving,
-    validationErrors,
+    getValidationError,
     EditableCell,
     onEdit,
     isDirty,

@@ -89,7 +89,7 @@ export declare namespace Datatable {
 
     type HookReturn<Data extends Record<string, any>> = {
       isEditable: boolean;
-      EditableCell: (props: { error?: string; inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
+      EditableCell: (props: { error?: string | null; inputType?: string; value: string; onChange: (value: any) => void; setOptions?: string[]; }) => React.ReactElement;
       onChange: (row: Data, field: string | number | symbol, value: any) => void;
       onEdit: (row: Data, field: string | number | symbol, cancelEdit: boolean) => void;
       isDirty: (row?: Data, field?: string | number | symbol) => boolean;
@@ -98,7 +98,7 @@ export declare namespace Datatable {
       cancel: () => void;
       isSaving: boolean;
       submitError?: string;
-      validationErrors?: { [K in keyof Data]?: string }
+      getValidationError: (row: Data, field: string | number | symbol) => string | null
     }
 
     interface Config<Data extends Record<string, any>> {

@@ -246,7 +246,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
                     onChange={value => editableCellsController.onChange(row, column.field, value)}
                     inputType={editRows[column.datatype]}
                     setOptions={column.setOptions}
-                    error={!editableCellsController.validationErrors ? undefined : editableCellsController.validationErrors[column.field]}
+                    error={editableCellsController.getValidationError(row, column.field)}
                   />
                 )
                 : Cell
