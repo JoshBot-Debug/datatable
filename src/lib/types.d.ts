@@ -10,7 +10,7 @@ export declare namespace Datatable {
   type Filters = { [F in Datatype]?: React.ReactNode };
 
   type Column<Data extends Record<string, any>> = {
-    field: keyof Data;
+    field: keyof Data | (string & {});
     columnName: string;
     sortable: boolean;
     filterable: boolean;

@@ -81,9 +81,6 @@ function MyListOfData() {
       { field: "dateOfBirth", width: 180, datatype: "date" },
       { field: "about", width: 500, datatype: "paragraph" },
       { field: "createdAt", width: 250, datatype: "datetime" },
-
-      // For custom fields that do not exist in "data", use @ts-ignore
-      // @ts-ignore
       { field: "customField" },
     ],
   })

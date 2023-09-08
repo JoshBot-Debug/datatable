@@ -43,7 +43,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
   return (
     <div className="myers-datatable">
       {renderHeaderPanel && renderHeaderPanel()}
-      
+
       <div ref={resizer.containerRef} className="table-scroll-container">
 
         <div className="table-header-row table-row">
@@ -222,12 +222,13 @@ const Cell = <Data extends Record<string, any>,>(props: { column: Datatable.Colu
 
 const DatatypeCell = <Data extends Record<string, any>,>(value: any, column: Datatable.Column<Data>) => {
 
+  if (value === undefined || value === null) return <span className="text-wrapper"></span>;
+
   if (column.datatype === "name") return <span className="cell-datatype-name text-wrapper">{value}</span>
 
   if (column.datatype === "link") return <a className="text-wrapper" href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
 
   if (column.datatype === "email") return <a className="text-wrapper" href={`mailto:${value}`} target="_blank" rel="noreferrer">{value}</a>
-
 
   if (column.datatype === "date") {
 

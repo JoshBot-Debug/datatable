@@ -22,7 +22,7 @@ function App() {
       for (let i = 0; i < dirtyRows.length; i++) {
         const editedRow = dirtyRows[i];
         const index = next.findIndex(r => r.id === editedRow.id);
-        if (index > 0) next[index] = { ...next[index], ...editedRow }
+        if (index > -1) next[index] = { ...next[index], ...editedRow }
       }
       return next;
     })
