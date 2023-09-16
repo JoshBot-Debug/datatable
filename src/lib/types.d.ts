@@ -23,7 +23,7 @@ export declare namespace Datatable {
     /**
      * @default true
      */
-    editable?: boolean;
+    editable?: boolean | ((value: any, column: Column<Data>, row: Data) => boolean);
   } & ({
     datatype: Include<Datatype, "string" | "link" | "email" | "phone" | "name" | "paragraph" | "image">;
     filterOperations?: UseOperationFilter.TextFilterOperations[];
@@ -69,7 +69,7 @@ export declare namespace Datatable {
      * An object that contains a validation function called on all keys of data.
      * Return an error message from the function if there is an error, null otherwise
      */
-    validateChanges?: { [K in keyof Data]?: (value: string) => string | null };
+    validateChanges?: Datatable.EditableCells.Config<Data>["validateChanges"];
 
     /**
      * When using onSaveChanges, you must specify a unique field to identify a row.
@@ -94,7 +94,7 @@ export declare namespace Datatable {
       onEdit: (row: Data, field: string | number | symbol, cancelEdit: boolean) => void;
       isDirty: (row?: Data, field?: string | number | symbol) => boolean;
       dirtyValue: (row: Data, field: string | number | symbol) => string | undefined;
-      save: () => Promise<void>;
+      save: (columns: Datatable.Column<Data>[], data: Data[]) => Promise<any>;
       cancel: () => void;
       isSaving: boolean;
       submitError?: string;
@@ -105,9 +105,10 @@ export declare namespace Datatable {
       submitError?: string;
       onSubmitChanges?: (dirtyRows: Data[]) => Promise<any>;
       uniqueRowIdentifier?: string;
-      validateChanges?: { [K in keyof Data]?: (value: string) => string | null };
+      validateChanges?: { [K in keyof Data | (string & {}) | "__allRows__"]?: ValidationFunction<Data> };
     }
 
+    type ValidationFunction<Data> = (value: string | null, field: string, dirtyRow: Record<string, any>, columns: Datatable.Column<Data>[], originalRow?: Data) => string | null
   }
 
   interface RichDatatableProps<Data extends Record<string, any>> {
@@ -184,7 +185,7 @@ export declare namespace Datatable {
     minColumnSize?: number;
     columnNameFontSize?: number;
     renderCell?: (column: Datatable.Column<Data>, row: Data, Cell: React.ReactNode) => React.ReactNode;
-    renderHeaderPanel?: () => React.ReactNode;
+    renderHeaderPanel?: (columns: Datatable.Column<Data>[], data: Data[]) => React.ReactNode;
   }
 
 
@@ -358,7 +359,7 @@ export declare namespace Datatable {
 
     type RangeFilterOperations = "Equal" | "Not equal" | "Greater than or equal" | "Less than or equal" | "Greater than" | "Less than" | "Is blank" | "Not blank";
 
-    type TextFilterOperations = "Equal" | "Not equal" | "Contains" | "Starts with" | "Ends with" | "Is blank" | "Not blank";
+    type TextFilterOperations = "Equal" | "Not equal" | "In" | "Contains" | "Starts with" | "Ends with" | "Is blank" | "Not blank";
 
     interface OperationProps<Data extends Record<string, any>, Operation> {
       inputType?: "text" | "date" | "datetime-local" | "number" | "time";

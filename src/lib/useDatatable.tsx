@@ -112,7 +112,7 @@ function getInitialSetFilter<Data extends Record<string, any>>(columns: Datatabl
 }
 
 
-const text = ["Contains", "Equal", "Not equal", "Starts with", "Ends with", "Is blank", "Not blank"];
+const text = ["Contains", "Equal", "In", "Not equal", "Starts with", "Ends with", "Is blank", "Not blank"];
 const number = ["Equal", "Not equal", "Is blank", "Not blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"];
 const date = ["Equal", "Not equal", "Is blank", "Not blank", "Greater than", "Greater than or equal", "Less than", "Less than or equal"];
 const boolean = ["Is true", "Is false", "Is blank", "Not blank"];
@@ -233,7 +233,8 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     if (!editableCellsController.isEditable) return <>{Cell}</>;
     const isDirty = editableCellsController.isDirty(row, column.field);
     const value = editableCellsController.dirtyValue(row, column.field);
-    if (column.editable === false) return Cell;
+    if (typeof column.editable === "boolean" && column.editable === false) return Cell;
+    if (typeof column.editable === "function" && column.editable(row[column.field as any], column, row) === false) return Cell;
     return (
       <Hover className="edit-row-cell">
         {isHover => (
@@ -264,13 +265,13 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
     )
   }
 
-  const renderHeaderPanel = () => {
+  const renderHeaderPanel: Datatable.DatatableProps<Data>["renderHeaderPanel"] = (columns, data) => {
     const isDirty = editableCellsController.isDirty();
     if (!isDirty || !editableCellsController.isEditable) return null;
     return (
       <div className="table-header-panel">
         <div className="table-header-panel-row">
-          <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.save}><IoCheckmarkOutline />Save</button>|
+          <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={() => editableCellsController.save(columns, data)}><IoCheckmarkOutline />Save</button>|
           <button disabled={editableCellsController.isSaving} className={`table-header-panel-button ${editableCellsController.isSaving ? "table-header-panel-button-disabled" : ""}`} type="button" onClick={editableCellsController.cancel}><IoCloseOutline />Cancel</button>
           {editableCellsController.submitError && <span title={editableCellsController.submitError} className="save-error-message">{editableCellsController.submitError}</span>}
         </div>

@@ -42,7 +42,7 @@ export function BaseDatatable<Data extends Record<string, any>>(props: Datatable
 
   return (
     <div className="myers-datatable">
-      {renderHeaderPanel && renderHeaderPanel()}
+      {renderHeaderPanel && renderHeaderPanel(columns, data)}
 
       <div ref={resizer.containerRef} className="table-scroll-container">
 

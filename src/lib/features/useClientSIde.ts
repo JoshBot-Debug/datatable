@@ -139,6 +139,11 @@ function applyOperation(itemValue: any, operation: string, filterValue?: string)
     return String(iValue).includes(String(fValue));
   }
 
+  if (operation === "In") {
+    return String(fValue).split(",").map(v => v.trim()).includes(String(iValue));
+  }
+
+
   if (operation === "Starts with") {
     return String(iValue).startsWith(String(fValue));
   }

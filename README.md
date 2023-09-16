@@ -18,7 +18,7 @@ If you find a bug or want a feature, raise an issue on GitHub.
 - A Seperate controller from component, to allow customization.
 - Added client sided data manipulation
 - Editable cells
-
+- Cell validation on edit
 
 ## Example usage
 
@@ -60,6 +60,23 @@ function MyListOfData() {
     serverSide: false,  // If this is false, data manipulation will be handled client sided. DEFAULT: true
     onFilter: console.log, // If serverSide is true, you need to handle the filters here and update data.
     onSaveChanges: onSaveChanges,
+    validateChanges: {
+      lastName: (value, field, dirtyRow, columns, originalRow) => {
+        if (!value) return null;
+        if (value.length > 3) return "Max 3 characters"
+        if (value === dirtyRow.middleName || value === originalRow?.middleName) return "Middle name and lastname cannot be the same"
+        return null
+      },
+      // A special field in validateChanges, used to perform validation on all fields, regardless wheather they were edited or not.
+      // If any field in the row is edited, all fields in that row will go through this validator.
+      // A good place to check for required fields if the data comes in empty and on edit you need to make sure the fields were filled.
+      __allRows__: (value, field, dirtyRow, columns, originalRow) => {
+        if (!value && field === "firstName") return "First name is required"
+        if(value && field === "firstName" && value.length < 2)  return "Minimum 2 characters is required"
+        // Check all other fields...
+        return null
+      },
+    },
     initialSortOrder: {
       id: { orderIndex: 1, sortDirection: "desc" }
     },
@@ -67,12 +84,12 @@ function MyListOfData() {
       // There are more props
       // You'll have to check them yourself
       { field: "id", width: 85, datatype: "number", editable: false },
-      { field: "status", setOptions: status, multiFilter: true },
-      { field: "fullName", width: 250 },
+      { field: "status", editable: val => val !== "dnd" setOptions: status, multiFilter: true },
+      { field: "fullName", editable: false, width: 250 },
       { field: "firstName" },
       { field: "middleName" },
       { field: "lastName" },
-      { field: "email", width: 250, datatype: "email" },
+      { field: "email", width: 250, datatype: "email", sortable: false, filterable: false },
       { field: "phone", datatype: "phone" },
       { field: "isActive", datatype: "boolean" },
       { field: "profileImage", datatype: "image", omit: true },

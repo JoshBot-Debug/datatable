@@ -73,32 +73,75 @@ export default function useEditableCell<Data extends Record<string, any>>(config
     return dirtyRows[uid][field];
   }
 
-  const save: Datatable.EditableCells.HookReturn<Data>["save"] = async () => {
+  const save: Datatable.EditableCells.HookReturn<Data>["save"] = async (columns, data) => {
     if (!onSubmitChanges) return;
     setValidationErrors({});
 
+    let hasError = false;
+
     if (validateChanges) {
-      let hasErrors = false;
       const rows = Object.values(dirtyRows);
       const nextValidatorErrors = JSON.parse(JSON.stringify(validationErrors));
+      const allFieldsValidator = validateChanges.__allRows__;
+
       for (let i = 0; i < rows.length; i++) {
         const row: Data = rows[i];
-        for (const key in row) {
-          if (!Object.prototype.hasOwnProperty.call(row, key)) continue;
-          const validator = validateChanges[key];
-          if (validator) {
-            const e = validator(row[key]);
-            if (e) {
-              const uid = getUid(row);
+        const uid = getUid(row);
+        const originalRow = data.find(d => d[uniqueRowIdentifier] === uid);
+
+        for (const field in row) {
+          if (!Object.prototype.hasOwnProperty.call(row, field)) continue;
+          const validate = validateChanges[field];
+          const errors: any = {
+            fieldValidatorError: null,
+            allFieldValidatorError: null,
+          }
+          if (validate) errors.fieldValidatorError = validate(row[field], field, dirtyRows[uid], columns, originalRow);
+          if (allFieldsValidator) errors.allFieldValidatorError = allFieldsValidator(row[field], field, dirtyRows[uid], columns, originalRow);
+          if (errors.fieldValidatorError || errors.allFieldValidatorError) {
+            if (!nextValidatorErrors[uid]) nextValidatorErrors[uid] = {};
+            nextValidatorErrors[uid][field] = {
+              value: row[field],
+              error: (errors.fieldValidatorError && errors.allFieldValidatorError)
+                ? `${errors.fieldValidatorError} \n${errors.allFieldValidatorError}`
+                : errors.fieldValidatorError
+                  ? errors.fieldValidatorError
+                  : errors.allFieldValidatorError
+            };
+            hasError = true;
+          }
+        }
+
+        for (const field in originalRow) {
+          if (!Object.prototype.hasOwnProperty.call(originalRow, field)) continue;
+          if (allFieldsValidator && (!nextValidatorErrors[uid] || !nextValidatorErrors[uid][field])) {
+            const error = allFieldsValidator(originalRow[field], field, dirtyRows[uid], columns, originalRow);
+            if (error) {
               if (!nextValidatorErrors[uid]) nextValidatorErrors[uid] = {};
-              nextValidatorErrors[uid][key] = e;
-              setValidationErrors(nextValidatorErrors);
-              hasErrors = true;
+              nextValidatorErrors[uid][field] = { error, value: originalRow[field] };
+              hasError = true;
             }
           }
         }
       }
-      if (hasErrors) return;
+
+      if (hasError) {
+        setValidationErrors(nextValidatorErrors);
+        const errorRows = Object.entries(nextValidatorErrors);
+        setDirtyRows(prev => {
+          const next = { ...prev };
+          for (let i = 0; i < errorRows.length; i++) {
+            const [uid, row] = errorRows[i] as any;
+            for (const field in row) {
+              if (!Object.prototype.hasOwnProperty.call(row, field)) continue;
+              if (next[uid][field]) continue;
+              next[uid][field] = row[field].value;
+            }
+          }
+          return next
+        })
+        return;
+      }
     }
 
     setIsSaving(true);
@@ -118,7 +161,7 @@ export default function useEditableCell<Data extends Record<string, any>>(config
 
   const getValidationError: Datatable.EditableCells.HookReturn<Data>["getValidationError"] = (row, field) => {
     const uid = getUid(row);
-    if (validationErrors[uid] && validationErrors[uid][field]) return validationErrors[uid][field];
+    if (validationErrors[uid] && validationErrors[uid][field]) return validationErrors[uid][field].error;
     return null;
   }
 

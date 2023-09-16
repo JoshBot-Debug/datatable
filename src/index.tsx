@@ -34,18 +34,30 @@ function App() {
     count: responseData.length,
     serverSide: false,
     onSubmitChanges: onSubmitChanges,
-    validateChanges: { "lastName": (value) => value.length > 3 ? "Max 3 characters" : null },
+    validateChanges: {
+      lastName: (value, field, dirtyRow, columns, originalRow) => {
+        if (!value) return null;
+        if (value.length > 3) return "Max 3 characters"
+        if (value === dirtyRow.middleName || value === originalRow?.middleName) return "Middle name and lastname cannot be the same"
+        return null
+      },
+      __allRows__: (value, field, dirtyRow, columns, originalRow) => {
+        if (!value && field === "firstName") return "First name is required"
+        if(value && field === "firstName" && value.length < 2)  return "Minimum 2 characters is required"
+        return null
+      },
+    },
     initialSortOrder: {
       id: { orderIndex: 1, sortDirection: "desc" }
     },
     columns: [
       { field: "id", width: 85, datatype: "number", editable: false },
-      { field: "status", setOptions: status, multiFilter: true },
-      { field: "fullName", columnName: "full name and long col name" },
+      { field: "status", editable: val => val !== "dnd", setOptions: status, multiFilter: true },
+      { field: "fullName", editable: false, columnName: "full name and long col name" },
       { field: "firstName" },
       { field: "middleName" },
       { field: "lastName" },
-      { field: "email", width: 250, datatype: "email" },
+      { field: "email", width: 250, datatype: "email", sortable: false, filterable: false },
       { field: "phone", datatype: "phone" },
       { field: "isActive", datatype: "boolean" },
       { field: "profileImage", datatype: "image", omit: true },
