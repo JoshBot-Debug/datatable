@@ -9,7 +9,7 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
     defaultSetFilter,
   } = config;
 
-  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(prepareInitialFilter(defaultSetFilter, initialSetFilter));
+  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter);
 
   const onSetFilter: Datatable.UseSetFilter.HookReturn<Data>["onSetFilter"] = (filter) => {
     const next = { ...setFilter };
@@ -19,7 +19,7 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
   }
 
   const reset = (filter?: Datatable.UseSetFilter.SetFilter<Data>, useDefaultFilter?: boolean) => {
-    const resetValue = useDefaultFilter ? defaultSetFilter : filter ?? prepareInitialFilter(defaultSetFilter, initialSetFilter);
+    const resetValue = useDefaultFilter ? defaultSetFilter : filter ?? initialSetFilter;
     updateFilter(resetValue);
     return resetValue;
   }
@@ -105,27 +105,4 @@ function SetFilter<Data extends Record<string, any>>(config: Datatable.UseSetFil
     </div>
   )
 
-}
-
-export function prepareInitialFilter<Data extends Record<string, any>>(defaultSetFilter: Datatable.UseSetFilter.SetFilter<Data>, initialSetFilter?: Datatable.UseSetFilter.SetFilter<Data>) {
-  const filter: Datatable.UseSetFilter.SetFilter<Data> = {};
-  if (!initialSetFilter || Object.keys(initialSetFilter).length === 0) return defaultSetFilter;
-  for (const key in initialSetFilter) {
-    if (!Object.prototype.hasOwnProperty.call(initialSetFilter, key)) continue;
-    const field = initialSetFilter[key];
-    if (field?.include) {
-      if (!filter[key]) filter[key] = {};
-      // @ts-ignore
-      filter[key].include = field.isAll ? defaultSetFilter[key]?.include : field.include;
-      // @ts-ignore
-      filter[key].isAll = field.isAll ?? field.include.length === defaultSetFilter[key]?.include?.length;
-      continue;
-    }
-    if (!filter[key]) filter[key] = {};
-    // @ts-ignore
-    filter[key].isAll = true;
-    // @ts-ignore
-    filter[key].include = defaultSetFilter[key]?.include ?? field.include ?? [];
-  }
-  return filter;
 }

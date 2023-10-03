@@ -307,7 +307,7 @@ export declare namespace Datatable {
 
     interface Config<Data extends Record<string, any>> {
       onChange: (setFilter: SetFilter<Data>) => void;
-      initialSetFilter?: UseSetFilter.SetFilter<Data>;
+      initialSetFilter: UseSetFilter.SetFilter<Data>;
       defaultSetFilter: UseSetFilter.SetFilter<Data>;
     }
 

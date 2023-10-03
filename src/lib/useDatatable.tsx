@@ -6,7 +6,7 @@ import usePagination from "./features/usePagination";
 import useSelectable from "./features/useSelectable";
 import OmitColumn from "./features/OmitColumn";
 import { type Datatable } from "./types";
-import useSetFilter, { prepareInitialFilter } from "./features/useSetFilter";
+import useSetFilter from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 import { useClientSide } from "./features/useClientSIde";
 import useEditableCell from "./features/useEditableCell";
@@ -31,8 +31,8 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     uniqueRowIdentifier,
   } = config;
 
-  const defaultSetFilter = getInitialSetFilter(columns);
-  const initialSetFilter = prepareInitialFilter(defaultSetFilter, config.initialSetFilter);
+  const defaultSetFilter = prepareDefaultSetFilter(columns);
+  const initialSetFilter = prepareInitialSetFilter(defaultSetFilter, config.initialSetFilter);
 
   const initialFilters = {
     sortOrder: initialSortOrder ?? {},
@@ -104,11 +104,6 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
     getFilters,
     setFilters,
   }
-}
-
-
-function getInitialSetFilter<Data extends Record<string, any>>(columns: Datatable.ColumnConfig<Data>): Datatable.UseSetFilter.SetFilter<Data> {
-  return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: { include: c.setOptions, isAll: true } } : r, {})
 }
 
 
@@ -384,4 +379,32 @@ function IoCheckmarkOutline() {
       <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" d="M416 128L192 384l-96-96" />
     </svg>
   )
+}
+
+
+function prepareDefaultSetFilter<Data extends Record<string, any>>(columns: Datatable.ColumnConfig<Data>): Datatable.UseSetFilter.SetFilter<Data> {
+  return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: { include: c.setOptions, isAll: true } } : r, {})
+}
+
+function prepareInitialSetFilter<Data extends Record<string, any>>(defaultSetFilter: Datatable.UseSetFilter.SetFilter<Data>, initialSetFilter?: Datatable.UseSetFilter.SetFilter<Data>) {
+  const filter: Datatable.UseSetFilter.SetFilter<Data> = {};
+  if (!initialSetFilter || Object.keys(initialSetFilter).length === 0) return defaultSetFilter;
+  for (const key in initialSetFilter) {
+    if (!Object.prototype.hasOwnProperty.call(initialSetFilter, key)) continue;
+    const field = initialSetFilter[key];
+    if (field?.include) {
+      if (!filter[key]) filter[key] = {};
+      // @ts-ignore
+      filter[key].include = field.isAll ? defaultSetFilter[key]?.include : field.include;
+      // @ts-ignore
+      filter[key].isAll = field.isAll ?? field.include.length === defaultSetFilter[key]?.include?.length;
+      continue;
+    }
+    if (!filter[key]) filter[key] = {};
+    // @ts-ignore
+    filter[key].isAll = true;
+    // @ts-ignore
+    filter[key].include = defaultSetFilter[key]?.include ?? field.include ?? [];
+  }
+  return filter;
 }
