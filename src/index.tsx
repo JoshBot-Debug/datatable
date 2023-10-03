@@ -43,7 +43,7 @@ function App() {
       },
       __allRows__: (value, field, dirtyRow, columns, originalRow) => {
         if (!value && field === "firstName") return "First name is required"
-        if(value && field === "firstName" && value.length < 2)  return "Minimum 2 characters is required"
+        if (value && field === "firstName" && value.length < 2) return "Minimum 2 characters is required"
         return null
       },
     },

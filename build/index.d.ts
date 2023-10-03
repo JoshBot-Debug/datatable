@@ -317,7 +317,7 @@ declare namespace Datatable {
       defaultSetFilter: UseSetFilter.SetFilter<Data>;
     }
 
-    type SetFilter<Data extends Record<string, any>> = { [K in keyof Data]?: string[] };
+    type SetFilter<Data extends Record<string, any>> = { [K in keyof Data]?: { include?: string[]; isAll?: boolean; } };
 
     interface HookReturn<Data extends Record<string, any>> {
       SetFilter: (props: SetFilterProps) => JSX.Element | null;
@@ -327,10 +327,10 @@ declare namespace Datatable {
     }
 
 
-    interface SetFilterProps {
+    interface SetFilterProps<Data> {
       field: string;
       options: string[];
-      onChange: (result: SetFilter) => void;
+      onChange: (result: SetFilter<Data>) => void;
       defaultValue?: string[]
     }
 

@@ -6,7 +6,7 @@ import usePagination from "./features/usePagination";
 import useSelectable from "./features/useSelectable";
 import OmitColumn from "./features/OmitColumn";
 import { type Datatable } from "./types";
-import useSetFilter from "./features/useSetFilter";
+import useSetFilter, { prepareInitialFilter } from "./features/useSetFilter";
 import useOperationFilter from "./features/useOperationFilter";
 import { useClientSide } from "./features/useClientSIde";
 import useEditableCell from "./features/useEditableCell";
@@ -32,7 +32,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
   } = config;
 
   const defaultSetFilter = getInitialSetFilter(columns);
-  const initialSetFilter = config.initialSetFilter ?? defaultSetFilter;
+  const initialSetFilter = prepareInitialFilter(defaultSetFilter, config.initialSetFilter);
 
   const initialFilters = {
     sortOrder: initialSortOrder ?? {},
@@ -108,7 +108,7 @@ export default function useDatatable<Data extends Record<string, any>>(config: D
 
 
 function getInitialSetFilter<Data extends Record<string, any>>(columns: Datatable.ColumnConfig<Data>): Datatable.UseSetFilter.SetFilter<Data> {
-  return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: c.setOptions } : r, {})
+  return columns.reduce((r, c) => c.setOptions ? { ...r, [(c.field as string)]: { include: c.setOptions, isAll: true } } : r, {})
 }
 
 
@@ -182,7 +182,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
   const renderFilter = (column: Datatable.Column<Data>, FilterMenu: React.FC<{ hasFilter: boolean; } & React.PropsWithChildren>) => {
     const hasSetOptions = !!column.setOptions;
     const hasFilterOptions = !!column.filterOperations;
-    const hasSetFilter = !!(column.setOptions && setFilter.setFilter[column.field]?.length !== column.setOptions.length);
+    const hasSetFilter = !!(column.setOptions && setFilter.setFilter[column.field]?.include?.length !== column.setOptions.length);
     const hasOperationFilter = !!operationFilterController.operationFilter[column.field];
     return (
       <FilterMenu hasFilter={hasOperationFilter || hasSetFilter}>
@@ -208,7 +208,7 @@ function RichDatatable<Data extends Record<string, any>>(props: Datatable.RichDa
                 field={String(column.field)}
                 onChange={setFilterController.onSetFilter}
                 options={column.setOptions ?? []}
-                defaultValue={setFilterController.setFilter[column.field] ?? []}
+                defaultValue={setFilterController.setFilter[column.field]?.include ?? []}
               />
             </>
           )

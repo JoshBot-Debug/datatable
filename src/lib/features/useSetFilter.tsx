@@ -9,9 +9,9 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
     defaultSetFilter,
   } = config;
 
-  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(initialSetFilter ?? defaultSetFilter);
+  const [setFilter, updateFilter] = useState<Datatable.UseSetFilter.SetFilter<Data>>(prepareInitialFilter(defaultSetFilter, initialSetFilter));
 
-  const onSetFilter = (filter: Datatable.UseSetFilter.SetFilter<Data>) => {
+  const onSetFilter: Datatable.UseSetFilter.HookReturn<Data>["onSetFilter"] = (filter) => {
     const next = { ...setFilter };
     for (const key in filter) next[key] = filter[key];
     updateFilter(next);
@@ -19,7 +19,7 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
   }
 
   const reset = (filter?: Datatable.UseSetFilter.SetFilter<Data>, useDefaultFilter?: boolean) => {
-    const resetValue = useDefaultFilter ? defaultSetFilter : filter ?? initialSetFilter ?? defaultSetFilter;
+    const resetValue = useDefaultFilter ? defaultSetFilter : filter ?? prepareInitialFilter(defaultSetFilter, initialSetFilter);
     updateFilter(resetValue);
     return resetValue;
   }
@@ -33,7 +33,7 @@ export default function useSetFilter<Data extends Record<string, any>>(config: D
 }
 
 
-function SetFilter(config: Datatable.UseSetFilter.SetFilterProps) {
+function SetFilter<Data extends Record<string, any>>(config: Datatable.UseSetFilter.SetFilterProps<Data>) {
 
   const {
     field,
@@ -50,19 +50,20 @@ function SetFilter(config: Datatable.UseSetFilter.SetFilterProps) {
     const next = [...selected];
     const selectedIndex = selected.findIndex(s => s === select);
     if (selectedIndex === -1) {
-      setSelected([...selected, select])
-      onChange({ [field]: [...selected, select] });
+      const include = [...selected, select];
+      setSelected(include)
+      onChange({ [field]: { include, isAll: include.length === options.length } } as any);
       return;
     }
     next.splice(selectedIndex, 1);
     setSelected(next);
-    onChange({ [field]: next });
+    onChange({ [field]: { include: next, isAll: next.length === options.length } } as any);
   }
 
   const onToggleSelectAll = () => {
     const next = selected.length === options.length ? [] : options;
     setSelected(next);
-    onChange({ [field]: next });
+    onChange({ [field]: { include: next, isAll: next.length === options.length } } as any);
   }
 
   return (
@@ -104,4 +105,27 @@ function SetFilter(config: Datatable.UseSetFilter.SetFilterProps) {
     </div>
   )
 
+}
+
+export function prepareInitialFilter<Data extends Record<string, any>>(defaultSetFilter: Datatable.UseSetFilter.SetFilter<Data>, initialSetFilter?: Datatable.UseSetFilter.SetFilter<Data>) {
+  const filter: Datatable.UseSetFilter.SetFilter<Data> = {};
+  if (!initialSetFilter || Object.keys(initialSetFilter).length === 0) return defaultSetFilter;
+  for (const key in initialSetFilter) {
+    if (!Object.prototype.hasOwnProperty.call(initialSetFilter, key)) continue;
+    const field = initialSetFilter[key];
+    if (field?.include) {
+      if (!filter[key]) filter[key] = {};
+      // @ts-ignore
+      filter[key].include = field.isAll ? defaultSetFilter[key]?.include : field.include;
+      // @ts-ignore
+      filter[key].isAll = field.isAll ?? field.include.length === defaultSetFilter[key]?.include?.length;
+      continue;
+    }
+    if (!filter[key]) filter[key] = {};
+    // @ts-ignore
+    filter[key].isAll = true;
+    // @ts-ignore
+    filter[key].include = defaultSetFilter[key]?.include ?? field.include ?? [];
+  }
+  return filter;
 }

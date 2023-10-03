@@ -73,7 +73,8 @@ function applySetFilter<Data extends Record<string, any>>(data: Data[], setFilte
     for (const key in setFilter) {
       if (setFilter.hasOwnProperty(key)) {
         const filterValues = setFilter[key];
-        if (!filterValues?.includes(item[key])) return false;
+        if (filterValues?.isAll === true) return true;
+        if (!filterValues?.include?.includes(item[key])) return false;
       }
     }
     return true;
