@@ -60,7 +60,7 @@ function App() {
       { field: "email", width: 250, datatype: "email", sortable: false, filterable: false },
       { field: "phone", datatype: "phone" },
       { field: "isActive", datatype: "boolean" },
-      { field: "profileImage", datatype: "image", omit: true },
+      { field: "profileImage", datatype: "image" },
       { field: "website", width: 250, datatype: "link" },
       { field: "loginTime", datatype: "time" },
       { field: "dateOfBirth", width: 180, datatype: "date" },

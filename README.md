@@ -1,10 +1,16 @@
-## @jjmyers/datatable
+## React Datatable
 
-### The styling of the datatable can be customized.
-### Check out the [DEMO WEBSITE](https://joshbot-debug.github.io/datatable)
+#### The styling of the datatable can be customized using CSS.
+#### Check out the [DEMO WEBSITE](https://joshbot-debug.github.io/datatable)
 
-A datatable equiped with every commonly used filter. The demo has an array of 10,000 records. Not all features are active here.
+A datatable equiped with every commonly used filter. The demo has an array of 1,000 records. Not all features are active here.
 If you find a bug or want a feature, raise an issue on GitHub.
+
+## ☕ Support My Work
+Hey there! 👋 If my npm libraries have made your coding journey easier or sparked creativity, consider supporting my work with a virtual coffee. Your generosity keeps the code flowing and inspires more innovations! ☕🚀
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/joshuajosephmyers)
+
 
 ## Quick Features
 - Sorting
