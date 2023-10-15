@@ -421,6 +421,7 @@
   width: 100%;
   cursor: pointer;
   font-weight: normal;
+  color: var(--black);
 }
 
 .myers-datatable .omit-column-container {

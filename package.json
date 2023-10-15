@@ -1,6 +1,6 @@
 {
   "name": "@jjmyers/datatable",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "private": false,
   "main": "build/index.js",
   "module": "build/index.esm.js",
