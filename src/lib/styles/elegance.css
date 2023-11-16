@@ -520,6 +520,7 @@
 
 .myers-datatable .operation-and-or-option-label {
   font-weight: normal;
+  color: var(--black);
 }
 
 .myers-datatable .no-items-to-display {
